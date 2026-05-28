@@ -488,8 +488,9 @@ function bip(){
       o.start(ctx.currentTime+start);
       o.stop(ctx.currentTime+start+dur+0.05);
     };
-    play(880,0,0.15);
-    play(1100,0.2,0.2);
+    play(880, 0,   0.18);   // bip 1
+    play(1100,0.25,0.18);   // bip 2
+    play(1100,0.5, 0.25);   // bip 3 — plus long pour marquer la fin
   }catch(e){}
 }
 
