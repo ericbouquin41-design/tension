@@ -149,7 +149,20 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .btn-green:hover{background:#0F6E56;}
 .btn-danger{width:100%;margin-top:.5rem;padding:11px;font-size:14px;font-weight:600;border-radius:10px;border:1px solid #F09595;background:#FCEBEB;color:#791F1F;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;}
 .btn-danger:hover{background:#F7C1C1;}
-.version-badge{display:inline-block;background:#E6F1FB;color:#0C447C;font-size:11px;font-weight:600;padding:2px 8px;border-radius:99px;margin-left:8px;}
+.timer-wrap{display:flex;align-items:center;gap:10px;padding:8px 12px;border-radius:8px;margin:6px 0;font-size:12px;}
+.timer-waiting{background:#FAEEDA;border:1px solid #FAC775;color:#633806;}
+.timer-ready{background:#EAF3DE;border:1px solid #C0DD97;color:#27500A;}
+.timer-bar-bg{flex:1;height:6px;background:#e2e8f0;border-radius:99px;overflow:hidden;}
+.timer-bar{height:6px;border-radius:99px;background:#D85A30;transition:width .5s linear;}
+.timer-ready .timer-bar{background:#1D9E75;}
+.mesure-col.locked{opacity:.4;pointer-events:none;}
+.mesure-col.unlocked{opacity:1;pointer-events:all;}
+.btn-save-sm:disabled{opacity:.45;cursor:not-allowed;}
+.interp-box{border-radius:10px;padding:10px 14px;margin-bottom:1rem;font-size:12px;display:flex;gap:8px;align-items:flex-start;}
+.interp-info{background:#E6F1FB;border:1px solid #B5D4F4;color:#185FA5;}
+.interp-warn{background:#FAEEDA;border:1px solid #FAC775;color:#633806;}
+.interp-danger{background:#FCEBEB;border:1px solid #F09595;color:#791F1F;}
+.chip-meta{font-size:10px;color:rgba(255,255,255,.7);margin-top:1px;}background:#E6F1FB;color:#0C447C;font-size:11px;font-weight:600;padding:2px 8px;border-radius:99px;margin-left:8px;}
 .manual-hero{background:#0C447C;border-radius:14px;padding:1.25rem 1.5rem;margin-bottom:1.25rem;display:flex;align-items:center;gap:16px;}
 .manual-hero-icon{font-size:36px;}
 .manual-hero h2{font-size:17px;font-weight:600;color:#fff;margin-bottom:3px;}
@@ -200,10 +213,18 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
   </div>
   <div class="card" style="margin-bottom:1rem;">
     <div class="card-hd"><span class="card-hd-icon">👤</span><span class="card-hd-title">Créer un profil</span></div>
-    <div class="form-row">
-      <div class="field"><label>Prénom ou nom</label><input type="text" id="pname" placeholder="ex : Marie, Papa…"></div>
-      <button class="btn-add" onclick="creerProfil()">➕ Créer</button>
+    <div class="form-grid" style="margin-bottom:10px;">
+      <div class="field" style="grid-column:1/-1;"><label>Prénom ou nom</label><input type="text" id="pname" placeholder="ex : Marie, Papa…"></div>
+      <div class="field"><label>📅 Année de naissance</label><input type="number" id="pannee" placeholder="ex : 1965" min="1900" max="2010"></div>
+      <div class="field"><label>⚧ Sexe</label>
+        <select id="psexe">
+          <option value="">— Non renseigné —</option>
+          <option value="H">👨 Homme</option>
+          <option value="F">👩 Femme</option>
+        </select>
+      </div>
     </div>
+    <button class="btn-add" style="width:100%;" onclick="creerProfil()">➕ Créer le profil</button>
   </div>
   <div id="pw"><div class="empty-state"><span class="empty-icon">👤</span><p>Aucun profil. Créez-en un ci-dessus.</p></div></div>
 </div>
@@ -216,7 +237,10 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
       <div class="hero-icon">❤️‍🩹</div>
       <div class="pchip" onclick="switchScreen('profiles')">
         <div class="pavs" id="chav"></div>
-        <span style="font-size:12px;color:#fff;font-weight:500;" id="chnm"></span>
+        <div>
+          <span style="font-size:12px;color:#fff;font-weight:500;" id="chnm"></span>
+          <div class="chip-meta" id="chip-meta"></div>
+        </div>
         <span style="font-size:10px;color:rgba(255,255,255,.7);">▼</span>
       </div>
     </div>
@@ -347,8 +371,13 @@ function switchScreen(s){
 function creerProfil(){
   const nom=document.getElementById('pname').value.trim();
   if(!nom){toast('⚠️ Entrez un nom','error');return;}
-  db.profiles.push({id:uid(),nom,color:COLORS[db.profiles.length%COLORS.length]});
-  save();document.getElementById('pname').value='';
+  const annee=parseInt(document.getElementById('pannee').value)||null;
+  const sexe=document.getElementById('psexe').value||null;
+  db.profiles.push({id:uid(),nom,color:COLORS[db.profiles.length%COLORS.length],annee,sexe});
+  save();
+  document.getElementById('pname').value='';
+  document.getElementById('pannee').value='';
+  document.getElementById('psexe').value='';
   toast('✅ Profil créé !','success');renderProfiles();
 }
 function delProfil(id){
@@ -361,9 +390,14 @@ function selectProfil(id){
   const p=db.profiles.find(x=>x.id===id);
   document.getElementById('chnm').textContent=p.nom;
   const av=document.getElementById('chav');av.textContent=ini(p.nom);av.style.background=p.color;
+  const age=getAge(p.annee);
+  const meta=document.getElementById('chip-meta');
+  if(meta)meta.textContent=[age?age+' ans':null,p.sexe==='H'?'Homme':p.sexe==='F'?'Femme':null].filter(Boolean).join(' · ');
   switchScreen('app');
   go('tp',document.querySelector('#sa .tab'));
 }
+function getAge(annee){return annee?new Date().getFullYear()-annee:null;}
+function sexeLabel(s){return s==='H'?'👨 Homme':s==='F'?'👩 Femme':null;}
 function renderProfiles(){
   const w=document.getElementById('pw');
   if(!db.profiles.length){w.innerHTML='<div class="empty-state"><span class="empty-icon">👤</span><p>Aucun profil. Créez-en un ci-dessus.</p></div>';return;}
@@ -371,9 +405,12 @@ function renderProfiles(){
   db.profiles.forEach(p=>{
     const pd=db.data[p.id]||{};
     const nP=(pd.periodes||[]).length,nS=(pd.seances||[]).length;
+    const age=getAge(p.annee);
+    const meta=[age?age+' ans':null,sexeLabel(p.sexe)].filter(Boolean).join(' · ');
     h+=`<div class="profile-card" onclick="selectProfil('${p.id}')">
       <div class="pav" style="background:${p.color};">${ini(p.nom)}</div>
       <div class="profile-name">${p.nom}</div>
+      ${meta?`<div class="profile-sub" style="margin-bottom:3px;">${meta}</div>`:''}
       <div class="profile-sub">${nP} période${nP!==1?'s':''} · ${nS} séance${nS!==1?'s':''}</div>
       <button class="profile-del" onclick="event.stopPropagation();delProfil('${p.id}')">🗑️ Supprimer</button>
     </div>`;
@@ -414,11 +451,80 @@ function delPer(id){
   save();renderPerList();toast('🗑️ Période supprimée','ok');
 }
 
+// Alerte sonore via Web Audio API
+function bip(){
+  try{
+    const ctx=new(window.AudioContext||window.webkitAudioContext)();
+    const play=(freq,start,dur)=>{
+      const o=ctx.createOscillator();
+      const g=ctx.createGain();
+      o.connect(g);g.connect(ctx.destination);
+      o.type='sine';
+      o.frequency.setValueAtTime(freq,ctx.currentTime+start);
+      g.gain.setValueAtTime(0,ctx.currentTime+start);
+      g.gain.linearRampToValueAtTime(0.4,ctx.currentTime+start+0.01);
+      g.gain.exponentialRampToValueAtTime(0.001,ctx.currentTime+start+dur);
+      o.start(ctx.currentTime+start);
+      o.stop(ctx.currentTime+start+dur+0.05);
+    };
+    play(880,0,0.15);    // bip 1
+    play(1100,0.2,0.2);  // bip 2 plus aigu
+    setTimeout(()=>ctx.close(),1000);
+  }catch(e){}
+}
+
+// Timers par séance
+const timers={};
+const TIMER_SEC=90; // 90 secondes entre mesures
+
+function startTimer(sid,step){
+  const key=sid+'_'+step;
+  if(timers[key])return;
+  // Afficher le bandeau
+  const tw=document.getElementById('tw'+sid+'_'+step);
+  if(tw)tw.style.display='flex';
+  const start=Date.now();
+  timers[key]={start,step,done:false};
+  const interval=setInterval(()=>{
+    const elapsed=Math.floor((Date.now()-start)/1000);
+    const remaining=Math.max(0,TIMER_SEC-elapsed);
+    const pct=Math.min(100,Math.floor(elapsed/TIMER_SEC*100));
+    const twEl=document.getElementById('tw'+sid+'_'+step);
+    const bar=document.getElementById('tbar'+sid+'_'+step);
+    const label=document.getElementById('tlbl'+sid+'_'+step);
+    const col=document.getElementById('mcol'+sid+'_'+step);
+    if(!twEl)return clearInterval(interval);
+    if(remaining>0){
+      if(bar)bar.style.width=pct+'%';
+      if(label)label.textContent='⏱️ Attendez '+remaining+' s avant la mesure M'+step;
+    } else {
+      clearInterval(interval);
+      timers[key].done=true;
+      twEl.className='timer-wrap timer-ready';
+      if(bar)bar.style.width='100%';
+      if(label)label.textContent='✅ Vous pouvez saisir la mesure M'+step;
+      if(col){col.classList.remove('locked');col.classList.add('unlocked');}
+      bip(); // 🔔 alerte sonore
+    }
+  },500);
+  timers[key].interval=interval;
+}
+
 function calcMoy(sid){
   const m=[1,2,3].map(i=>({
     sys:parseInt(document.getElementById('s'+sid+'sys'+i)?.value)||null,
     dia:parseInt(document.getElementById('s'+sid+'dia'+i)?.value)||null
   }));
+
+  // Démarrer timer M2 quand M1 est saisie
+  if(m[0].sys&&m[0].dia&&!timers[sid+'_2']){
+    startTimer(sid,2);
+  }
+  // Démarrer timer M3 quand M2 est saisie
+  if(m[1].sys&&m[1].dia&&!timers[sid+'_3']){
+    startTimer(sid,3);
+  }
+
   const used=m.slice(1).filter(x=>x.sys&&x.dia);
   const base=used.length>=1?used:m.filter(x=>x.sys&&x.dia).slice(0,1);
   const ms=avg(base.map(x=>x.sys));
@@ -434,6 +540,31 @@ function calcMoy(sid){
   } else if(prev){
     prev.classList.remove('visible');
   }
+
+  // Activer bouton enregistrer seulement si 3 mesures complètes
+  const btn=document.getElementById('sbtn'+sid);
+  if(btn){
+    const all3=m[0].sys&&m[0].dia&&m[1].sys&&m[1].dia&&m[2].sys&&m[2].dia;
+    btn.disabled=!all3;
+  }
+}
+
+function interpPersonnalisee(sys,dia,annee,sexe){
+  const age=getAge(annee);
+  const msgs=[];
+  if(age&&age>=60&&sys>=130){
+    msgs.push({cls:'interp-warn',txt:'⚠️ Après 60 ans, une systolique ≥ 130 mmHg mérite une attention particulière. Consultez votre médecin.'});
+  }
+  if(sexe==='F'&&age&&age>=50&&sys>=130){
+    msgs.push({cls:'interp-warn',txt:'⚠️ Après la ménopause, la tension artérielle peut augmenter significativement. Un suivi médical régulier est recommandé.'});
+  }
+  if(sexe==='H'&&age&&age>=55&&sys>=140){
+    msgs.push({cls:'interp-danger',txt:'🔴 Homme de plus de 55 ans avec systolique ≥ 140 mmHg : risque cardiovasculaire accru. Consultez votre médecin.'});
+  }
+  if(age&&age<40&&sys>=140){
+    msgs.push({cls:'interp-danger',txt:'🔴 HTA chez un sujet jeune (< 40 ans) : une consultation médicale est fortement recommandée.'});
+  }
+  return msgs;
 }
 
 function enregistrerSeance(perId){
@@ -447,7 +578,14 @@ function enregistrerSeance(perId){
     dia:parseInt(document.getElementById('s'+sid+'dia'+i)?.value)||null,
     hr:parseInt(document.getElementById('s'+sid+'hr'+i)?.value)||null
   }));
-  if(!m[0].sys&&!m[1].sys){toast('⚠️ Saisissez au moins une mesure','error');return;}
+  const all3=m[0].sys&&m[0].dia&&m[1].sys&&m[1].dia&&m[2].sys&&m[2].dia;
+  if(!all3){toast('⚠️ Les 3 mesures sont requises','error');return;}
+  // Nettoyer les timers de cette séance
+  [2,3].forEach(s=>{
+    const k=sid+'_'+s;
+    if(timers[k]&&timers[k].interval)clearInterval(timers[k].interval);
+    delete timers[k];
+  });
   const used=m.slice(1).filter(x=>x.sys&&x.dia);
   const base=used.length>=1?used:m.filter(x=>x.sys&&x.dia).slice(0,1);
   const sys=avg(base.map(x=>x.sys));
@@ -516,23 +654,40 @@ function renderPerList(){
       }
       const sid=p.id;
       h+=`<div class="saisie-form">
-        <div class="saisie-title">✏️ Nouvelle séance — 3 mesures</div>
+        <div class="saisie-title">✏️ Nouvelle séance — 3 mesures espacées de 90 secondes &nbsp;<button onclick="bip()" style="font-size:11px;padding:2px 8px;border-radius:6px;border:1px solid #dde1e7;background:#fff;cursor:pointer;color:#555;" title="Tester le son">🔔 Test son</button></div>
         <div class="saisie-top">
           <div class="field-sm"><label>📆 Date</label><input type="date" id="s${sid}date" value="${today}"></div>
           <div class="field-sm"><label>🕐 Moment</label><select id="s${sid}mom"><option value="matin">☀️ Matin</option><option value="soir">🌙 Soir</option></select></div>
           <div class="field-sm"><label>💪 Bras</label><select id="s${sid}bras"><option value="gauche">👈 Gauche</option><option value="droit">👉 Droit</option></select></div>
         </div>
-        <div class="mesures-grid">`;
-      [1,2,3].forEach(i=>{
-        const note=i===1?'(souvent écartée)':i===2?'(retenue)':'(retenue)';
-        h+=`<div class="mesure-col${i===1?' m1':''}">
-          <div class="mesure-col-title">Mesure ${i}<br><span style="font-size:10px;opacity:.65;">${note}</span></div>
-          <div class="field-sm"><label>❤️ SYS</label><input type="number" id="s${sid}sys${i}" placeholder="120" min="60" max="250" oninput="calcMoy('${sid}')"></div>
-          <div class="field-sm" style="margin-top:5px;"><label>💙 DIA</label><input type="number" id="s${sid}dia${i}" placeholder="80" min="40" max="160" oninput="calcMoy('${sid}')"></div>
-          <div class="field-sm" style="margin-top:5px;"><label>💓 bpm</label><input type="number" id="s${sid}hr${i}" placeholder="70" min="30" max="220" oninput="calcMoy('${sid}')"></div>
-        </div>`;
-      });
-      h+=`</div>
+        <div class="mesures-grid">
+          <div class="mesure-col unlocked" id="mcol${sid}_1">
+            <div class="mesure-col-title">Mesure 1<br><span style="font-size:10px;opacity:.65;">(souvent écartée)</span></div>
+            <div class="field-sm"><label>❤️ SYS</label><input type="number" id="s${sid}sys1" placeholder="120" min="60" max="250" oninput="calcMoy('${sid}')"></div>
+            <div class="field-sm" style="margin-top:5px;"><label>💙 DIA</label><input type="number" id="s${sid}dia1" placeholder="80" min="40" max="160" oninput="calcMoy('${sid}')"></div>
+            <div class="field-sm" style="margin-top:5px;"><label>💓 bpm</label><input type="number" id="s${sid}hr1" placeholder="70" min="30" max="220" oninput="calcMoy('${sid}')"></div>
+          </div>
+          <div class="mesure-col locked" id="mcol${sid}_2">
+            <div class="mesure-col-title">Mesure 2<br><span style="font-size:10px;opacity:.65;">(retenue)</span></div>
+            <div class="field-sm"><label>❤️ SYS</label><input type="number" id="s${sid}sys2" placeholder="120" min="60" max="250" oninput="calcMoy('${sid}')"></div>
+            <div class="field-sm" style="margin-top:5px;"><label>💙 DIA</label><input type="number" id="s${sid}dia2" placeholder="80" min="40" max="160" oninput="calcMoy('${sid}')"></div>
+            <div class="field-sm" style="margin-top:5px;"><label>💓 bpm</label><input type="number" id="s${sid}hr2" placeholder="70" min="30" max="220" oninput="calcMoy('${sid}')"></div>
+          </div>
+          <div class="mesure-col locked" id="mcol${sid}_3">
+            <div class="mesure-col-title">Mesure 3<br><span style="font-size:10px;opacity:.65;">(retenue)</span></div>
+            <div class="field-sm"><label>❤️ SYS</label><input type="number" id="s${sid}sys3" placeholder="120" min="60" max="250" oninput="calcMoy('${sid}')"></div>
+            <div class="field-sm" style="margin-top:5px;"><label>💙 DIA</label><input type="number" id="s${sid}dia3" placeholder="80" min="40" max="160" oninput="calcMoy('${sid}')"></div>
+            <div class="field-sm" style="margin-top:5px;"><label>💓 bpm</label><input type="number" id="s${sid}hr3" placeholder="70" min="30" max="220" oninput="calcMoy('${sid}')"></div>
+          </div>
+        </div>
+        <div class="timer-wrap timer-waiting" id="tw${sid}_2" style="display:none;">
+          <span id="tlbl${sid}_2">⏱️ Saisissez M1 pour démarrer le minuteur</span>
+          <div class="timer-bar-bg"><div class="timer-bar" id="tbar${sid}_2" style="width:0%"></div></div>
+        </div>
+        <div class="timer-wrap timer-waiting" id="tw${sid}_3" style="display:none;">
+          <span id="tlbl${sid}_3">⏱️ Saisissez M2 pour démarrer le minuteur</span>
+          <div class="timer-bar-bg"><div class="timer-bar" id="tbar${sid}_3" style="width:0%"></div></div>
+        </div>
         <div class="preview-moy" id="s${sid}prev">
           <span class="preview-label">Moyenne retenue :</span>
           <span class="preview-sys" id="s${sid}psys"></span>
@@ -542,7 +697,8 @@ function renderPerList(){
           <span class="badge" id="s${sid}pbadge"></span>
           <span class="preview-note">M2 + M3</span>
         </div>
-        <button class="btn-save-sm" onclick="enregistrerSeance('${sid}')">💾 Enregistrer la séance</button>
+        <button class="btn-save-sm" id="sbtn${sid}" disabled onclick="enregistrerSeance('${sid}')">💾 Enregistrer la séance</button>
+        <p style="font-size:11px;color:#888;text-align:center;margin-top:6px;">Le bouton s'active une fois les 3 mesures saisies</p>
       </div></div></div>`;
     }
     h+='</div>';
@@ -602,12 +758,16 @@ function renderGraphs(){
   const sM=avg(seances.map(s=>s.sys)),dM=avg(seances.map(s=>s.dia)),hM=avg(seances.filter(s=>s.hr).map(s=>s.hr));
   const[bl,bcl]=cat(sM,dM);
   const bc={ok:'background:#EAF3DE;color:#27500A;',warn:'background:#FAEEDA;color:#633806;',danger:'background:#FCEBEB;color:#791F1F;'};
+  const prof=db.profiles.find(x=>x.id===cpid)||{};
+  const interpMsgs=interpPersonnalisee(sM,dM,prof.annee,prof.sexe);
+  const interpHtml=interpMsgs.map(m=>`<div class="interp-box ${m.cls}" style="margin-bottom:.5rem;"><span>${m.txt}</span></div>`).join('');
   top.innerHTML=`<div class="metrics-grid">
     <div class="metric m-sys"><div class="metric-emoji">❤️</div><div class="metric-lbl">Systolique moy.</div><div class="metric-val">${sM}</div><div class="metric-unit">mmHg</div></div>
     <div class="metric m-dia"><div class="metric-emoji">💙</div><div class="metric-lbl">Diastolique moy.</div><div class="metric-val">${dM}</div><div class="metric-unit">mmHg</div></div>
     <div class="metric m-hr"><div class="metric-emoji">💓</div><div class="metric-lbl">Pouls moyen</div><div class="metric-val">${hM??'—'}</div><div class="metric-unit">bpm</div></div>
   </div>
-  <div class="bilan" style="${bc[bcl]}"><span style="font-size:16px;">${bl.split(' ')[0]}</span><span style="font-size:13px;font-weight:600;">${bl.replace(/^\S+\s/,'')}</span><span style="margin-left:auto;font-size:12px;">${seances.length} séance${seances.length>1?'s':''} · ${p.nom}</span></div>`;
+  <div class="bilan" style="${bc[bcl]}"><span style="font-size:16px;">${bl.split(' ')[0]}</span><span style="font-size:13px;font-weight:600;">${bl.replace(/^\S+\s/,'')}</span><span style="margin-left:auto;font-size:12px;">${seances.length} séance${seances.length>1?'s':''} · ${p.nom}</span></div>
+  ${interpHtml}`;
   const labels=seances.map(s=>`${fmtDs(s.date)} ${s.mom==='matin'?'☀':'🌙'}`);
   const axOpts={ticks:{font:{size:10},maxRotation:45,autoSkip:true},grid:{color:'rgba(128,128,128,0.08)'}};
   const opts={responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:axOpts,y:{grid:{color:'rgba(128,128,128,0.08)'}}}};
