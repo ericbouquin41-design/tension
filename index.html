@@ -780,24 +780,9 @@ function renderPerList(){
     h+='</div>';
   });
   w.innerHTML=h+'</div>';
+}
 
-  // Attacher tous les événements via délégation — fiable iOS Safari
-  const container=w.querySelector('.per-list');
-  if(!container)return;
-  container.addEventListener('click',function(e){
-    const btnAgenda=e.target.closest('.btn-agenda[data-per]');
-    if(btnAgenda){e.stopPropagation();ouvrirModalAgenda(btnAgenda.dataset.per);return;}
-    const btnDel=e.target.closest('.per-del-btn[data-del]');
-    if(btnDel){e.stopPropagation();delPer(btnDel.dataset.del);return;}
-    const btnDelS=e.target.closest('.seance-del[data-del-seance]');
-    if(btnDelS){e.stopPropagation();delSeance(btnDelS.dataset.delSeance);return;}
-    const btnSave=e.target.closest('.btn-save-sm[data-save]');
-    if(btnSave&&!btnSave.disabled){e.stopPropagation();enregistrerSeance(btnSave.dataset.save);return;}
-    const hd=e.target.closest('.per-card-hd[data-toggle]');
-    if(hd){togglePer(hd.dataset.toggle);return;}
-  });
-}(id){hpid=id;renderHist();}
-function setGraphPer(id){gpid=id;renderGraphs();}
+function setHistPer(id){gpid=id;renderGraphs();}
 
 function renderPerSel(elId,cur,cb){
   const pd=getPD();const c=document.getElementById(elId);
@@ -1264,6 +1249,29 @@ function genererICS(){
 // Fermer le modal en cliquant sur l'overlay
 document.getElementById('modal-agenda').addEventListener('click',function(e){
   if(e.target===this)fermerModalAgenda();
+});
+
+// ── Listener permanent sur #plw ──────────────────────────────────────────────
+// Attaché UNE SEULE FOIS. Survit à tous les re-renders de renderPerList().
+document.getElementById('plw').addEventListener('click',function(e){
+  const btnAgenda=e.target.closest('.btn-agenda');
+  if(btnAgenda&&btnAgenda.dataset.per){
+    e.stopPropagation();ouvrirModalAgenda(btnAgenda.dataset.per);return;
+  }
+  const btnDel=e.target.closest('.per-del-btn');
+  if(btnDel&&btnDel.dataset.del){
+    e.stopPropagation();delPer(btnDel.dataset.del);return;
+  }
+  const btnDelS=e.target.closest('.seance-del');
+  if(btnDelS&&btnDelS.dataset.delSeance){
+    e.stopPropagation();delSeance(btnDelS.dataset.delSeance);return;
+  }
+  const btnSave=e.target.closest('.btn-save-sm');
+  if(btnSave&&btnSave.dataset.save&&!btnSave.disabled){
+    e.stopPropagation();enregistrerSeance(btnSave.dataset.save);return;
+  }
+  const hd=e.target.closest('.per-card-hd');
+  if(hd&&hd.dataset.toggle){togglePer(hd.dataset.toggle);return;}
 });
 
 renderProfiles();
