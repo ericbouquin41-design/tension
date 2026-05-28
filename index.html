@@ -1,0 +1,900 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🩺 Suivi tensionnel</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f4f6f9;color:#1a1a2e;padding:16px;}
+.app{max-width:720px;margin:0 auto;padding-bottom:2rem;}
+.hero{background:#0C447C;border-radius:16px;padding:1.4rem 1.75rem;margin-bottom:1.5rem;display:flex;align-items:center;justify-content:space-between;}
+.hero h1{font-size:20px;font-weight:600;color:#fff;margin-bottom:4px;}
+.hero p{font-size:13px;color:#85B7EB;}
+.hero-right{display:flex;flex-direction:column;align-items:flex-end;gap:8px;}
+.hero-icon{font-size:40px;}
+.pchip{background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.25);border-radius:99px;padding:4px 12px 4px 8px;display:flex;align-items:center;gap:7px;cursor:pointer;}
+.pchip:hover{background:rgba(255,255,255,0.22);}
+.pavs{width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;color:#fff;flex-shrink:0;}
+.screen{display:none;}.screen.active{display:block;}
+.profiles-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin-bottom:1rem;}
+.profile-card{background:#fff;border:1px solid #e2e8f0;border-radius:14px;padding:1.2rem 1rem;text-align:center;cursor:pointer;transition:border-color .15s;}
+.profile-card:hover{border-color:#b5d4f4;}
+.pav{width:48px;height:48px;border-radius:50%;margin:0 auto 10px;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:600;color:#fff;}
+.profile-name{font-size:14px;font-weight:600;color:#1a1a2e;margin-bottom:3px;}
+.profile-sub{font-size:12px;color:#888;}
+.profile-del{font-size:12px;color:#888;background:none;border:none;cursor:pointer;margin-top:6px;padding:2px 6px;border-radius:6px;}
+.profile-del:hover{background:#FCEBEB;color:#A32D2D;}
+.card{background:#fff;border:1px solid #e2e8f0;border-radius:14px;padding:1.1rem 1.25rem;margin-bottom:1rem;}
+.card-hd{display:flex;align-items:center;gap:8px;margin-bottom:1rem;padding-bottom:.75rem;border-bottom:1px solid #f0f0f0;}
+.card-hd-icon{font-size:17px;}.card-hd-title{font-size:14px;font-weight:600;color:#1a1a2e;}
+.card-hd-sub{font-size:12px;color:#888;margin-left:auto;}
+.field label{display:block;font-size:12px;color:#555;font-weight:500;margin-bottom:5px;}
+.field input,.field select{width:100%;padding:8px 10px;border:1px solid #dde1e7;border-radius:8px;font-size:14px;background:#fafafa;color:#1a1a2e;outline:none;transition:border .15s;}
+.field input:focus,.field select:focus{border-color:#0C447C;background:#fff;}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.form-row{display:flex;gap:10px;align-items:flex-end;}
+.form-row .field{flex:1;}
+.btn-primary{width:100%;margin-top:1rem;padding:11px;font-size:14px;font-weight:600;border-radius:10px;border:none;background:#0C447C;color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;transition:background .15s;}
+.btn-primary:hover{background:#185FA5;}
+.btn-add{padding:9px 16px;border-radius:10px;border:none;background:#0C447C;color:#fff;font-size:13px;font-weight:600;cursor:pointer;white-space:nowrap;}
+.btn-add:hover{background:#185FA5;}
+.tabs{display:flex;gap:5px;margin-bottom:1.5rem;background:#e8ecf0;padding:4px;border-radius:12px;}
+.tab{flex:1;font-size:12px;padding:7px 5px;border-radius:9px;border:none;background:transparent;cursor:pointer;color:#666;display:flex;align-items:center;justify-content:center;gap:3px;transition:all .15s;}
+.tab.active{background:#fff;color:#1a1a2e;font-weight:600;box-shadow:0 1px 3px rgba(0,0,0,.1);}
+.section{display:none;}.section.active{display:block;}
+
+.per-list{display:flex;flex-direction:column;gap:10px;}
+.per-card{border-radius:14px;border:1px solid #e2e8f0;background:#fff;overflow:hidden;}
+.per-card.open{border:2px solid #0C447C;}
+.per-card-hd{padding:.9rem 1.1rem;display:flex;align-items:center;gap:10px;cursor:pointer;user-select:none;transition:background .15s;}
+.per-card-hd:hover{background:#f8fafc;}
+.per-card.open .per-card-hd{background:#E6F1FB;}
+.per-dot{width:9px;height:9px;border-radius:50%;background:#ccc;flex-shrink:0;}
+.per-card.open .per-dot{background:#0C447C;}
+.per-card.cur .per-dot{background:#1D9E75;}
+.per-info{flex:1;min-width:0;}
+.per-name{font-size:14px;font-weight:600;color:#1a1a2e;}
+.per-card.open .per-name{color:#0C447C;}
+.per-dates{font-size:11px;color:#888;margin-top:1px;}
+.per-meta{display:flex;align-items:center;gap:8px;}
+.per-caret{font-size:11px;color:#888;transition:transform .2s;display:inline-block;}
+.per-card.open .per-caret{transform:rotate(180deg);}
+.per-del-btn{background:none;border:none;cursor:pointer;font-size:13px;padding:3px 5px;border-radius:6px;}
+.per-del-btn:hover{background:#FCEBEB;}
+.per-body{display:none;border-top:1px solid #f0f0f0;}
+.per-card.open .per-body{display:block;}
+.per-body-in{padding:1rem 1.1rem;}
+
+.seance-item{border:1px solid #e2e8f0;border-radius:10px;margin-bottom:8px;overflow:hidden;}
+.seance-hd{display:flex;align-items:center;gap:8px;padding:8px 12px;background:#f8fafc;flex-wrap:wrap;}
+.seance-del{background:none;border:none;cursor:pointer;font-size:12px;padding:2px 4px;border-radius:5px;color:#888;}
+.seance-del:hover{background:#FCEBEB;}
+.badge{display:inline-flex;padding:2px 7px;border-radius:99px;font-size:10px;font-weight:600;white-space:nowrap;}
+.badge-ok{background:#EAF3DE;color:#27500A;}
+.badge-warn{background:#FAEEDA;color:#633806;}
+.badge-danger{background:#FCEBEB;color:#791F1F;}
+.mesures-table{width:100%;border-collapse:collapse;font-size:12px;}
+.mesures-table th{text-align:center;font-size:11px;font-weight:600;color:#888;padding:4px 8px;border-bottom:1px solid #f0f0f0;}
+.mesures-table td{text-align:center;padding:5px 8px;border-bottom:1px solid #f8f8f8;color:#1a1a2e;}
+.mesures-table tr:last-child td{border-bottom:none;}
+.moy-row td{background:#f8fafc;font-weight:600;}
+.sys-val{color:#712B13;font-weight:600;}
+.dia-val{color:#0C447C;font-weight:600;}
+.excluded{opacity:.4;text-decoration:line-through;}
+
+.saisie-form{background:#f8fafc;border-radius:10px;padding:.9rem 1rem;border:1px solid #e8ecf0;}
+.saisie-title{font-size:12px;font-weight:600;color:#555;margin-bottom:.75rem;}
+.saisie-top{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:.75rem;}
+.field-sm label{display:block;font-size:11px;color:#666;font-weight:500;margin-bottom:4px;}
+.field-sm input,.field-sm select{width:100%;padding:7px 9px;border:1px solid #dde1e7;border-radius:8px;font-size:13px;background:#fff;color:#1a1a2e;outline:none;transition:border .15s;}
+.field-sm input:focus,.field-sm select:focus{border-color:#0C447C;}
+.mesures-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:.75rem;}
+.mesure-col{background:#fff;border:1px solid #e2e8f0;border-radius:8px;padding:8px;}
+.mesure-col.m1{opacity:.8;}
+.mesure-col-title{font-size:11px;font-weight:600;color:#888;margin-bottom:6px;text-align:center;}
+.preview-moy{background:#fff;border:1px solid #B5D4F4;border-radius:8px;padding:8px 12px;display:none;align-items:center;gap:8px;margin-bottom:.75rem;flex-wrap:wrap;}
+.preview-moy.visible{display:flex;}
+.preview-label{font-size:12px;color:#888;}
+.preview-sys{font-size:18px;font-weight:600;color:#712B13;}
+.preview-dia{font-size:18px;font-weight:600;color:#0C447C;}
+.preview-note{font-size:11px;color:#888;margin-left:auto;}
+.btn-save-sm{width:100%;padding:10px;font-size:13px;font-weight:600;border-radius:8px;border:none;background:#0C447C;color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;}
+.btn-save-sm:hover{background:#185FA5;}
+
+.metrics-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:1rem;}
+.metric{border-radius:14px;padding:.9rem 1rem;border:1px solid transparent;}
+.m-sys{background:#FAECE7;border-color:#F5C4B3;}.m-dia{background:#E6F1FB;border-color:#B5D4F4;}.m-hr{background:#EAF3DE;border-color:#C0DD97;}
+.metric-emoji{font-size:18px;margin-bottom:4px;}
+.metric-lbl{font-size:11px;font-weight:600;margin-bottom:2px;}
+.m-sys .metric-lbl{color:#993C1D;}.m-dia .metric-lbl{color:#185FA5;}.m-hr .metric-lbl{color:#3B6D11;}
+.metric-val{font-size:24px;font-weight:600;}
+.m-sys .metric-val{color:#712B13;}.m-dia .metric-val{color:#0C447C;}.m-hr .metric-val{color:#27500A;}
+.metric-unit{font-size:11px;}
+.m-sys .metric-unit{color:#D85A30;}.m-dia .metric-unit{color:#378ADD;}.m-hr .metric-unit{color:#639922;}
+.bilan{border-radius:10px;padding:8px 14px;margin-bottom:1rem;font-size:13px;display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+.charts-2col{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:1rem;}
+.chart-lbl{font-size:12px;font-weight:600;color:#666;margin-bottom:6px;}
+.per-selector{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:1rem;}
+.btn-sm{font-size:12px;padding:5px 12px;border-radius:8px;border:1px solid #dde1e7;background:#fff;cursor:pointer;color:#1a1a2e;}
+.btn-sm:hover{background:#f4f6f9;}
+.btn-sm.ap{background:#0C447C;color:#fff;border-color:#0C447C;}
+.empty-state{text-align:center;padding:2.5rem 1rem;}
+.empty-icon{font-size:40px;display:block;margin-bottom:10px;}
+.empty-state p{font-size:14px;color:#888;}
+.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);border-radius:10px;padding:10px 20px;font-size:13px;font-weight:500;display:none;z-index:999;box-shadow:0 4px 12px rgba(0,0,0,.15);}
+.toast.ok{background:#0C447C;color:#fff;}
+.toast.success{background:#EAF3DE;color:#27500A;border:1px solid #C0DD97;}
+.toast.error{background:#FCEBEB;color:#791F1F;border:1px solid #F09595;}
+
+/* EXPORT/IMPORT */
+.action-btn{display:flex;align-items:center;gap:12px;padding:14px 16px;border-radius:12px;border:1px solid #e2e8f0;background:#fff;cursor:pointer;text-align:left;width:100%;margin-bottom:10px;transition:all .15s;}
+.action-btn:hover{border-color:#b5d4f4;background:#f8fafc;}
+.action-icon{font-size:26px;flex-shrink:0;}
+.action-label{font-size:13px;font-weight:600;color:#1a1a2e;}
+.action-desc{font-size:11px;color:#888;margin-top:2px;}
+.info-banner{display:flex;align-items:flex-start;gap:8px;padding:10px 14px;background:#E6F1FB;border:1px solid #B5D4F4;border-radius:10px;font-size:12px;color:#185FA5;margin-bottom:1rem;}
+.profil-export-row{display:flex;align-items:center;gap:10px;padding:8px 12px;border:1px solid #e2e8f0;border-radius:8px;margin-bottom:6px;background:#fff;}
+.profil-export-row label{flex:1;display:flex;align-items:center;gap:10px;cursor:pointer;}
+.profil-export-stats{font-size:11px;color:#888;margin-left:auto;}
+.radio-opt{display:flex;align-items:flex-start;gap:10px;padding:10px 12px;border:1px solid #e2e8f0;border-radius:8px;cursor:pointer;margin-bottom:8px;transition:all .15s;}
+.radio-opt.selected{border-color:#0C447C;background:#E6F1FB;}
+.radio-opt label{cursor:pointer;}
+.radio-label{font-size:13px;font-weight:600;color:#1a1a2e;}
+.radio-desc{font-size:11px;color:#888;margin-top:2px;}
+.import-zone{border:2px dashed #b5d4f4;border-radius:10px;padding:1.5rem;text-align:center;cursor:pointer;margin-bottom:.75rem;background:#f8fafc;transition:all .15s;}
+.import-zone:hover{background:#E6F1FB;border-color:#0C447C;}
+.import-zone p{font-size:13px;color:#888;margin-top:8px;}
+.btn-green{width:100%;margin-top:1rem;padding:11px;font-size:14px;font-weight:600;border-radius:10px;border:none;background:#1D9E75;color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;}
+.btn-green:hover{background:#0F6E56;}
+.btn-danger{width:100%;margin-top:.5rem;padding:11px;font-size:14px;font-weight:600;border-radius:10px;border:1px solid #F09595;background:#FCEBEB;color:#791F1F;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;}
+.btn-danger:hover{background:#F7C1C1;}
+.version-badge{display:inline-block;background:#E6F1FB;color:#0C447C;font-size:11px;font-weight:600;padding:2px 8px;border-radius:99px;margin-left:8px;}
+.manual-hero{background:#0C447C;border-radius:14px;padding:1.25rem 1.5rem;margin-bottom:1.25rem;display:flex;align-items:center;gap:16px;}
+.manual-hero-icon{font-size:36px;}
+.manual-hero h2{font-size:17px;font-weight:600;color:#fff;margin-bottom:3px;}
+.manual-hero p{font-size:12px;color:#85B7EB;}
+.manual-toc{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:1.25rem;}
+.toc-item{background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:10px 14px;cursor:pointer;display:flex;align-items:center;gap:10px;transition:all .15s;}
+.toc-item:hover{border-color:#b5d4f4;background:#f0f7ff;}
+.toc-item.active{border-color:#0C447C;background:#E6F1FB;}
+.toc-icon{font-size:20px;}
+.toc-label{font-size:13px;font-weight:600;color:#1a1a2e;}
+.toc-desc{font-size:11px;color:#888;margin-top:1px;}
+.manual-section{display:none;}
+.manual-section.active{display:block;}
+.man-card{background:#fff;border:1px solid #e2e8f0;border-radius:14px;padding:1.1rem 1.25rem;margin-bottom:1rem;}
+.man-card-title{font-size:14px;font-weight:600;color:#1a1a2e;margin-bottom:.75rem;display:flex;align-items:center;gap:8px;}
+.step-list{display:flex;flex-direction:column;gap:10px;}
+.step{display:flex;gap:12px;align-items:flex-start;}
+.step-num{width:24px;height:24px;border-radius:50%;background:#0C447C;color:#fff;font-size:12px;font-weight:600;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;}
+.step-body{flex:1;}
+.step-title{font-size:13px;font-weight:600;color:#1a1a2e;margin-bottom:2px;}
+.step-desc{font-size:12px;color:#555;line-height:1.5;}
+.tip-box{background:#FAEEDA;border:1px solid #FAC775;border-radius:10px;padding:10px 14px;font-size:12px;color:#633806;margin-top:.75rem;display:flex;gap:8px;}
+.info-box{background:#E6F1FB;border:1px solid #B5D4F4;border-radius:10px;padding:10px 14px;font-size:12px;color:#185FA5;margin-top:.75rem;display:flex;gap:8px;}
+.warn-box{background:#FCEBEB;border:1px solid #F09595;border-radius:10px;padding:10px 14px;font-size:12px;color:#791F1F;margin-top:.75rem;display:flex;gap:8px;}
+.norme-table{width:100%;border-collapse:collapse;font-size:12px;margin-top:.5rem;}
+.norme-table th{text-align:left;font-size:11px;font-weight:600;color:#888;padding:6px 10px;border-bottom:1px solid #f0f0f0;}
+.norme-table td{padding:7px 10px;border-bottom:1px solid #f8f8f8;color:#1a1a2e;}
+.norme-table tr:last-child td{border-bottom:none;}
+.pill{display:inline-flex;padding:2px 8px;border-radius:99px;font-size:11px;font-weight:600;white-space:nowrap;}
+.p-ok{background:#EAF3DE;color:#27500A;}
+.p-warn{background:#FAEEDA;color:#633806;}
+.p-danger{background:#FCEBEB;color:#791F1F;}
+.faq-item{border-bottom:1px solid #f0f0f0;padding:.75rem 0;}
+.faq-item:last-child{border-bottom:none;}
+.faq-q{font-size:13px;font-weight:600;color:#1a1a2e;margin-bottom:4px;}
+.faq-a{font-size:12px;color:#555;line-height:1.6;}
+</style>
+<body>
+<div class="app">
+<div class="toast" id="toast"></div>
+<input type="file" id="file-input" accept=".json" style="display:none">
+
+<!-- PROFILS -->
+<div id="sp" class="screen active">
+  <div class="hero" style="margin-bottom:1.5rem;">
+    <div><h1>🩺 Suivi tensionnel</h1><p>Qui êtes-vous ?</p></div>
+    <div class="hero-icon">👥</div>
+  </div>
+  <div class="card" style="margin-bottom:1rem;">
+    <div class="card-hd"><span class="card-hd-icon">👤</span><span class="card-hd-title">Créer un profil</span></div>
+    <div class="form-row">
+      <div class="field"><label>Prénom ou nom</label><input type="text" id="pname" placeholder="ex : Marie, Papa…"></div>
+      <button class="btn-add" onclick="creerProfil()">➕ Créer</button>
+    </div>
+  </div>
+  <div id="pw"><div class="empty-state"><span class="empty-icon">👤</span><p>Aucun profil. Créez-en un ci-dessus.</p></div></div>
+</div>
+
+<!-- APP -->
+<div id="sa" class="screen">
+  <div class="hero">
+    <div><h1>🩺 Suivi tensionnel</h1><p>Protocole 3 jours · ☀️ matin &amp; 🌙 soir · 3 mesures</p></div>
+    <div class="hero-right">
+      <div class="hero-icon">❤️‍🩹</div>
+      <div class="pchip" onclick="switchScreen('profiles')">
+        <div class="pavs" id="chav"></div>
+        <span style="font-size:12px;color:#fff;font-weight:500;" id="chnm"></span>
+        <span style="font-size:10px;color:rgba(255,255,255,.7);">▼</span>
+      </div>
+    </div>
+  </div>
+  <div class="tabs">
+    <button class="tab active" onclick="go('tp',this)">📅 Périodes</button>
+    <button class="tab" onclick="go('th',this)">📋 Historique</button>
+    <button class="tab" onclick="go('tg',this)">📊 Graphiques</button>
+    <button class="tab" onclick="go('te',this)">⚙️ Données</button>
+    <button class="tab" onclick="go('tm',this)">❓ Manuel</button>
+  </div>
+
+  <!-- PÉRIODES -->
+  <div id="tp" class="section active">
+    <div class="card">
+      <div class="card-hd"><span class="card-hd-icon">➕</span><span class="card-hd-title">Nouvelle période</span></div>
+      <div class="form-grid">
+        <div class="field" style="grid-column:1/-1;"><label>🏷️ Nom (optionnel)</label><input type="text" id="pnom" placeholder="ex : Semaine repos, Après traitement…"></div>
+        <div class="field"><label>📆 Début</label><input type="date" id="pdeb"></div>
+        <div class="field"><label>📆 Fin <span style="font-size:11px;color:#888;">(auto J+2)</span></label><input type="date" id="pfin"></div>
+      </div>
+      <button class="btn-primary" onclick="creerPer()">📅 Créer la période</button>
+    </div>
+    <div id="plw"><div class="empty-state"><span class="empty-icon">📭</span><p>Aucune période. Créez-en une ci-dessus.</p></div></div>
+  </div>
+
+  <!-- HISTORIQUE -->
+  <div id="th" class="section">
+    <div id="hps" class="per-selector"></div>
+    <div id="hc"></div>
+  </div>
+
+  <!-- GRAPHIQUES -->
+  <div id="tg" class="section">
+    <div id="gps" class="per-selector"></div>
+    <div id="gt"></div>
+    <div class="charts-2col">
+      <div class="card"><div class="chart-lbl">❤️ Systolique (mmHg)</div><div style="position:relative;height:185px;"><canvas id="cSys" role="img" aria-label="Évolution systolique"></canvas></div></div>
+      <div class="card"><div class="chart-lbl">💙 Diastolique (mmHg)</div><div style="position:relative;height:185px;"><canvas id="cDia" role="img" aria-label="Évolution diastolique"></canvas></div></div>
+    </div>
+    <div class="card"><div class="chart-lbl">💓 Pouls (bpm)</div><div style="position:relative;height:165px;"><canvas id="cHr" role="img" aria-label="Évolution pouls"></canvas></div></div>
+  </div>
+
+  <!-- DONNÉES -->
+  <div id="te" class="section">
+    <!-- EXPORT -->
+    <div class="card">
+      <div class="card-hd"><span class="card-hd-icon">⬇️</span><span class="card-hd-title">Exporter les données</span><span class="card-hd-sub">Format JSON</span></div>
+      <div class="info-banner">📦 Le fichier exporté contient les profils, périodes et séances sélectionnés. Conservez-le comme sauvegarde ou transférez-le sur un autre appareil.</div>
+      <div id="export-profils"></div>
+      <button class="btn-primary" onclick="exporterDonnees()">⬇️ Télécharger le fichier JSON</button>
+    </div>
+
+    <!-- IMPORT -->
+    <div class="card">
+      <div class="card-hd"><span class="card-hd-icon">⬆️</span><span class="card-hd-title">Importer des données</span><span class="card-hd-sub">Fichier .json</span></div>
+      <div class="import-zone" onclick="document.getElementById('file-input').click()">
+        <div style="font-size:32px;">📁</div>
+        <p>Cliquez pour sélectionner un fichier<br><span style="font-size:11px;">tensions_*.json</span></p>
+      </div>
+      <div id="import-filename" style="font-size:12px;color:#888;margin-bottom:.75rem;display:none;"></div>
+      <div class="radio-opt selected" id="ro-merge" onclick="selectMode('merge')">
+        <input type="radio" name="imode" id="rm" checked>
+        <div>
+          <div class="radio-label">🔀 Fusionner avec les données existantes</div>
+          <div class="radio-desc">Les profils importés s'ajoutent. Les séances déjà présentes ne sont pas dupliquées.</div>
+        </div>
+      </div>
+      <div class="radio-opt" id="ro-replace" onclick="selectMode('replace')">
+        <input type="radio" name="imode" id="rr">
+        <div>
+          <div class="radio-label">♻️ Remplacer toutes les données</div>
+          <div class="radio-desc">Toutes les données actuelles seront effacées et remplacées par celles du fichier.</div>
+        </div>
+      </div>
+      <button class="btn-green" onclick="importerDonnees()">⬆️ Importer le fichier</button>
+    </div>
+
+    <!-- DANGER ZONE -->
+    <div class="card">
+      <div class="card-hd"><span class="card-hd-icon">⚠️</span><span class="card-hd-title">Zone de danger</span></div>
+      <p style="font-size:13px;color:#888;margin-bottom:.75rem;">Ces actions sont irréversibles. Pensez à exporter vos données avant.</p>
+      <button class="btn-danger" onclick="effacerProfil()">🗑️ Effacer les données du profil actuel</button>
+      <button class="btn-danger" onclick="effacerTout()">💥 Effacer toutes les données</button>
+    </div>
+  </div>
+  <!-- MANUEL -->
+  <div id="tm" class="section">
+    <div id="manuel-content"></div>
+  </div>
+
+</div><!-- fin screen-app -->
+</div><!-- fin app -->
+<script>
+const COLORS=['#0C447C','#D85A30','#1D9E75','#7F77DD','#D4537E','#BA7517'];
+let db={profiles:[],data:{}};
+let cpid=null,opid=null,hpid=null,gpid=null;
+let importMode='merge', importData=null;
+let cS,cD,cH;
+try{db=JSON.parse(localStorage.getItem('bp7')||'{"profiles":[],"data":{}}');}catch(e){}
+
+function save(){try{localStorage.setItem('bp7',JSON.stringify(db));}catch(e){}}
+function toast(msg,type='ok'){
+  const t=document.getElementById('toast');
+  t.textContent=msg;t.className='toast '+type;t.style.display='block';
+  setTimeout(()=>t.style.display='none',2500);
+}
+function uid(){return Date.now().toString(36)+Math.random().toString(36).slice(2);}
+function fmtD(d){return new Date(d).toLocaleDateString('fr-FR',{day:'2-digit',month:'2-digit',year:'numeric'});}
+function fmtDs(d){return new Date(d).toLocaleDateString('fr-FR',{day:'2-digit',month:'2-digit'});}
+function ini(n){return n.trim().split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2);}
+function cat(s,d){
+  if(s<120&&d<80)return['✅ Optimal','ok'];
+  if(s<130&&d<85)return['🟢 Normal','ok'];
+  if(s<140&&d<90)return['🟡 Normal élevé','warn'];
+  if(s<160&&d<100)return['🟠 HTA grade 1','warn'];
+  return['🔴 HTA grade 2+','danger'];
+}
+function avg(a){const v=a.filter(x=>x!=null&&!isNaN(x));return v.length?Math.round(v.reduce((x,y)=>x+y,0)/v.length):null;}
+function getPD(){return db.data[cpid]||(db.data[cpid]={periodes:[],seances:[]});}
+
+function switchScreen(s){
+  document.getElementById('sp').classList.toggle('active',s==='profiles');
+  document.getElementById('sa').classList.toggle('active',s==='app');
+  if(s==='profiles')renderProfiles();
+}
+
+function creerProfil(){
+  const nom=document.getElementById('pname').value.trim();
+  if(!nom){toast('⚠️ Entrez un nom','error');return;}
+  db.profiles.push({id:uid(),nom,color:COLORS[db.profiles.length%COLORS.length]});
+  save();document.getElementById('pname').value='';
+  toast('✅ Profil créé !','success');renderProfiles();
+}
+function delProfil(id){
+  if(!confirm('Supprimer ce profil et toutes ses données ?'))return;
+  db.profiles=db.profiles.filter(p=>p.id!==id);delete db.data[id];
+  save();renderProfiles();toast('🗑️ Profil supprimé','ok');
+}
+function selectProfil(id){
+  cpid=id;opid=null;hpid=null;gpid=null;
+  const p=db.profiles.find(x=>x.id===id);
+  document.getElementById('chnm').textContent=p.nom;
+  const av=document.getElementById('chav');av.textContent=ini(p.nom);av.style.background=p.color;
+  switchScreen('app');
+  go('tp',document.querySelector('#sa .tab'));
+}
+function renderProfiles(){
+  const w=document.getElementById('pw');
+  if(!db.profiles.length){w.innerHTML='<div class="empty-state"><span class="empty-icon">👤</span><p>Aucun profil. Créez-en un ci-dessus.</p></div>';return;}
+  let h='<div class="profiles-grid">';
+  db.profiles.forEach(p=>{
+    const pd=db.data[p.id]||{};
+    const nP=(pd.periodes||[]).length,nS=(pd.seances||[]).length;
+    h+=`<div class="profile-card" onclick="selectProfil('${p.id}')">
+      <div class="pav" style="background:${p.color};">${ini(p.nom)}</div>
+      <div class="profile-name">${p.nom}</div>
+      <div class="profile-sub">${nP} période${nP!==1?'s':''} · ${nS} séance${nS!==1?'s':''}</div>
+      <button class="profile-del" onclick="event.stopPropagation();delProfil('${p.id}')">🗑️ Supprimer</button>
+    </div>`;
+  });
+  w.innerHTML=h+'</div>';
+}
+
+function go(tab,btn){
+  document.querySelectorAll('#sa .section').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('#sa .tab').forEach(t=>t.classList.remove('active'));
+  document.getElementById(tab).classList.add('active');btn.classList.add('active');
+  if(tab==='tp')renderPerList();
+  if(tab==='th')renderHist();
+  if(tab==='tg')renderGraphs();
+  if(tab==='te')renderExport();
+  if(tab==='tm')renderManuel();
+}
+
+function creerPer(){
+  const debut=document.getElementById('pdeb').value;
+  const fin=document.getElementById('pfin').value;
+  const nom=document.getElementById('pnom').value.trim();
+  if(!debut||!fin){toast('⚠️ Dates requises','error');return;}
+  const pd=getPD();
+  const p={id:uid(),nom:nom||'Période du '+fmtDs(debut),debut,fin};
+  pd.periodes.unshift(p);save();
+  document.getElementById('pnom').value='';
+  opid=p.id;toast('✅ Période créée !','success');renderPerList();
+}
+
+function togglePer(id){opid=opid===id?null:id;renderPerList();}
+function delPer(id){
+  if(!confirm('Supprimer cette période et ses séances ?'))return;
+  const pd=getPD();
+  pd.periodes=pd.periodes.filter(p=>p.id!==id);
+  pd.seances=(pd.seances||[]).filter(s=>s.perId!==id);
+  if(opid===id)opid=null;
+  save();renderPerList();toast('🗑️ Période supprimée','ok');
+}
+
+function calcMoy(sid){
+  const m=[1,2,3].map(i=>({
+    sys:parseInt(document.getElementById('s'+sid+'sys'+i)?.value)||null,
+    dia:parseInt(document.getElementById('s'+sid+'dia'+i)?.value)||null
+  }));
+  const used=m.slice(1).filter(x=>x.sys&&x.dia);
+  const base=used.length>=1?used:m.filter(x=>x.sys&&x.dia).slice(0,1);
+  const ms=avg(base.map(x=>x.sys));
+  const md=avg(base.map(x=>x.dia));
+  const prev=document.getElementById('s'+sid+'prev');
+  if(prev&&ms&&md){
+    prev.classList.add('visible');
+    document.getElementById('s'+sid+'psys').textContent=ms;
+    document.getElementById('s'+sid+'pdia').textContent=md;
+    const[lbl,cls]=cat(ms,md);
+    const b=document.getElementById('s'+sid+'pbadge');
+    b.className='badge badge-'+cls;b.textContent=lbl;
+  } else if(prev){
+    prev.classList.remove('visible');
+  }
+}
+
+function enregistrerSeance(perId){
+  const sid=perId;
+  const date=document.getElementById('s'+sid+'date')?.value;
+  const mom=document.getElementById('s'+sid+'mom')?.value;
+  const bras=document.getElementById('s'+sid+'bras')?.value;
+  if(!date){toast('⚠️ Date requise','error');return;}
+  const m=[1,2,3].map(i=>({
+    sys:parseInt(document.getElementById('s'+sid+'sys'+i)?.value)||null,
+    dia:parseInt(document.getElementById('s'+sid+'dia'+i)?.value)||null,
+    hr:parseInt(document.getElementById('s'+sid+'hr'+i)?.value)||null
+  }));
+  if(!m[0].sys&&!m[1].sys){toast('⚠️ Saisissez au moins une mesure','error');return;}
+  const used=m.slice(1).filter(x=>x.sys&&x.dia);
+  const base=used.length>=1?used:m.filter(x=>x.sys&&x.dia).slice(0,1);
+  const sys=avg(base.map(x=>x.sys));
+  const dia=avg(base.map(x=>x.dia));
+  const hr=avg(base.map(x=>x.hr));
+  const pd=getPD();if(!pd.seances)pd.seances=[];
+  pd.seances.push({id:uid(),perId,date,mom,bras,mesures:m,sys,dia,hr});
+  save();toast('✅ Séance enregistrée !','success');renderPerList();
+}
+
+function delSeance(id){
+  const pd=getPD();pd.seances=(pd.seances||[]).filter(s=>s.id!==id);
+  save();renderPerList();toast('🗑️ Séance supprimée','ok');
+}
+
+function renderPerList(){
+  const pd=getPD();
+  const w=document.getElementById('plw');
+  if(!pd.periodes||!pd.periodes.length){
+    w.innerHTML='<div class="empty-state"><span class="empty-icon">📭</span><p>Aucune période. Créez-en une ci-dessus.</p></div>';return;
+  }
+  const today=new Date().toISOString().slice(0,10);
+  let h='<div class="per-list">';
+  pd.periodes.forEach(p=>{
+    const seances=(pd.seances||[]).filter(s=>s.perId===p.id);
+    const isOpen=p.id===opid;
+    const isCur=p.debut<=today&&today<=p.fin;
+    h+=`<div class="per-card${isOpen?' open':''}${isCur?' cur':''}">
+      <div class="per-card-hd" onclick="togglePer('${p.id}')">
+        <div class="per-dot"></div>
+        <div class="per-info">
+          <div class="per-name">${p.nom}${isCur?' <span style="font-size:10px;color:#1D9E75;font-weight:600;">● en cours</span>':''}</div>
+          <div class="per-dates">📅 ${fmtD(p.debut)} → ${fmtD(p.fin)}</div>
+        </div>
+        <div class="per-meta">
+          <span style="font-size:11px;color:#888;">${seances.length} séance${seances.length!==1?'s':''}</span>
+          <span class="per-caret">▼</span>
+          <button class="per-del-btn" onclick="event.stopPropagation();delPer('${p.id}')">🗑️</button>
+        </div>
+      </div>`;
+    if(isOpen){
+      h+=`<div class="per-body"><div class="per-body-in">`;
+      if(seances.length){
+        const sorted=[...seances].sort((a,b)=>a.date.localeCompare(b.date)||(a.mom==='matin'?-1:1));
+        sorted.forEach(s=>{
+          const[lbl,cls]=cat(s.sys,s.dia);
+          h+=`<div class="seance-item">
+            <div class="seance-hd">
+              <span>${s.mom==='matin'?'☀️':'🌙'}</span>
+              <span style="font-size:13px;font-weight:600;">${fmtDs(s.date)}</span>
+              <span style="font-size:11px;color:#888;">${s.bras==='gauche'?'👈':'👉'}</span>
+              <span style="margin-left:auto;font-size:13px;"><strong class="sys-val">${s.sys}</strong>/<strong class="dia-val">${s.dia}</strong> mmHg ${s.hr?'💓'+s.hr:''}</span>
+              <span class="badge badge-${cls}">${lbl}</span>
+              <button class="seance-del" onclick="delSeance('${s.id}')">🗑️</button>
+            </div>
+            <table class="mesures-table"><thead><tr><th>Mesure</th><th>❤️ SYS</th><th>💙 DIA</th><th>💓 bpm</th></tr></thead><tbody>`;
+          s.mesures.forEach((m,i)=>{
+            if(!m.sys&&!m.dia)return;
+            const excl=i===0&&s.mesures.filter(x=>x.sys).length>=2;
+            h+=`<tr class="${excl?'excluded':''}"><td style="color:#888;">M${i+1}${excl?' (écartée)':''}</td><td class="sys-val">${m.sys??'—'}</td><td class="dia-val">${m.dia??'—'}</td><td>${m.hr??'—'}</td></tr>`;
+          });
+          h+=`<tr class="moy-row"><td style="color:#888;">Moyenne retenue</td><td class="sys-val">${s.sys}</td><td class="dia-val">${s.dia}</td><td>${s.hr??'—'}</td></tr></tbody></table></div>`;
+        });
+      } else {
+        h+=`<p style="font-size:13px;color:#888;text-align:center;margin-bottom:.75rem;">Aucune séance — saisissez la première ci-dessous 👇</p>`;
+      }
+      const sid=p.id;
+      h+=`<div class="saisie-form">
+        <div class="saisie-title">✏️ Nouvelle séance — 3 mesures</div>
+        <div class="saisie-top">
+          <div class="field-sm"><label>📆 Date</label><input type="date" id="s${sid}date" value="${today}"></div>
+          <div class="field-sm"><label>🕐 Moment</label><select id="s${sid}mom"><option value="matin">☀️ Matin</option><option value="soir">🌙 Soir</option></select></div>
+          <div class="field-sm"><label>💪 Bras</label><select id="s${sid}bras"><option value="gauche">👈 Gauche</option><option value="droit">👉 Droit</option></select></div>
+        </div>
+        <div class="mesures-grid">`;
+      [1,2,3].forEach(i=>{
+        const note=i===1?'(souvent écartée)':i===2?'(retenue)':'(retenue)';
+        h+=`<div class="mesure-col${i===1?' m1':''}">
+          <div class="mesure-col-title">Mesure ${i}<br><span style="font-size:10px;opacity:.65;">${note}</span></div>
+          <div class="field-sm"><label>❤️ SYS</label><input type="number" id="s${sid}sys${i}" placeholder="120" min="60" max="250" oninput="calcMoy('${sid}')"></div>
+          <div class="field-sm" style="margin-top:5px;"><label>💙 DIA</label><input type="number" id="s${sid}dia${i}" placeholder="80" min="40" max="160" oninput="calcMoy('${sid}')"></div>
+          <div class="field-sm" style="margin-top:5px;"><label>💓 bpm</label><input type="number" id="s${sid}hr${i}" placeholder="70" min="30" max="220" oninput="calcMoy('${sid}')"></div>
+        </div>`;
+      });
+      h+=`</div>
+        <div class="preview-moy" id="s${sid}prev">
+          <span class="preview-label">Moyenne retenue :</span>
+          <span class="preview-sys" id="s${sid}psys"></span>
+          <span class="preview-label">/</span>
+          <span class="preview-dia" id="s${sid}pdia"></span>
+          <span class="preview-label">mmHg</span>
+          <span class="badge" id="s${sid}pbadge"></span>
+          <span class="preview-note">M2 + M3</span>
+        </div>
+        <button class="btn-save-sm" onclick="enregistrerSeance('${sid}')">💾 Enregistrer la séance</button>
+      </div></div></div>`;
+    }
+    h+='</div>';
+  });
+  w.innerHTML=h+'</div>';
+}
+
+function setHistPer(id){hpid=id;renderHist();}
+function setGraphPer(id){gpid=id;renderGraphs();}
+
+function renderPerSel(elId,cur,cb){
+  const pd=getPD();const c=document.getElementById(elId);
+  if(!pd.periodes||!pd.periodes.length){c.innerHTML='';return;}
+  c.innerHTML=pd.periodes.map(p=>`<button class="btn-sm${p.id===cur?' ap':''}" onclick="${cb}('${p.id}')">${p.nom}</button>`).join('');
+}
+
+function renderHist(){
+  const pd=getPD();
+  if(!hpid&&pd.periodes&&pd.periodes.length)hpid=pd.periodes[0].id;
+  renderPerSel('hps',hpid,'setHistPer');
+  const c=document.getElementById('hc');
+  if(!pd.periodes||!pd.periodes.length){c.innerHTML='<div class="empty-state"><span class="empty-icon">📭</span><p>Aucune période.</p></div>';return;}
+  const p=pd.periodes.find(x=>x.id===hpid);if(!p){c.innerHTML='';return;}
+  const seances=(pd.seances||[]).filter(s=>s.perId===hpid).sort((a,b)=>a.date.localeCompare(b.date)||(a.mom==='matin'?-1:1));
+  if(!seances.length){c.innerHTML=`<div class="card"><div class="empty-state" style="padding:1.5rem;"><span class="empty-icon">📋</span><p>Aucune séance pour cette période.</p></div></div>`;return;}
+  let h=`<div class="card"><div class="card-hd"><span class="card-hd-icon">📅</span><span class="card-hd-title">${p.nom}</span><span style="margin-left:auto;font-size:11px;color:#888;">${fmtD(p.debut)} → ${fmtD(p.fin)}</span></div>`;
+  seances.forEach(s=>{
+    const[lbl,cls]=cat(s.sys,s.dia);
+    h+=`<div class="seance-item" style="margin-bottom:8px;">
+      <div class="seance-hd">
+        <span>${s.mom==='matin'?'☀️':'🌙'}</span>
+        <span style="font-size:13px;font-weight:600;">${fmtDs(s.date)}</span>
+        <span style="margin-left:auto;"><strong class="sys-val">${s.sys}</strong>/<strong class="dia-val">${s.dia}</strong> mmHg ${s.hr?'💓'+s.hr:''}</span>
+        <span class="badge badge-${cls}">${lbl}</span>
+      </div>
+      <table class="mesures-table"><thead><tr><th>Mesure</th><th>❤️ SYS</th><th>💙 DIA</th><th>💓</th></tr></thead><tbody>`;
+    s.mesures.forEach((m,i)=>{
+      if(!m.sys&&!m.dia)return;
+      const excl=i===0&&s.mesures.filter(x=>x.sys).length>=2;
+      h+=`<tr class="${excl?'excluded':''}"><td style="color:#888;">M${i+1}${excl?' (écartée)':''}</td><td class="sys-val">${m.sys??'—'}</td><td class="dia-val">${m.dia??'—'}</td><td>${m.hr??'—'}</td></tr>`;
+    });
+    h+=`<tr class="moy-row"><td style="color:#888;">Moyenne</td><td class="sys-val">${s.sys}</td><td class="dia-val">${s.dia}</td><td>${s.hr??'—'}</td></tr>
+    </tbody></table></div>`;
+  });
+  c.innerHTML=h+'</div>';
+}
+
+function renderGraphs(){
+  const pd=getPD();
+  if(!gpid&&pd.periodes&&pd.periodes.length)gpid=pd.periodes[0].id;
+  renderPerSel('gps',gpid,'setGraphPer');
+  const top=document.getElementById('gt');
+  if(!pd.periodes||!pd.periodes.length||!gpid){top.innerHTML='<div class="empty-state"><span class="empty-icon">📊</span><p>Aucune période.</p></div>';return;}
+  const seances=(pd.seances||[]).filter(s=>s.perId===gpid).sort((a,b)=>a.date.localeCompare(b.date)||(a.mom==='matin'?-1:1));
+  const p=pd.periodes.find(x=>x.id===gpid);
+  if(!seances.length){top.innerHTML=`<div class="card"><div class="empty-state" style="padding:1.5rem;"><span class="empty-icon">📊</span><p>Aucune séance pour <strong>${p.nom}</strong>.</p></div></div>`;return;}
+  const sM=avg(seances.map(s=>s.sys)),dM=avg(seances.map(s=>s.dia)),hM=avg(seances.filter(s=>s.hr).map(s=>s.hr));
+  const[bl,bcl]=cat(sM,dM);
+  const bc={ok:'background:#EAF3DE;color:#27500A;',warn:'background:#FAEEDA;color:#633806;',danger:'background:#FCEBEB;color:#791F1F;'};
+  top.innerHTML=`<div class="metrics-grid">
+    <div class="metric m-sys"><div class="metric-emoji">❤️</div><div class="metric-lbl">Systolique moy.</div><div class="metric-val">${sM}</div><div class="metric-unit">mmHg</div></div>
+    <div class="metric m-dia"><div class="metric-emoji">💙</div><div class="metric-lbl">Diastolique moy.</div><div class="metric-val">${dM}</div><div class="metric-unit">mmHg</div></div>
+    <div class="metric m-hr"><div class="metric-emoji">💓</div><div class="metric-lbl">Pouls moyen</div><div class="metric-val">${hM??'—'}</div><div class="metric-unit">bpm</div></div>
+  </div>
+  <div class="bilan" style="${bc[bcl]}"><span style="font-size:16px;">${bl.split(' ')[0]}</span><span style="font-size:13px;font-weight:600;">${bl.replace(/^\S+\s/,'')}</span><span style="margin-left:auto;font-size:12px;">${seances.length} séance${seances.length>1?'s':''} · ${p.nom}</span></div>`;
+  const labels=seances.map(s=>`${fmtDs(s.date)} ${s.mom==='matin'?'☀':'🌙'}`);
+  const axOpts={ticks:{font:{size:10},maxRotation:45,autoSkip:true},grid:{color:'rgba(128,128,128,0.08)'}};
+  const opts={responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:axOpts,y:{grid:{color:'rgba(128,128,128,0.08)'}}}};
+  if(cS)cS.destroy();if(cD)cD.destroy();if(cH)cH.destroy();
+  cS=new Chart(document.getElementById('cSys'),{type:'line',data:{labels,datasets:[
+    {data:seances.map(s=>s.sys),borderColor:'#D85A30',backgroundColor:'rgba(216,90,48,0.07)',pointRadius:4,pointBackgroundColor:'#D85A30',tension:0.35},
+    {data:seances.map(()=>140),borderColor:'rgba(216,90,48,0.3)',borderDash:[5,4],pointRadius:0}
+  ]},options:opts});
+  cD=new Chart(document.getElementById('cDia'),{type:'line',data:{labels,datasets:[
+    {data:seances.map(s=>s.dia),borderColor:'#185FA5',backgroundColor:'rgba(24,95,165,0.07)',pointRadius:4,pointBackgroundColor:'#185FA5',tension:0.35},
+    {data:seances.map(()=>90),borderColor:'rgba(24,95,165,0.3)',borderDash:[5,4],pointRadius:0}
+  ]},options:opts});
+  cH=new Chart(document.getElementById('cHr'),{type:'line',data:{labels,datasets:[
+    {data:seances.map(s=>s.hr),borderColor:'#1D9E75',backgroundColor:'rgba(29,158,117,0.07)',pointRadius:4,pointBackgroundColor:'#1D9E75',tension:0.35}
+  ]},options:opts});
+}
+
+/* ===== EXPORT / IMPORT ===== */
+function renderExport(){
+  const w=document.getElementById('export-profils');
+  if(!db.profiles.length){w.innerHTML='<p style="font-size:13px;color:#888;">Aucun profil à exporter.</p>';return;}
+  let h='';
+  db.profiles.forEach(p=>{
+    const pd=db.data[p.id]||{};
+    const nP=(pd.periodes||[]).length,nS=(pd.seances||[]).length;
+    h+=`<div class="profil-export-row">
+      <label>
+        <div class="pav" style="background:${p.color};width:28px;height:28px;font-size:11px;">${ini(p.nom)}</div>
+        <span style="font-size:13px;font-weight:600;color:#1a1a2e;">${p.nom}</span>
+      </label>
+      <span style="font-size:11px;color:#888;">${nP} période${nP!==1?'s':''} · ${nS} séance${nS!==1?'s':''}</span>
+      <input type="checkbox" id="exp-${p.id}" checked style="width:16px;height:16px;cursor:pointer;">
+    </div>`;
+  });
+  w.innerHTML=h;
+}
+
+function exporterDonnees(){
+  const selected=db.profiles.filter(p=>{
+    const cb=document.getElementById('exp-'+p.id);
+    return cb?cb.checked:true;
+  });
+  if(!selected.length){toast('⚠️ Sélectionnez au moins un profil','error');return;}
+  const payload={
+    version:'1.0',
+    exportDate:new Date().toISOString(),
+    profiles:selected,
+    data:{}
+  };
+  selected.forEach(p=>{payload.data[p.id]=db.data[p.id]||{periodes:[],seances:[]};});
+  const json=JSON.stringify(payload,null,2);
+  const blob=new Blob([json],{type:'application/json'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  const today=new Date().toISOString().slice(0,10);
+  a.href=url;a.download='tensions_'+today+'.json';
+  document.body.appendChild(a);a.click();
+  document.body.removeChild(a);URL.revokeObjectURL(url);
+  toast('✅ Fichier exporté !','success');
+}
+
+function selectMode(mode){
+  importMode=mode;
+  document.getElementById('ro-merge').classList.toggle('selected',mode==='merge');
+  document.getElementById('ro-replace').classList.toggle('selected',mode==='replace');
+  document.getElementById('rm').checked=mode==='merge';
+  document.getElementById('rr').checked=mode==='replace';
+}
+
+document.getElementById('file-input').addEventListener('change',function(e){
+  const file=e.target.files[0];
+  if(!file)return;
+  const fn=document.getElementById('import-filename');
+  fn.textContent='📄 Fichier sélectionné : '+file.name;fn.style.display='block';
+  const reader=new FileReader();
+  reader.onload=function(ev){
+    try{importData=JSON.parse(ev.target.result);}
+    catch(err){toast('❌ Fichier JSON invalide','error');importData=null;}
+  };
+  reader.readAsText(file);
+  this.value='';
+});
+
+function importerDonnees(){
+  if(!importData){toast('⚠️ Sélectionnez d\'abord un fichier','error');return;}
+  if(!importData.profiles||!importData.data){toast('❌ Format de fichier non reconnu','error');return;}
+  if(importMode==='replace'){
+    if(!confirm('Toutes les données actuelles seront effacées. Continuer ?'))return;
+    db={profiles:importData.profiles,data:importData.data};
+  } else {
+    importData.profiles.forEach(p=>{
+      const exists=db.profiles.find(x=>x.id===p.id);
+      if(!exists){
+        db.profiles.push(p);
+        db.data[p.id]=importData.data[p.id]||{periodes:[],seances:[]};
+      } else {
+        const src=importData.data[p.id]||{};
+        const dst=db.data[p.id]||(db.data[p.id]={periodes:[],seances:[]});
+        (src.periodes||[]).forEach(per=>{
+          if(!dst.periodes.find(x=>x.id===per.id))dst.periodes.push(per);
+        });
+        (src.seances||[]).forEach(s=>{
+          if(!dst.seances.find(x=>x.id===s.id))dst.seances.push(s);
+        });
+      }
+    });
+  }
+  save();
+  const nP=importData.profiles.length;
+  toast(`✅ ${nP} profil${nP>1?'s':''} importé${nP>1?'s':''}  !`,'success');
+  importData=null;
+  document.getElementById('import-filename').style.display='none';
+  renderProfiles();
+  renderExport();
+}
+
+function effacerProfil(){
+  if(!cpid){toast('⚠️ Aucun profil actif','error');return;}
+  const p=db.profiles.find(x=>x.id===cpid);
+  if(!confirm(`Effacer toutes les données de ${p.nom} ? Cette action est irréversible.`))return;
+  db.data[cpid]={periodes:[],seances:[]};
+  save();toast('🗑️ Données effacées','ok');renderExport();
+}
+
+function effacerTout(){
+  if(!confirm('Effacer TOUTES les données de TOUS les profils ? Cette action est irréversible.'))return;
+  db={profiles:[],data:{}};
+  save();cpid=null;
+  switchScreen('profiles');
+  toast('💥 Toutes les données effacées','ok');
+}
+
+document.getElementById('pdeb').value=d0.toISOString().slice(0,10);
+document.getElementById('pfin').value=d2.toISOString().slice(0,10);
+document.getElementById('pdeb').addEventListener('change',function(){
+  const d=new Date(this.value);d.setDate(d.getDate()+2);
+  document.getElementById('pfin').value=d.toISOString().slice(0,10);
+});
+
+let manuelSection='demarrage';
+function showManuelSection(id){
+  manuelSection=id;
+  document.querySelectorAll('.toc-item').forEach(el=>el.classList.toggle('active',el.dataset.sec===id));
+  document.querySelectorAll('.manual-section').forEach(el=>el.classList.toggle('active',el.id==='ms-'+id));
+}
+function renderManuel(){
+  const c=document.getElementById('manuel-content');
+  if(c.dataset.built==='1'){showManuelSection(manuelSection);return;}
+  c.dataset.built='1';
+  c.innerHTML=`
+  <div class="manual-hero">
+    <div class="manual-hero-icon">📖</div>
+    <div><h2>Manuel utilisateur <span class="version-badge">v6</span></h2><p>Guide complet de l'application Suivi tensionnel</p></div>
+  </div>
+  <div class="manual-toc">
+    <div class="toc-item active" data-sec="demarrage" onclick="showManuelSection('demarrage')"><span class="toc-icon">🚀</span><div><div class="toc-label">Démarrage</div><div class="toc-desc">Premiers pas</div></div></div>
+    <div class="toc-item" data-sec="periodes" onclick="showManuelSection('periodes')"><span class="toc-icon">📅</span><div><div class="toc-label">Périodes</div><div class="toc-desc">Créer et gérer</div></div></div>
+    <div class="toc-item" data-sec="mesures" onclick="showManuelSection('mesures')"><span class="toc-icon">🩺</span><div><div class="toc-label">Saisie des mesures</div><div class="toc-desc">Protocole 3 mesures</div></div></div>
+    <div class="toc-item" data-sec="resultats" onclick="showManuelSection('resultats')"><span class="toc-icon">📊</span><div><div class="toc-label">Résultats</div><div class="toc-desc">Historique et graphiques</div></div></div>
+    <div class="toc-item" data-sec="profils" onclick="showManuelSection('profils')"><span class="toc-icon">👥</span><div><div class="toc-label">Profils</div><div class="toc-desc">Multi-utilisateurs</div></div></div>
+    <div class="toc-item" data-sec="donnees" onclick="showManuelSection('donnees')"><span class="toc-icon">💾</span><div><div class="toc-label">Données</div><div class="toc-desc">Export et import</div></div></div>
+    <div class="toc-item" data-sec="normes" onclick="showManuelSection('normes')"><span class="toc-icon">❤️</span><div><div class="toc-label">Normes tensionnelles</div><div class="toc-desc">Référence médicale</div></div></div>
+    <div class="toc-item" data-sec="faq" onclick="showManuelSection('faq')"><span class="toc-icon">💬</span><div><div class="toc-label">FAQ</div><div class="toc-desc">Questions fréquentes</div></div></div>
+  </div>
+  <div id="ms-demarrage" class="manual-section active">
+    <div class="man-card">
+      <div class="man-card-title">🚀 Premiers pas</div>
+      <div class="step-list">
+        <div class="step"><div class="step-num">1</div><div class="step-body"><div class="step-title">Créer votre profil</div><div class="step-desc">Au premier lancement, entrez votre prénom ou nom et cliquez sur ➕ Créer. Un avatar coloré vous est attribué automatiquement.</div></div></div>
+        <div class="step"><div class="step-num">2</div><div class="step-body"><div class="step-title">Sélectionner votre profil</div><div class="step-desc">Cliquez sur votre carte de profil pour entrer dans votre espace personnel. Toutes vos données sont isolées des autres profils.</div></div></div>
+        <div class="step"><div class="step-num">3</div><div class="step-body"><div class="step-title">Créer une période de 3 jours</div><div class="step-desc">Dans l'onglet 📅 Périodes, donnez un nom à votre période (ex. : "Semaine de repos"), choisissez une date de début — la date de fin est calculée automatiquement à J+2.</div></div></div>
+        <div class="step"><div class="step-num">4</div><div class="step-body"><div class="step-title">Saisir vos premières mesures</div><div class="step-desc">Cliquez sur votre période pour l'ouvrir. Le formulaire de saisie apparaît directement en bas. Renseignez vos 3 mesures matin et soir.</div></div></div>
+        <div class="step"><div class="step-num">5</div><div class="step-body"><div class="step-title">Consulter vos résultats</div><div class="step-desc">Les onglets 📋 Historique et 📊 Graphiques vous donnent un bilan complet de chaque période.</div></div></div>
+      </div>
+      <div class="tip-box"><span>💡</span><span>L'application fonctionne entièrement hors-ligne. Vos données sont sauvegardées automatiquement dans votre navigateur.</span></div>
+    </div>
+  </div>
+  <div id="ms-periodes" class="manual-section">
+    <div class="man-card">
+      <div class="man-card-title">📅 Créer une période</div>
+      <div class="step-list">
+        <div class="step"><div class="step-num">1</div><div class="step-body"><div class="step-title">Nommer la période (optionnel)</div><div class="step-desc">Donnez un nom descriptif : "Avant traitement", "Semaine de stress", "Contrôle mensuel"…</div></div></div>
+        <div class="step"><div class="step-num">2</div><div class="step-body"><div class="step-title">Choisir la date de début</div><div class="step-desc">La date de fin est calculée automatiquement à J+2, soit exactement 3 jours. Vous pouvez la modifier manuellement si besoin.</div></div></div>
+        <div class="step"><div class="step-num">3</div><div class="step-body"><div class="step-title">Cliquer sur la période pour saisir</div><div class="step-desc">Chaque période est une carte cliquable. Un clic l'ouvre et affiche le formulaire de saisie et l'historique des séances.</div></div></div>
+      </div>
+      <div class="info-box"><span>ℹ️</span><span>La période <strong>en cours</strong> est marquée d'un indicateur vert ● en cours.</span></div>
+    </div>
+    <div class="man-card">
+      <div class="man-card-title">🗑️ Supprimer une période</div>
+      <p style="font-size:13px;color:#555;">Cliquez sur l'icône 🗑️ à droite de la carte. Attention : toutes les séances associées seront également supprimées.</p>
+      <div class="warn-box"><span>⚠️</span><span>Exportez vos données avant de supprimer une période importante.</span></div>
+    </div>
+  </div>
+  <div id="ms-mesures" class="manual-section">
+    <div class="man-card">
+      <div class="man-card-title">🩺 Protocole de mesure recommandé</div>
+      <p style="font-size:13px;color:#555;margin-bottom:.75rem;">Le protocole médical ESH/ESC recommande 3 mesures consécutives espacées d'1 à 2 minutes, matin et soir, pendant 3 jours.</p>
+      <div class="step-list">
+        <div class="step"><div class="step-num">1</div><div class="step-body"><div class="step-title">Se préparer</div><div class="step-desc">Restez assis au calme 5 minutes avant la mesure. Évitez café, tabac et effort physique dans l'heure précédente.</div></div></div>
+        <div class="step"><div class="step-num">2</div><div class="step-body"><div class="step-title">Effectuer 3 mesures</div><div class="step-desc">Prenez 3 mesures espacées d'1 à 2 minutes. Entrez chacune dans les colonnes M1, M2, M3.</div></div></div>
+        <div class="step"><div class="step-num">3</div><div class="step-body"><div class="step-title">M1 automatiquement écartée</div><div class="step-desc">Dès que M2 et M3 sont renseignées, M1 est écartée et la moyenne de M2+M3 est calculée. Un bandeau de prévisualisation apparaît en temps réel.</div></div></div>
+        <div class="step"><div class="step-num">4</div><div class="step-body"><div class="step-title">Enregistrer la séance</div><div class="step-desc">Cliquez sur 💾 Enregistrer la séance. Elle apparaît dans la liste avec le détail des 3 mesures.</div></div></div>
+      </div>
+      <div class="tip-box"><span>💡</span><span>Si vous n'avez qu'une ou deux mesures, l'application s'adapte et calcule la moyenne sur les mesures disponibles.</span></div>
+    </div>
+    <div class="man-card">
+      <div class="man-card-title">💪 Quel bras utiliser ?</div>
+      <p style="font-size:13px;color:#555;">Mesurez toujours sur le même bras. Comparez les deux bras lors de la première mesure et utilisez celui qui donne les valeurs les plus élevées.</p>
+    </div>
+  </div>
+  <div id="ms-resultats" class="manual-section">
+    <div class="man-card">
+      <div class="man-card-title">📋 Onglet Historique</div>
+      <p style="font-size:13px;color:#555;margin-bottom:.75rem;">Présente toutes les séances d'une période. Pour chaque séance : le moment (☀️/🌙), la date, le détail des 3 mesures avec M1 barrée si écartée, la moyenne retenue et le statut tensionnel.</p>
+      <div class="info-box"><span>ℹ️</span><span>Utilisez les boutons de sélection de période en haut pour naviguer entre vos périodes.</span></div>
+    </div>
+    <div class="man-card">
+      <div class="man-card-title">📊 Onglet Graphiques</div>
+      <p style="font-size:13px;color:#555;margin-bottom:.75rem;">Trois graphiques : systolique, diastolique, pouls. Les moyennes retenues par séance sont tracées avec une ligne de seuil en pointillés (140 mmHg / 90 mmHg). En haut : cartes de moyennes globales et bilan coloré de la période.</p>
+    </div>
+  </div>
+  <div id="ms-profils" class="manual-section">
+    <div class="man-card">
+      <div class="man-card-title">👥 Gestion des profils</div>
+      <p style="font-size:13px;color:#555;margin-bottom:.75rem;">Plusieurs personnes peuvent partager le même appareil. Chaque profil possède ses propres périodes et séances, totalement isolées.</p>
+      <div class="step-list">
+        <div class="step"><div class="step-num">1</div><div class="step-body"><div class="step-title">Créer un profil</div><div class="step-desc">Sur l'écran d'accueil, entrez un prénom ou nom et cliquez ➕ Créer.</div></div></div>
+        <div class="step"><div class="step-num">2</div><div class="step-body"><div class="step-title">Changer de profil</div><div class="step-desc">Cliquez sur le chip avatar + nom ▼ en haut à droite du bandeau bleu pour revenir à l'écran de sélection.</div></div></div>
+        <div class="step"><div class="step-num">3</div><div class="step-body"><div class="step-title">Supprimer un profil</div><div class="step-desc">Sur l'écran d'accueil, cliquez 🗑️ Supprimer sous la carte. Toutes les données associées sont effacées définitivement.</div></div></div>
+      </div>
+      <div class="tip-box"><span>💡</span><span>Jusqu'à 6 couleurs distinctes sont attribuées automatiquement aux profils.</span></div>
+    </div>
+  </div>
+  <div id="ms-donnees" class="manual-section">
+    <div class="man-card">
+      <div class="man-card-title">⬇️ Exporter les données</div>
+      <div class="step-list">
+        <div class="step"><div class="step-num">1</div><div class="step-body"><div class="step-title">Aller dans ⚙️ Données</div><div class="step-desc">Accessible depuis l'onglet ⚙️ Données de n'importe quel profil.</div></div></div>
+        <div class="step"><div class="step-num">2</div><div class="step-body"><div class="step-title">Sélectionner les profils</div><div class="step-desc">Cochez les profils à inclure. Par défaut tous sont cochés.</div></div></div>
+        <div class="step"><div class="step-num">3</div><div class="step-body"><div class="step-title">Télécharger</div><div class="step-desc">Cliquez ⬇️ Télécharger. Un fichier tensions_AAAA-MM-JJ.json est téléchargé.</div></div></div>
+      </div>
+    </div>
+    <div class="man-card">
+      <div class="man-card-title">⬆️ Importer des données</div>
+      <div class="step-list">
+        <div class="step"><div class="step-num">1</div><div class="step-body"><div class="step-title">Sélectionner le fichier</div><div class="step-desc">Cliquez sur la zone 📁 et choisissez un fichier tensions_*.json.</div></div></div>
+        <div class="step"><div class="step-num">2</div><div class="step-body"><div class="step-title">Choisir le mode</div><div class="step-desc"><strong>🔀 Fusionner</strong> : ajoute sans écraser. <strong>♻️ Remplacer</strong> : efface tout et remplace.</div></div></div>
+        <div class="step"><div class="step-num">3</div><div class="step-body"><div class="step-title">Confirmer l'import</div><div class="step-desc">Cliquez ⬆️ Importer. Un message confirme le nombre de profils importés.</div></div></div>
+      </div>
+      <div class="warn-box"><span>⚠️</span><span>En mode Remplacer, exportez d'abord vos données. L'opération est irréversible.</span></div>
+    </div>
+  </div>
+  <div id="ms-normes" class="manual-section">
+    <div class="man-card">
+      <div class="man-card-title">❤️ Normes tensionnelles ESH/ESC</div>
+      <p style="font-size:13px;color:#555;margin-bottom:.75rem;">Ces normes sont établies par la Société Européenne d'Hypertension (ESH) et la Société Européenne de Cardiologie (ESC). Elles s'appliquent aux mesures effectuées à domicile.</p>
+      <table class="norme-table">
+        <thead><tr><th>Catégorie</th><th>Systolique</th><th>Diastolique</th><th>Statut</th></tr></thead>
+        <tbody>
+          <tr><td>Optimal</td><td>&lt; 120 mmHg</td><td>&lt; 80 mmHg</td><td><span class="pill p-ok">✅ Optimal</span></td></tr>
+          <tr><td>Normal</td><td>120–129 mmHg</td><td>80–84 mmHg</td><td><span class="pill p-ok">🟢 Normal</span></td></tr>
+          <tr><td>Normal élevé</td><td>130–139 mmHg</td><td>85–89 mmHg</td><td><span class="pill p-warn">🟡 Normal élevé</span></td></tr>
+          <tr><td>HTA grade 1</td><td>140–159 mmHg</td><td>90–99 mmHg</td><td><span class="pill p-warn">🟠 HTA grade 1</span></td></tr>
+          <tr><td>HTA grade 2+</td><td>≥ 160 mmHg</td><td>≥ 100 mmHg</td><td><span class="pill p-danger">🔴 HTA grade 2+</span></td></tr>
+        </tbody>
+      </table>
+      <div class="warn-box" style="margin-top:1rem;"><span>⚠️</span><span>Ces informations sont fournies à titre indicatif. Consultez toujours votre médecin pour l'interprétation de vos résultats.</span></div>
+      <div class="info-box"><span>ℹ️</span><span>Le statut affiché se base sur la valeur la plus élevée. Ex : 125/95 mmHg → 🟠 HTA grade 1 (diastolique ≥ 90).</span></div>
+    </div>
+  </div>
+  <div id="ms-faq" class="manual-section">
+    <div class="man-card">
+      <div class="man-card-title">💬 Questions fréquentes</div>
+      <div class="faq-item"><div class="faq-q">❓ Mes données sont-elles sécurisées ?</div><div class="faq-a">Toutes vos données restent sur votre appareil dans la mémoire locale du navigateur (localStorage). Elles ne sont jamais envoyées sur internet.</div></div>
+      <div class="faq-item"><div class="faq-q">❓ Que se passe-t-il si je vide le cache du navigateur ?</div><div class="faq-a">Les données peuvent être effacées lors du vidage du cache. Exportez régulièrement vos données via ⚙️ Données pour ne rien perdre.</div></div>
+      <div class="faq-item"><div class="faq-q">❓ Puis-je utiliser l'application sur mobile ?</div><div class="faq-a">Oui, le fichier HTML fonctionne dans tout navigateur mobile (Safari, Chrome). Ajoutez la page à l'écran d'accueil pour un accès rapide.</div></div>
+      <div class="faq-item"><div class="faq-q">❓ Pourquoi la 1ère mesure est-elle écartée ?</div><div class="faq-a">La première mesure est souvent plus élevée (effet d'alerte). Le protocole ESH recommande de l'écarter et de retenir la moyenne des mesures suivantes.</div></div>
+      <div class="faq-item"><div class="faq-q">❓ Puis-je saisir une seule mesure par séance ?</div><div class="faq-a">Oui. Si seule M1 est remplie, elle est utilisée directement. Si M1 et M2 sont remplies, leur moyenne est retenue.</div></div>
+      <div class="faq-item"><div class="faq-q">❓ Comment transférer mes données sur un autre appareil ?</div><div class="faq-a">Exportez depuis ⚙️ Données (fichier JSON), puis importez ce fichier sur l'autre appareil via le même onglet en mode Fusionner.</div></div>
+      <div class="faq-item"><div class="faq-q">❓ Le bilan porte-t-il sur toutes les séances ou une seule période ?</div><div class="faq-a">Le bilan se base sur la période sélectionnée via les boutons en haut des onglets Historique et Graphiques. Chaque période est analysée séparément.</div></div>
+    </div>
+  </div>
+  `;
+  showManuelSection(manuelSection);
+}
+
+renderProfiles();
+</script>
+</body>
+</html>
