@@ -676,20 +676,161 @@ function delSeance(id){
   save();renderPerList();toast('🗑️ Séance supprimée','ok');
 }
 
-function mk(tag,cls,html){
-  const el=document.createElement(tag);
-  if(cls)el.className=cls;
-  if(html)el.innerHTML=html;
-  return el;
-}
-function mkBtn(cls,label,onClick){
-  const b=document.createElement('button');
-  b.type='button';b.className=cls;b.innerHTML=label;
-  b.addEventListener('click',onClick);
-  return b;
-}
+function mk(tag,cls,html){const el=document.createElement(tag);if(cls)el.className=cls;if(html)el.innerHTML=html;return el;}
+function mkBtn(cls,label,onClick){const b=document.createElement('button');b.type='button';b.className=cls;b.innerHTML=label;b.onclick=onClick;return b;}
 
 function renderPerList(){
+  const pd=getPD();
+  const w=document.getElementById('plw');
+  w.innerHTML='';
+  if(!pd.periodes||!pd.periodes.length){
+    w.innerHTML='<div class="empty-state"><span class="empty-icon">📭</span><p>Aucune période. Créez-en une ci-dessus.</p></div>';return;
+  }
+  const today=new Date().toISOString().slice(0,10);
+  const list=mk('div','per-list');
+
+  pd.periodes.forEach(p=>{
+    const seances=(pd.seances||[]).filter(s=>s.perId===p.id);
+    const isOpen=p.id===opid;
+    const isCur=p.debut<=today&&today<=p.fin;
+
+    const card=mk('div','per-card'+(isOpen?' open':'')+(isCur?' cur':''));
+
+    // EN-TÊTE — bouton natif pour garantir le clic sur iOS
+    const hd=mk('button','per-card-hd');
+    hd.type='button';
+    hd.style.cssText='width:100%;text-align:left;background:none;border:none;padding:.9rem 1.1rem;display:flex;align-items:center;gap:10px;cursor:pointer;';
+    hd.onclick=()=>togglePer(p.id);
+
+    const dot=mk('div','per-dot');
+    const info=mk('div','per-info');
+    const name=mk('div','per-name');
+    name.textContent=p.nom;
+    if(isCur){const s=mk('span');s.style.cssText='font-size:10px;color:#1D9E75;font-weight:600;';s.textContent=' ● en cours';name.appendChild(s);}
+    const dates=mk('div','per-dates');dates.textContent='📅 '+fmtD(p.debut)+' → '+fmtD(p.fin);
+    info.appendChild(name);info.appendChild(dates);
+
+    const meta=mk('div','per-meta');
+    const cnt=mk('span');cnt.style.cssText='font-size:11px;color:#888;pointer-events:none;';
+    cnt.textContent=seances.length+' séance'+(seances.length!==1?'s':'');
+
+    const btnAg=mk('button','btn-agenda');
+    btnAg.type='button';btnAg.textContent='📆 Agenda';
+    btnAg.onclick=e=>{e.stopPropagation();ouvrirModalAgenda(p.id);};
+
+    const caret=mk('span','per-caret');caret.textContent='▼';caret.style.pointerEvents='none';
+
+    const btnDel=mk('button','per-del-btn');
+    btnDel.type='button';btnDel.textContent='🗑️';
+    btnDel.onclick=e=>{e.stopPropagation();delPer(p.id);};
+
+    meta.appendChild(cnt);meta.appendChild(btnAg);meta.appendChild(caret);meta.appendChild(btnDel);
+    hd.appendChild(dot);hd.appendChild(info);hd.appendChild(meta);
+    card.appendChild(hd);
+
+    if(isOpen){
+      const body=mk('div','per-body');
+      const inner=mk('div','per-body-in');
+
+      if(seances.length){
+        [...seances].sort((a,b)=>a.date.localeCompare(b.date)||(a.mom==='matin'?-1:1)).forEach(s=>{
+          const[lbl,cls]=cat(s.sys,s.dia);
+          const si=mk('div','seance-item');
+          const shd=mk('div','seance-hd');
+          shd.innerHTML=`<span>${s.mom==='matin'?'☀️':'🌙'}</span><span style="font-size:13px;font-weight:600;">${fmtDs(s.date)}</span><span style="font-size:11px;color:#888;">${s.bras==='gauche'?'👈':'👉'}</span><span style="margin-left:auto;font-size:13px;"><strong class="sys-val">${s.sys}</strong>/<strong class="dia-val">${s.dia}</strong> mmHg ${s.hr?'💓'+s.hr:''}</span><span class="badge badge-${cls}">${lbl}</span>`;
+          const bds=mk('button','seance-del');bds.type='button';bds.textContent='🗑️';bds.onclick=()=>delSeance(s.id);
+          shd.appendChild(bds);
+          let rows='';
+          s.mesures.forEach((m,i)=>{
+            if(!m.sys&&!m.dia)return;
+            const excl=i===0&&s.mesures.filter(x=>x.sys).length>=2;
+            rows+=`<tr class="${excl?'excluded':''}"><td style="color:#888;">M${i+1}${excl?' (écartée)':''}</td><td class="sys-val">${m.sys??'—'}</td><td class="dia-val">${m.dia??'—'}</td><td>${m.hr??'—'}</td></tr>`;
+          });
+          rows+=`<tr class="moy-row"><td style="color:#888;">Moyenne retenue</td><td class="sys-val">${s.sys}</td><td class="dia-val">${s.dia}</td><td>${s.hr??'—'}</td></tr>`;
+          si.appendChild(shd);
+          si.appendChild(mk('table','mesures-table',`<thead><tr><th>Mesure</th><th>❤️ SYS</th><th>💙 DIA</th><th>💓 bpm</th></tr></thead><tbody>${rows}</tbody>`));
+          inner.appendChild(si);
+        });
+      } else {
+        const empty=mk('p');empty.style.cssText='font-size:13px;color:#888;text-align:center;margin-bottom:.75rem;';
+        empty.textContent='Aucune séance — saisissez la première ci-dessous 👇';
+        inner.appendChild(empty);
+      }
+
+      const sid=p.id;
+      const form=mk('div','saisie-form');
+
+      // Titre + bouton test son
+      const titleRow=mk('div','saisie-title');
+      titleRow.textContent='✏️ Nouvelle séance — 3 mesures espacées de 90 secondes ';
+      const btnTest=mk('button');btnTest.type='button';
+      btnTest.textContent='🔔 Test son';
+      btnTest.style.cssText='font-size:11px;padding:2px 8px;border-radius:6px;border:1px solid #dde1e7;background:#fff;cursor:pointer;color:#555;';
+      btnTest.onclick=()=>bip();
+      titleRow.appendChild(btnTest);
+      form.appendChild(titleRow);
+
+      // Champs date/moment/bras + grille 3 mesures + timers + preview + bouton save
+      form.innerHTML+=`<div class="saisie-top">
+        <div class="field-sm"><label>📆 Date</label><input type="date" id="s${sid}date" value="${today}"></div>
+        <div class="field-sm"><label>🕐 Moment</label><select id="s${sid}mom"><option value="matin">☀️ Matin</option><option value="soir">🌙 Soir</option></select></div>
+        <div class="field-sm"><label>💪 Bras</label><select id="s${sid}bras"><option value="gauche">👈 Gauche</option><option value="droit">👉 Droit</option></select></div>
+      </div>
+      <div class="mesures-grid">
+        <div class="mesure-col unlocked" id="mcol${sid}_1">
+          <div class="mesure-col-title">Mesure 1<br><span style="font-size:10px;opacity:.65;">(souvent écartée)</span></div>
+          <div class="field-sm"><label>❤️ SYS</label><input type="number" id="s${sid}sys1" placeholder="120" min="60" max="250" oninput="calcMoy('${sid}')"></div>
+          <div class="field-sm" style="margin-top:5px;"><label>💙 DIA</label><input type="number" id="s${sid}dia1" placeholder="80" min="40" max="160" oninput="calcMoy('${sid}')"></div>
+          <div class="field-sm" style="margin-top:5px;"><label>💓 bpm</label><input type="number" id="s${sid}hr1" placeholder="70" min="30" max="220" oninput="calcMoy('${sid}')"></div>
+        </div>
+        <div class="mesure-col locked" id="mcol${sid}_2">
+          <div class="mesure-col-title">Mesure 2<br><span style="font-size:10px;opacity:.65;">(retenue)</span></div>
+          <div class="field-sm"><label>❤️ SYS</label><input type="number" id="s${sid}sys2" placeholder="120" min="60" max="250" oninput="calcMoy('${sid}')"></div>
+          <div class="field-sm" style="margin-top:5px;"><label>💙 DIA</label><input type="number" id="s${sid}dia2" placeholder="80" min="40" max="160" oninput="calcMoy('${sid}')"></div>
+          <div class="field-sm" style="margin-top:5px;"><label>💓 bpm</label><input type="number" id="s${sid}hr2" placeholder="70" min="30" max="220" oninput="calcMoy('${sid}')"></div>
+        </div>
+        <div class="mesure-col locked" id="mcol${sid}_3">
+          <div class="mesure-col-title">Mesure 3<br><span style="font-size:10px;opacity:.65;">(retenue)</span></div>
+          <div class="field-sm"><label>❤️ SYS</label><input type="number" id="s${sid}sys3" placeholder="120" min="60" max="250" oninput="calcMoy('${sid}')"></div>
+          <div class="field-sm" style="margin-top:5px;"><label>💙 DIA</label><input type="number" id="s${sid}dia3" placeholder="80" min="40" max="160" oninput="calcMoy('${sid}')"></div>
+          <div class="field-sm" style="margin-top:5px;"><label>💓 bpm</label><input type="number" id="s${sid}hr3" placeholder="70" min="30" max="220" oninput="calcMoy('${sid}')"></div>
+        </div>
+      </div>
+      <div class="timer-wrap timer-waiting" id="tw${sid}_2" style="display:none;">
+        <span id="tlbl${sid}_2">⏱️ Saisissez M1 pour démarrer le minuteur</span>
+        <div class="timer-bar-bg"><div class="timer-bar" id="tbar${sid}_2" style="width:0%"></div></div>
+      </div>
+      <div class="timer-wrap timer-waiting" id="tw${sid}_3" style="display:none;">
+        <span id="tlbl${sid}_3">⏱️ Saisissez M2 pour démarrer le minuteur</span>
+        <div class="timer-bar-bg"><div class="timer-bar" id="tbar${sid}_3" style="width:0%"></div></div>
+      </div>
+      <div class="preview-moy" id="s${sid}prev">
+        <span class="preview-label">Moyenne retenue :</span>
+        <span class="preview-sys" id="s${sid}psys"></span>
+        <span class="preview-label">/</span>
+        <span class="preview-dia" id="s${sid}pdia"></span>
+        <span class="preview-label">mmHg</span>
+        <span class="badge" id="s${sid}pbadge"></span>
+        <span class="preview-note">M2 + M3</span>
+      </div>`;
+
+      const btnSave=mk('button','btn-save-sm');
+      btnSave.type='button';btnSave.id='sbtn'+sid;btnSave.disabled=true;
+      btnSave.textContent='💾 Enregistrer la séance';
+      btnSave.onclick=()=>enregistrerSeance(sid);
+      form.appendChild(btnSave);
+      const hint=mk('p');hint.style.cssText='font-size:11px;color:#888;text-align:center;margin-top:6px;';
+      hint.textContent="Le bouton s'active une fois les 3 mesures saisies";
+      form.appendChild(hint);
+
+      inner.appendChild(form);
+      body.appendChild(inner);
+      card.appendChild(body);
+    }
+    list.appendChild(card);
+  });
+  w.appendChild(list);
+}
   const pd=getPD();
   const w=document.getElementById('plw');
   w.innerHTML='';
@@ -1044,14 +1185,14 @@ function renderManuel(){
     <div><h2>Manuel utilisateur <span class="version-badge">v13</span></h2><p>Guide complet de l'application Suivi tensionnel</p></div>
   </div>
   <div class="manual-toc">
-  <button type="button" class="toc-item active" data-sec="demarrage"><span class="toc-icon">🚀</span><div><div class="toc-label">Démarrage</div><div class="toc-desc">Premiers pas</div></div></button>
-    <button type="button" class="toc-item" data-sec="periodes"><span class="toc-icon">📅</span><div><div class="toc-label">Périodes</div><div class="toc-desc">Créer et gérer</div></div></button>
-    <button type="button" class="toc-item" data-sec="mesures"><span class="toc-icon">🩺</span><div><div class="toc-label">Saisie des mesures</div><div class="toc-desc">Protocole 3 mesures</div></div></button>
-    <button type="button" class="toc-item" data-sec="resultats"><span class="toc-icon">📊</span><div><div class="toc-label">Résultats</div><div class="toc-desc">Historique et graphiques</div></div></button>
-    <button type="button" class="toc-item" data-sec="profils"><span class="toc-icon">👥</span><div><div class="toc-label">Profils</div><div class="toc-desc">Multi-utilisateurs</div></div></button>
-    <button type="button" class="toc-item" data-sec="donnees"><span class="toc-icon">💾</span><div><div class="toc-label">Données</div><div class="toc-desc">Export et import</div></div></button>
-    <button type="button" class="toc-item" data-sec="normes"><span class="toc-icon">❤️</span><div><div class="toc-label">Normes tensionnelles</div><div class="toc-desc">Référence médicale</div></div></button>
-    <button type="button" class="toc-item" data-sec="faq"><span class="toc-icon">💬</span><div><div class="toc-label">FAQ</div><div class="toc-desc">Questions fréquentes</div></div></button>
+  <button type="button" class="toc-item active" data-sec="demarrage" onclick="showManuelSection('demarrage')"><span class="toc-icon">🚀</span><div><div class="toc-label">Démarrage</div><div class="toc-desc">Premiers pas</div></div></button>
+    <button type="button" class="toc-item" data-sec="periodes" onclick="showManuelSection('periodes')"><span class="toc-icon">📅</span><div><div class="toc-label">Périodes</div><div class="toc-desc">Créer et gérer</div></div></button>
+    <button type="button" class="toc-item" data-sec="mesures" onclick="showManuelSection('mesures')"><span class="toc-icon">🩺</span><div><div class="toc-label">Saisie des mesures</div><div class="toc-desc">Protocole 3 mesures</div></div></button>
+    <button type="button" class="toc-item" data-sec="resultats" onclick="showManuelSection('resultats')"><span class="toc-icon">📊</span><div><div class="toc-label">Résultats</div><div class="toc-desc">Historique et graphiques</div></div></button>
+    <button type="button" class="toc-item" data-sec="profils" onclick="showManuelSection('profils')"><span class="toc-icon">👥</span><div><div class="toc-label">Profils</div><div class="toc-desc">Multi-utilisateurs</div></div></button>
+    <button type="button" class="toc-item" data-sec="donnees" onclick="showManuelSection('donnees')"><span class="toc-icon">💾</span><div><div class="toc-label">Données</div><div class="toc-desc">Export et import</div></div></button>
+    <button type="button" class="toc-item" data-sec="normes" onclick="showManuelSection('normes')"><span class="toc-icon">❤️</span><div><div class="toc-label">Normes tensionnelles</div><div class="toc-desc">Référence médicale</div></div></button>
+    <button type="button" class="toc-item" data-sec="faq" onclick="showManuelSection('faq')"><span class="toc-icon">💬</span><div><div class="toc-label">FAQ</div><div class="toc-desc">Questions fréquentes</div></div></button>
   </div>
   <div id="ms-demarrage" class="manual-section active">
     <div class="man-card">
@@ -1181,12 +1322,6 @@ function renderManuel(){
   </div>
   `;
   showManuelSection(manuelSection);
-
-  // Délégation d'événement sur le conteneur — fiable sur iOS Safari
-  c.addEventListener('click', function(e){
-    const item=e.target.closest('.toc-item');
-    if(item && item.dataset.sec) showManuelSection(item.dataset.sec);
-  });
 }
 
 /* ===== AGENDA ICS ===== */
@@ -1292,29 +1427,6 @@ function genererICS(){
 // Fermer le modal en cliquant sur l'overlay
 document.getElementById('modal-agenda').addEventListener('click',function(e){
   if(e.target===this)fermerModalAgenda();
-});
-
-// ── Listener global sur document ─────────────────────────────────────────────
-// Niveau document = jamais perdu, survit à tout re-render, fiable iOS Safari.
-document.addEventListener('click',function(e){
-  const btnAgenda=e.target.closest('.btn-agenda');
-  if(btnAgenda&&btnAgenda.dataset.per){
-    e.stopPropagation();ouvrirModalAgenda(btnAgenda.dataset.per);return;
-  }
-  const btnDelPer=e.target.closest('.per-del-btn');
-  if(btnDelPer&&btnDelPer.dataset.del){
-    e.stopPropagation();delPer(btnDelPer.dataset.del);return;
-  }
-  const btnDelS=e.target.closest('.seance-del');
-  if(btnDelS&&btnDelS.dataset.delSeance){
-    e.stopPropagation();delSeance(btnDelS.dataset.delSeance);return;
-  }
-  const btnSave=e.target.closest('.btn-save-sm');
-  if(btnSave&&btnSave.dataset.save&&!btnSave.disabled){
-    e.stopPropagation();enregistrerSeance(btnSave.dataset.save);return;
-  }
-  const hd=e.target.closest('.per-card-hd');
-  if(hd&&hd.dataset.toggle){togglePer(hd.dataset.toggle);return;}
 });
 
 renderProfiles();
