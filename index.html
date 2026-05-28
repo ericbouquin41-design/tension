@@ -940,27 +940,27 @@ function renderManuel(){
   c.innerHTML=`
   <div class="manual-hero">
     <div class="manual-hero-icon">📖</div>
-    <div><h2>Manuel utilisateur <span class="version-badge">v6</span></h2><p>Guide complet de l'application Suivi tensionnel</p></div>
+    <div><h2>Manuel utilisateur <span class="version-badge">v13</span></h2><p>Guide complet de l'application Suivi tensionnel</p></div>
   </div>
   <div class="manual-toc">
-    <div class="toc-item active" data-sec="demarrage" onclick="showManuelSection('demarrage')"><span class="toc-icon">🚀</span><div><div class="toc-label">Démarrage</div><div class="toc-desc">Premiers pas</div></div></div>
-    <div class="toc-item" data-sec="periodes" onclick="showManuelSection('periodes')"><span class="toc-icon">📅</span><div><div class="toc-label">Périodes</div><div class="toc-desc">Créer et gérer</div></div></div>
-    <div class="toc-item" data-sec="mesures" onclick="showManuelSection('mesures')"><span class="toc-icon">🩺</span><div><div class="toc-label">Saisie des mesures</div><div class="toc-desc">Protocole 3 mesures</div></div></div>
-    <div class="toc-item" data-sec="resultats" onclick="showManuelSection('resultats')"><span class="toc-icon">📊</span><div><div class="toc-label">Résultats</div><div class="toc-desc">Historique et graphiques</div></div></div>
-    <div class="toc-item" data-sec="profils" onclick="showManuelSection('profils')"><span class="toc-icon">👥</span><div><div class="toc-label">Profils</div><div class="toc-desc">Multi-utilisateurs</div></div></div>
-    <div class="toc-item" data-sec="donnees" onclick="showManuelSection('donnees')"><span class="toc-icon">💾</span><div><div class="toc-label">Données</div><div class="toc-desc">Export et import</div></div></div>
-    <div class="toc-item" data-sec="normes" onclick="showManuelSection('normes')"><span class="toc-icon">❤️</span><div><div class="toc-label">Normes tensionnelles</div><div class="toc-desc">Référence médicale</div></div></div>
-    <div class="toc-item" data-sec="faq" onclick="showManuelSection('faq')"><span class="toc-icon">💬</span><div><div class="toc-label">FAQ</div><div class="toc-desc">Questions fréquentes</div></div></div>
+    <div class="toc-item active" data-sec="demarrage" onclick="showManuelSection('demarrage')" ontouchstart=""><span class="toc-icon">🚀</span><div><div class="toc-label">Démarrage</div><div class="toc-desc">Premiers pas</div></div></div>
+    <div class="toc-item" data-sec="periodes" onclick="showManuelSection('periodes')" ontouchstart=""><span class="toc-icon">📅</span><div><div class="toc-label">Périodes</div><div class="toc-desc">Créer et gérer</div></div></div>
+    <div class="toc-item" data-sec="mesures" onclick="showManuelSection('mesures')" ontouchstart=""><span class="toc-icon">🩺</span><div><div class="toc-label">Saisie des mesures</div><div class="toc-desc">Protocole 3 mesures</div></div></div>
+    <div class="toc-item" data-sec="resultats" onclick="showManuelSection('resultats')" ontouchstart=""><span class="toc-icon">📊</span><div><div class="toc-label">Résultats</div><div class="toc-desc">Historique et graphiques</div></div></div>
+    <div class="toc-item" data-sec="profils" onclick="showManuelSection('profils')" ontouchstart=""><span class="toc-icon">👥</span><div><div class="toc-label">Profils</div><div class="toc-desc">Multi-utilisateurs</div></div></div>
+    <div class="toc-item" data-sec="donnees" onclick="showManuelSection('donnees')" ontouchstart=""><span class="toc-icon">💾</span><div><div class="toc-label">Données</div><div class="toc-desc">Export et import</div></div></div>
+    <div class="toc-item" data-sec="normes" onclick="showManuelSection('normes')" ontouchstart=""><span class="toc-icon">❤️</span><div><div class="toc-label">Normes tensionnelles</div><div class="toc-desc">Référence médicale</div></div></div>
+    <div class="toc-item" data-sec="faq" onclick="showManuelSection('faq')" ontouchstart=""><span class="toc-icon">💬</span><div><div class="toc-label">FAQ</div><div class="toc-desc">Questions fréquentes</div></div></div>
   </div>
   <div id="ms-demarrage" class="manual-section active">
     <div class="man-card">
       <div class="man-card-title">🚀 Premiers pas</div>
       <div class="step-list">
-        <div class="step"><div class="step-num">1</div><div class="step-body"><div class="step-title">Créer votre profil</div><div class="step-desc">Au premier lancement, entrez votre prénom ou nom et cliquez sur ➕ Créer. Un avatar coloré vous est attribué automatiquement.</div></div></div>
+        <div class="step"><div class="step-num">1</div><div class="step-body"><div class="step-title">Créer votre profil</div><div class="step-desc">Au premier lancement, entrez votre prénom ou nom, votre <strong>année de naissance</strong> et votre <strong>sexe</strong>, puis cliquez sur ➕ Créer. Ces informations permettent une interprétation personnalisée de vos résultats.</div></div></div>
         <div class="step"><div class="step-num">2</div><div class="step-body"><div class="step-title">Sélectionner votre profil</div><div class="step-desc">Cliquez sur votre carte de profil pour entrer dans votre espace personnel. Toutes vos données sont isolées des autres profils.</div></div></div>
         <div class="step"><div class="step-num">3</div><div class="step-body"><div class="step-title">Créer une période de 3 jours</div><div class="step-desc">Dans l'onglet 📅 Périodes, donnez un nom à votre période (ex. : "Semaine de repos"), choisissez une date de début — la date de fin est calculée automatiquement à J+2.</div></div></div>
-        <div class="step"><div class="step-num">4</div><div class="step-body"><div class="step-title">Saisir vos premières mesures</div><div class="step-desc">Cliquez sur votre période pour l'ouvrir. Le formulaire de saisie apparaît directement en bas. Renseignez vos 3 mesures matin et soir.</div></div></div>
-        <div class="step"><div class="step-num">5</div><div class="step-body"><div class="step-title">Consulter vos résultats</div><div class="step-desc">Les onglets 📋 Historique et 📊 Graphiques vous donnent un bilan complet de chaque période.</div></div></div>
+        <div class="step"><div class="step-num">4</div><div class="step-body"><div class="step-title">Saisir vos mesures</div><div class="step-desc">Cliquez sur votre période pour l'ouvrir. Le formulaire de saisie apparaît directement en bas. Saisissez les 3 mesures en respectant le minuteur de 90 secondes entre chaque.</div></div></div>
+        <div class="step"><div class="step-num">5</div><div class="step-body"><div class="step-title">Consulter vos résultats</div><div class="step-desc">Les onglets 📋 Historique et 📊 Graphiques vous donnent un bilan complet avec interprétation personnalisée selon votre âge et sexe.</div></div></div>
       </div>
       <div class="tip-box"><span>💡</span><span>L'application fonctionne entièrement hors-ligne. Vos données sont sauvegardées automatiquement dans votre navigateur.</span></div>
     </div>
@@ -984,18 +984,24 @@ function renderManuel(){
   <div id="ms-mesures" class="manual-section">
     <div class="man-card">
       <div class="man-card-title">🩺 Protocole de mesure recommandé</div>
-      <p style="font-size:13px;color:#555;margin-bottom:.75rem;">Le protocole médical ESH/ESC recommande 3 mesures consécutives espacées d'1 à 2 minutes, matin et soir, pendant 3 jours.</p>
+      <p style="font-size:13px;color:#555;margin-bottom:.75rem;">Le protocole médical ESH/ESC recommande 3 mesures consécutives espacées d'au moins 90 secondes, matin et soir, pendant 3 jours.</p>
       <div class="step-list">
         <div class="step"><div class="step-num">1</div><div class="step-body"><div class="step-title">Se préparer</div><div class="step-desc">Restez assis au calme 5 minutes avant la mesure. Évitez café, tabac et effort physique dans l'heure précédente.</div></div></div>
-        <div class="step"><div class="step-num">2</div><div class="step-body"><div class="step-title">Effectuer 3 mesures</div><div class="step-desc">Prenez 3 mesures espacées d'1 à 2 minutes. Entrez chacune dans les colonnes M1, M2, M3.</div></div></div>
-        <div class="step"><div class="step-num">3</div><div class="step-body"><div class="step-title">M1 automatiquement écartée</div><div class="step-desc">Dès que M2 et M3 sont renseignées, M1 est écartée et la moyenne de M2+M3 est calculée. Un bandeau de prévisualisation apparaît en temps réel.</div></div></div>
-        <div class="step"><div class="step-num">4</div><div class="step-body"><div class="step-title">Enregistrer la séance</div><div class="step-desc">Cliquez sur 💾 Enregistrer la séance. Elle apparaît dans la liste avec le détail des 3 mesures.</div></div></div>
+        <div class="step"><div class="step-num">2</div><div class="step-body"><div class="step-title">Saisir M1 — le minuteur démarre automatiquement</div><div class="step-desc">Dès que vous entrez les valeurs SYS et DIA de M1, un <strong>minuteur de 90 secondes</strong> démarre. M2 reste grisée et inaccessible pendant ce délai.</div></div></div>
+        <div class="step"><div class="step-num">3</div><div class="step-body"><div class="step-title">🔔 Triple bip — saisir M2</div><div class="step-desc">À la fin des 90 secondes, <strong>3 bips sonores</strong> retentissent et M2 se déverrouille automatiquement. Prenez votre deuxième mesure et saisissez-la.</div></div></div>
+        <div class="step"><div class="step-num">4</div><div class="step-body"><div class="step-title">🔔 Triple bip — saisir M3</div><div class="step-desc">Même principe : après 90 secondes, 3 bips retentissent et M3 se déverrouille. Prenez et saisissez la troisième mesure.</div></div></div>
+        <div class="step"><div class="step-num">5</div><div class="step-body"><div class="step-title">Enregistrer la séance</div><div class="step-desc">Le bouton 💾 Enregistrer s'active uniquement quand les <strong>3 mesures sont complètes</strong>. La moyenne de M2+M3 est calculée (M1 écartée). Cliquez pour enregistrer.</div></div></div>
       </div>
-      <div class="tip-box"><span>💡</span><span>Si vous n'avez qu'une ou deux mesures, l'application s'adapte et calcule la moyenne sur les mesures disponibles.</span></div>
+      <div class="info-box"><span>🔔</span><span>Avant votre première séance, testez le son avec le bouton <strong>🔔 Test son</strong> dans le formulaire. Sur iOS, ce test est obligatoire pour activer l'audio.</span></div>
+      <div class="tip-box"><span>💡</span><span>Vous pouvez poser l'appareil et vaquer à vos occupations entre les mesures — les 3 bips vous alerteront au bon moment.</span></div>
     </div>
     <div class="man-card">
       <div class="man-card-title">💪 Quel bras utiliser ?</div>
-      <p style="font-size:13px;color:#555;">Mesurez toujours sur le même bras. Comparez les deux bras lors de la première mesure et utilisez celui qui donne les valeurs les plus élevées.</p>
+      <p style="font-size:13px;color:#555;">Mesurez toujours sur le même bras. Comparez les deux bras lors de la première séance et utilisez celui qui donne les valeurs les plus élevées. Indiquez le bras dans le champ dédié.</p>
+    </div>
+    <div class="man-card">
+      <div class="man-card-title">🚫 Pourquoi M1 est-elle écartée ?</div>
+      <p style="font-size:13px;color:#555;">La première mesure est souvent plus élevée car le patient n'est pas encore totalement détendu (<em>effet d'alerte</em>). Le protocole ESH recommande de l'écarter et de retenir la moyenne de M2+M3. M1 reste visible dans l'historique, barrée, à titre indicatif.</p>
     </div>
   </div>
   <div id="ms-resultats" class="manual-section">
@@ -1014,10 +1020,11 @@ function renderManuel(){
       <div class="man-card-title">👥 Gestion des profils</div>
       <p style="font-size:13px;color:#555;margin-bottom:.75rem;">Plusieurs personnes peuvent partager le même appareil. Chaque profil possède ses propres périodes et séances, totalement isolées.</p>
       <div class="step-list">
-        <div class="step"><div class="step-num">1</div><div class="step-body"><div class="step-title">Créer un profil</div><div class="step-desc">Sur l'écran d'accueil, entrez un prénom ou nom et cliquez ➕ Créer.</div></div></div>
-        <div class="step"><div class="step-num">2</div><div class="step-body"><div class="step-title">Changer de profil</div><div class="step-desc">Cliquez sur le chip avatar + nom ▼ en haut à droite du bandeau bleu pour revenir à l'écran de sélection.</div></div></div>
+        <div class="step"><div class="step-num">1</div><div class="step-body"><div class="step-title">Créer un profil</div><div class="step-desc">Sur l'écran d'accueil, entrez un prénom ou nom, votre <strong>année de naissance</strong> et votre <strong>sexe</strong> (optionnels mais recommandés pour l'interprétation personnalisée), puis cliquez ➕ Créer.</div></div></div>
+        <div class="step"><div class="step-num">2</div><div class="step-body"><div class="step-title">Changer de profil</div><div class="step-desc">Cliquez sur le chip en haut à droite du bandeau bleu (avatar + nom + ▼). Il affiche aussi l'âge et le sexe. Vous revenez à l'écran de sélection.</div></div></div>
         <div class="step"><div class="step-num">3</div><div class="step-body"><div class="step-title">Supprimer un profil</div><div class="step-desc">Sur l'écran d'accueil, cliquez 🗑️ Supprimer sous la carte. Toutes les données associées sont effacées définitivement.</div></div></div>
       </div>
+      <div class="info-box"><span>ℹ️</span><span>L'âge et le sexe permettent d'afficher des <strong>alertes personnalisées</strong> dans l'onglet Graphiques : femme après 50 ans, homme après 55 ans, sujet jeune avec HTA, etc.</span></div>
       <div class="tip-box"><span>💡</span><span>Jusqu'à 6 couleurs distinctes sont attribuées automatiquement aux profils.</span></div>
     </div>
   </div>
@@ -1063,11 +1070,12 @@ function renderManuel(){
       <div class="man-card-title">💬 Questions fréquentes</div>
       <div class="faq-item"><div class="faq-q">❓ Mes données sont-elles sécurisées ?</div><div class="faq-a">Toutes vos données restent sur votre appareil dans la mémoire locale du navigateur (localStorage). Elles ne sont jamais envoyées sur internet.</div></div>
       <div class="faq-item"><div class="faq-q">❓ Que se passe-t-il si je vide le cache du navigateur ?</div><div class="faq-a">Les données peuvent être effacées lors du vidage du cache. Exportez régulièrement vos données via ⚙️ Données pour ne rien perdre.</div></div>
+      <div class="faq-item"><div class="faq-q">❓ Le son ne fonctionne pas, que faire ?</div><div class="faq-a">Sur iOS (iPhone/iPad), le son doit être activé par une interaction manuelle. Avant votre séance, appuyez sur le bouton <strong>🔔 Test son</strong> dans le formulaire. Cela déverrouille l'audio pour toute la session.</div></div>
+      <div class="faq-item"><div class="faq-q">❓ Puis-je passer à une autre app pendant le minuteur ?</div><div class="faq-a">Oui, le minuteur continue. Mais le bip sonore ne se déclenche que si l'onglet est actif au moment où il se termine. Restez dans l'onglet pour entendre les bips.</div></div>
+      <div class="faq-item"><div class="faq-q">❓ Pourquoi indiquer l'âge et le sexe ?</div><div class="faq-a">Ces informations permettent d'afficher des alertes personnalisées dans l'onglet Graphiques — par exemple, une attention particulière pour une femme de plus de 50 ans ou un homme de plus de 55 ans avec une systolique élevée.</div></div>
       <div class="faq-item"><div class="faq-q">❓ Puis-je utiliser l'application sur mobile ?</div><div class="faq-a">Oui, le fichier HTML fonctionne dans tout navigateur mobile (Safari, Chrome). Ajoutez la page à l'écran d'accueil pour un accès rapide.</div></div>
-      <div class="faq-item"><div class="faq-q">❓ Pourquoi la 1ère mesure est-elle écartée ?</div><div class="faq-a">La première mesure est souvent plus élevée (effet d'alerte). Le protocole ESH recommande de l'écarter et de retenir la moyenne des mesures suivantes.</div></div>
-      <div class="faq-item"><div class="faq-q">❓ Puis-je saisir une seule mesure par séance ?</div><div class="faq-a">Oui. Si seule M1 est remplie, elle est utilisée directement. Si M1 et M2 sont remplies, leur moyenne est retenue.</div></div>
-      <div class="faq-item"><div class="faq-q">❓ Comment transférer mes données sur un autre appareil ?</div><div class="faq-a">Exportez depuis ⚙️ Données (fichier JSON), puis importez ce fichier sur l'autre appareil via le même onglet en mode Fusionner.</div></div>
-      <div class="faq-item"><div class="faq-q">❓ Le bilan porte-t-il sur toutes les séances ou une seule période ?</div><div class="faq-a">Le bilan se base sur la période sélectionnée via les boutons en haut des onglets Historique et Graphiques. Chaque période est analysée séparément.</div></div>
+      <div class="faq-item"><div class="faq-q">❓ Pourquoi la 1ère mesure est-elle écartée ?</div><div class="faq-a">La première mesure est souvent plus élevée (effet d'alerte). Le protocole ESH recommande de l'écarter et de retenir la moyenne de M2+M3.</div></div>
+      <div class="faq-item"><div class="faq-q">❓ Comment transférer mes données sur un autre appareil ?</div><div class="faq-a">Exportez depuis ⚙️ Données (fichier JSON), puis importez ce fichier sur l'autre appareil en mode Fusionner.</div></div>
     </div>
   </div>
   `;
