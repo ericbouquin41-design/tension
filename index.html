@@ -122,6 +122,26 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .empty-state{text-align:center;padding:2.5rem 1rem;}
 .empty-icon{font-size:40px;display:block;margin-bottom:10px;}
 .empty-state p{font-size:14px;color:#888;}
+.btn-agenda{display:flex;align-items:center;gap:8px;padding:8px 14px;border-radius:8px;border:1px solid #b5d4f4;background:#E6F1FB;color:#0C447C;font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap;touch-action:manipulation;}
+.btn-agenda:hover{background:#d0e8f9;}
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.45);z-index:200;display:flex;align-items:center;justify-content:center;padding:16px;}
+.modal-overlay.hidden{display:none;}
+.modal-box{background:#fff;border-radius:16px;padding:1.25rem 1.4rem;width:100%;max-width:400px;box-shadow:0 8px 32px rgba(0,0,0,.18);}
+.modal-title{font-size:16px;font-weight:600;color:#1a1a2e;margin-bottom:.25rem;display:flex;align-items:center;gap:8px;}
+.modal-sub{font-size:12px;color:#888;margin-bottom:1rem;}
+.modal-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:.75rem;}
+.modal-field label{display:block;font-size:12px;font-weight:500;color:#555;margin-bottom:4px;}
+.modal-field input,.modal-field select{width:100%;padding:8px 10px;border:1px solid #dde1e7;border-radius:8px;font-size:14px;background:#fafafa;color:#1a1a2e;outline:none;}
+.modal-field input:focus{border-color:#0C447C;background:#fff;}
+.modal-preview{background:#f8fafc;border:1px solid #e2e8f0;border-radius:10px;padding:10px 12px;margin-bottom:1rem;}
+.modal-preview-title{font-size:11px;font-weight:600;color:#888;margin-bottom:6px;text-transform:uppercase;letter-spacing:.04em;}
+.event-preview-row{display:flex;align-items:center;gap:8px;padding:4px 0;border-bottom:1px solid #f0f0f0;font-size:12px;color:#555;}
+.event-preview-row:last-child{border-bottom:none;}
+.event-dot{width:8px;height:8px;border-radius:50%;background:#0C447C;flex-shrink:0;}
+.modal-btns{display:flex;gap:8px;}
+.modal-btn-cancel{flex:1;padding:10px;border-radius:8px;border:1px solid #dde1e7;background:#fff;font-size:13px;font-weight:600;cursor:pointer;color:#555;touch-action:manipulation;}
+.modal-btn-ok{flex:2;padding:10px;border-radius:8px;border:none;background:#0C447C;color:#fff;font-size:13px;font-weight:600;cursor:pointer;touch-action:manipulation;}
+.modal-btn-ok:hover{background:#185FA5;}
 .toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);border-radius:10px;padding:10px 20px;font-size:13px;font-weight:500;display:none;z-index:999;box-shadow:0 4px 12px rgba(0,0,0,.15);}
 .toast.ok{background:#0C447C;color:#fff;}
 .toast.success{background:#EAF3DE;color:#27500A;border:1px solid #C0DD97;}
@@ -168,7 +188,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .manual-hero h2{font-size:17px;font-weight:600;color:#fff;margin-bottom:3px;}
 .manual-hero p{font-size:12px;color:#85B7EB;}
 .manual-toc{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:1.25rem;}
-.toc-item{background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:10px 14px;cursor:pointer;display:flex;align-items:center;gap:10px;transition:all .15s;touch-action:manipulation;-webkit-tap-highlight-color:transparent;user-select:none;}
+.toc-item{background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:10px 14px;cursor:pointer;display:flex;align-items:center;gap:10px;transition:all .15s;touch-action:manipulation;-webkit-tap-highlight-color:rgba(0,0,0,0.1);user-select:none;text-align:left;font-family:inherit;font-size:inherit;width:100%;}
 .toc-item:hover{border-color:#b5d4f4;background:#f0f7ff;}
 .toc-item.active{border-color:#0C447C;background:#E6F1FB;}
 .toc-icon{font-size:20px;}
@@ -204,6 +224,41 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 <div class="app">
 <div class="toast" id="toast"></div>
 <input type="file" id="file-input" accept=".json" style="display:none">
+
+<!-- MODAL AGENDA -->
+<div class="modal-overlay hidden" id="modal-agenda">
+  <div class="modal-box">
+    <div class="modal-title">📆 Ajouter à l'agenda</div>
+    <div class="modal-sub" id="modal-agenda-sub">Période · 3 jours · 6 rappels</div>
+    <div class="modal-grid">
+      <div class="modal-field">
+        <label>☀️ Heure matin</label>
+        <input type="time" id="agenda-heure-matin" value="08:00">
+      </div>
+      <div class="modal-field">
+        <label>🌙 Heure soir</label>
+        <input type="time" id="agenda-heure-soir" value="20:00">
+      </div>
+      <div class="modal-field" style="grid-column:1/-1;">
+        <label>⏰ Rappel avant la mesure</label>
+        <select id="agenda-rappel">
+          <option value="5">5 minutes avant</option>
+          <option value="10" selected>10 minutes avant</option>
+          <option value="15">15 minutes avant</option>
+          <option value="30">30 minutes avant</option>
+        </select>
+      </div>
+    </div>
+    <div class="modal-preview">
+      <div class="modal-preview-title">Aperçu des événements</div>
+      <div id="agenda-preview"></div>
+    </div>
+    <div class="modal-btns">
+      <button type="button" class="modal-btn-cancel" onclick="fermerModalAgenda()">Annuler</button>
+      <button type="button" class="modal-btn-ok" onclick="genererICS()">⬇️ Télécharger le fichier .ics</button>
+    </div>
+  </div>
+</div>
 
 <!-- PROFILS -->
 <div id="sp" class="screen active">
@@ -642,6 +697,7 @@ function renderPerList(){
         </div>
         <div class="per-meta">
           <span style="font-size:11px;color:#888;">${seances.length} séance${seances.length!==1?'s':''}</span>
+          <button type="button" class="btn-agenda" onclick="event.stopPropagation();ouvrirModalAgenda('${p.id}')" title="Ajouter à l'agenda">📆</button>
           <span class="per-caret">▼</span>
           <button class="per-del-btn" onclick="event.stopPropagation();delPer('${p.id}')">🗑️</button>
         </div>
@@ -946,14 +1002,14 @@ function renderManuel(){
     <div><h2>Manuel utilisateur <span class="version-badge">v13</span></h2><p>Guide complet de l'application Suivi tensionnel</p></div>
   </div>
   <div class="manual-toc">
-    <div class="toc-item active" data-sec="demarrage"><span class="toc-icon">🚀</span><div><div class="toc-label">Démarrage</div><div class="toc-desc">Premiers pas</div></div></div>
-    <div class="toc-item" data-sec="periodes"><span class="toc-icon">📅</span><div><div class="toc-label">Périodes</div><div class="toc-desc">Créer et gérer</div></div></div>
-    <div class="toc-item" data-sec="mesures"><span class="toc-icon">🩺</span><div><div class="toc-label">Saisie des mesures</div><div class="toc-desc">Protocole 3 mesures</div></div></div>
-    <div class="toc-item" data-sec="resultats"><span class="toc-icon">📊</span><div><div class="toc-label">Résultats</div><div class="toc-desc">Historique et graphiques</div></div></div>
-    <div class="toc-item" data-sec="profils"><span class="toc-icon">👥</span><div><div class="toc-label">Profils</div><div class="toc-desc">Multi-utilisateurs</div></div></div>
-    <div class="toc-item" data-sec="donnees"><span class="toc-icon">💾</span><div><div class="toc-label">Données</div><div class="toc-desc">Export et import</div></div></div>
-    <div class="toc-item" data-sec="normes"><span class="toc-icon">❤️</span><div><div class="toc-label">Normes tensionnelles</div><div class="toc-desc">Référence médicale</div></div></div>
-    <div class="toc-item" data-sec="faq"><span class="toc-icon">💬</span><div><div class="toc-label">FAQ</div><div class="toc-desc">Questions fréquentes</div></div></div>
+  <button type="button" class="toc-item active" data-sec="demarrage"><span class="toc-icon">🚀</span><div><div class="toc-label">Démarrage</div><div class="toc-desc">Premiers pas</div></div></button>
+    <button type="button" class="toc-item" data-sec="periodes"><span class="toc-icon">📅</span><div><div class="toc-label">Périodes</div><div class="toc-desc">Créer et gérer</div></div></button>
+    <button type="button" class="toc-item" data-sec="mesures"><span class="toc-icon">🩺</span><div><div class="toc-label">Saisie des mesures</div><div class="toc-desc">Protocole 3 mesures</div></div></button>
+    <button type="button" class="toc-item" data-sec="resultats"><span class="toc-icon">📊</span><div><div class="toc-label">Résultats</div><div class="toc-desc">Historique et graphiques</div></div></button>
+    <button type="button" class="toc-item" data-sec="profils"><span class="toc-icon">👥</span><div><div class="toc-label">Profils</div><div class="toc-desc">Multi-utilisateurs</div></div></button>
+    <button type="button" class="toc-item" data-sec="donnees"><span class="toc-icon">💾</span><div><div class="toc-label">Données</div><div class="toc-desc">Export et import</div></div></button>
+    <button type="button" class="toc-item" data-sec="normes"><span class="toc-icon">❤️</span><div><div class="toc-label">Normes tensionnelles</div><div class="toc-desc">Référence médicale</div></div></button>
+    <button type="button" class="toc-item" data-sec="faq"><span class="toc-icon">💬</span><div><div class="toc-label">FAQ</div><div class="toc-desc">Questions fréquentes</div></div></button>
   </div>
   <div id="ms-demarrage" class="manual-section active">
     <div class="man-card">
@@ -1084,16 +1140,117 @@ function renderManuel(){
   `;
   showManuelSection(manuelSection);
 
-  // Attacher les événements APRÈS le rendu — fiable sur iOS Safari
-  c.querySelectorAll('.toc-item').forEach(el=>{
-    const sec=el.dataset.sec;
-    el.addEventListener('click',()=>showManuelSection(sec));
-    el.addEventListener('touchend',(e)=>{
-      e.preventDefault(); // empêche le double-déclenchement sur iOS
-      showManuelSection(sec);
-    });
+  // Délégation d'événement sur le conteneur — fiable sur iOS Safari
+  c.addEventListener('click', function(e){
+    const item=e.target.closest('.toc-item');
+    if(item && item.dataset.sec) showManuelSection(item.dataset.sec);
   });
 }
+
+/* ===== AGENDA ICS ===== */
+let agendaPerId=null;
+
+function ouvrirModalAgenda(perId){
+  agendaPerId=perId;
+  const pd=getPD();
+  const p=pd.periodes.find(x=>x.id===perId);
+  if(!p)return;
+  document.getElementById('modal-agenda-sub').textContent=`${p.nom} · ${fmtD(p.debut)} → ${fmtD(p.fin)} · 6 rappels`;
+  majPreviewAgenda(p);
+  document.getElementById('agenda-heure-matin').oninput=()=>majPreviewAgenda(p);
+  document.getElementById('agenda-heure-soir').oninput=()=>majPreviewAgenda(p);
+  document.getElementById('modal-agenda').classList.remove('hidden');
+}
+
+function fermerModalAgenda(){
+  document.getElementById('modal-agenda').classList.add('hidden');
+  agendaPerId=null;
+}
+
+function majPreviewAgenda(p){
+  const hm=document.getElementById('agenda-heure-matin').value||'08:00';
+  const hs=document.getElementById('agenda-heure-soir').value||'20:00';
+  let h='';
+  for(let i=0;i<3;i++){
+    const d=new Date(p.debut+'T12:00:00');d.setDate(d.getDate()+i);
+    const nom=d.toLocaleDateString('fr-FR',{weekday:'short',day:'2-digit',month:'2-digit'});
+    h+=`<div class="event-preview-row"><div class="event-dot"></div><span style="min-width:90px;font-weight:500;">${nom}</span><span>☀️ ${hm}</span><span style="color:#ccc;margin:0 6px;">|</span><span>🌙 ${hs}</span></div>`;
+  }
+  document.getElementById('agenda-preview').innerHTML=h;
+}
+
+function pad2(n){return String(n).padStart(2,'0');}
+
+function toICSDate(dateStr,timeStr){
+  const [y,m,d]=dateStr.split('-').map(Number);
+  const [hh,mm]=timeStr.split(':').map(Number);
+  return `${y}${pad2(m)}${pad2(d)}T${pad2(hh)}${pad2(mm)}00`;
+}
+
+function addMinutes(dateStr,timeStr,mins){
+  const [y,m,d]=dateStr.split('-').map(Number);
+  const [hh,mm]=timeStr.split(':').map(Number);
+  const dt=new Date(y,m-1,d,hh,mm+mins,0);
+  return `${dt.getFullYear()}${pad2(dt.getMonth()+1)}${pad2(dt.getDate())}T${pad2(dt.getHours())}${pad2(dt.getMinutes())}00`;
+}
+
+function addDays(dateStr,n){
+  const d=new Date(dateStr+'T12:00:00');
+  d.setDate(d.getDate()+n);
+  return d.toISOString().slice(0,10);
+}
+
+function genererICS(){
+  const pd=getPD();
+  const p=pd.periodes.find(x=>x.id===agendaPerId);
+  if(!p)return;
+  const prof=db.profiles.find(x=>x.id===cpid)||{nom:'Utilisateur'};
+  const hm=document.getElementById('agenda-heure-matin').value||'08:00';
+  const hs=document.getElementById('agenda-heure-soir').value||'20:00';
+  const rappel=parseInt(document.getElementById('agenda-rappel').value)||10;
+  const stamp=new Date().toISOString().replace(/[-:.]/g,'').slice(0,15)+'Z';
+
+  let ics='BEGIN:VCALENDAR\r\nVERSION:2.0\r\nPRODID:-//Suivi Tensionnel//FR\r\nCALSCALE:GREGORIAN\r\nMETHOD:PUBLISH\r\n';
+
+  for(let i=0;i<3;i++){
+    const jour=addDays(p.debut,i);
+    const d=new Date(jour+'T12:00:00');
+    const nomJour=d.toLocaleDateString('fr-FR',{weekday:'long',day:'2-digit',month:'long'});
+
+    [{time:hm,label:'Matin ☀️',emoji:'☀️'},{time:hs,label:'Soir 🌙',emoji:'🌙'}].forEach(({time,label,emoji})=>{
+      const uid=Math.random().toString(36).slice(2)+Date.now().toString(36);
+      ics+=`BEGIN:VEVENT\r\n`;
+      ics+=`UID:${uid}@suivi-tensionnel\r\n`;
+      ics+=`DTSTAMP:${stamp}\r\n`;
+      ics+=`DTSTART:${toICSDate(jour,time)}\r\n`;
+      ics+=`DTEND:${addMinutes(jour,time,30)}\r\n`;
+      ics+=`SUMMARY:🩺 Tension ${label} — ${prof.nom}\r\n`;
+      ics+=`DESCRIPTION:Période : ${p.nom}\\nDate : ${nomJour}\\nProtocole : 3 mesures espacées de 90 secondes\\nApplication : Suivi tensionnel\r\n`;
+      ics+=`BEGIN:VALARM\r\n`;
+      ics+=`TRIGGER:-PT${rappel}M\r\n`;
+      ics+=`ACTION:DISPLAY\r\n`;
+      ics+=`DESCRIPTION:🩺 Prendre sa tension — ${label} — ${prof.nom}\r\n`;
+      ics+=`END:VALARM\r\n`;
+      ics+=`END:VEVENT\r\n`;
+    });
+  }
+  ics+='END:VCALENDAR';
+
+  const blob=new Blob([ics],{type:'text/calendar;charset=utf-8'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  a.href=url;
+  a.download=`tension_${p.nom.replace(/[^a-zA-Z0-9]/g,'_')}_${p.debut}.ics`;
+  document.body.appendChild(a);a.click();
+  document.body.removeChild(a);URL.revokeObjectURL(url);
+  fermerModalAgenda();
+  toast('✅ Fichier .ics téléchargé — ouvrez-le pour l\'importer dans votre agenda !','success');
+}
+
+// Fermer le modal en cliquant sur l'overlay
+document.getElementById('modal-agenda').addEventListener('click',function(e){
+  if(e.target===this)fermerModalAgenda();
+});
 
 renderProfiles();
 </script>
