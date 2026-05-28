@@ -168,7 +168,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .manual-hero h2{font-size:17px;font-weight:600;color:#fff;margin-bottom:3px;}
 .manual-hero p{font-size:12px;color:#85B7EB;}
 .manual-toc{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:1.25rem;}
-.toc-item{background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:10px 14px;cursor:pointer;display:flex;align-items:center;gap:10px;transition:all .15s;}
+.toc-item{background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:10px 14px;cursor:pointer;display:flex;align-items:center;gap:10px;transition:all .15s;touch-action:manipulation;-webkit-tap-highlight-color:transparent;user-select:none;}
 .toc-item:hover{border-color:#b5d4f4;background:#f0f7ff;}
 .toc-item.active{border-color:#0C447C;background:#E6F1FB;}
 .toc-icon{font-size:20px;}
@@ -932,6 +932,9 @@ function showManuelSection(id){
   manuelSection=id;
   document.querySelectorAll('.toc-item').forEach(el=>el.classList.toggle('active',el.dataset.sec===id));
   document.querySelectorAll('.manual-section').forEach(el=>el.classList.toggle('active',el.id==='ms-'+id));
+  // Scroll vers le haut de la section
+  const sec=document.getElementById('ms-'+id);
+  if(sec)sec.scrollIntoView({behavior:'smooth',block:'start'});
 }
 function renderManuel(){
   const c=document.getElementById('manuel-content');
@@ -943,14 +946,14 @@ function renderManuel(){
     <div><h2>Manuel utilisateur <span class="version-badge">v13</span></h2><p>Guide complet de l'application Suivi tensionnel</p></div>
   </div>
   <div class="manual-toc">
-    <div class="toc-item active" data-sec="demarrage" onclick="showManuelSection('demarrage')" ontouchstart=""><span class="toc-icon">🚀</span><div><div class="toc-label">Démarrage</div><div class="toc-desc">Premiers pas</div></div></div>
-    <div class="toc-item" data-sec="periodes" onclick="showManuelSection('periodes')" ontouchstart=""><span class="toc-icon">📅</span><div><div class="toc-label">Périodes</div><div class="toc-desc">Créer et gérer</div></div></div>
-    <div class="toc-item" data-sec="mesures" onclick="showManuelSection('mesures')" ontouchstart=""><span class="toc-icon">🩺</span><div><div class="toc-label">Saisie des mesures</div><div class="toc-desc">Protocole 3 mesures</div></div></div>
-    <div class="toc-item" data-sec="resultats" onclick="showManuelSection('resultats')" ontouchstart=""><span class="toc-icon">📊</span><div><div class="toc-label">Résultats</div><div class="toc-desc">Historique et graphiques</div></div></div>
-    <div class="toc-item" data-sec="profils" onclick="showManuelSection('profils')" ontouchstart=""><span class="toc-icon">👥</span><div><div class="toc-label">Profils</div><div class="toc-desc">Multi-utilisateurs</div></div></div>
-    <div class="toc-item" data-sec="donnees" onclick="showManuelSection('donnees')" ontouchstart=""><span class="toc-icon">💾</span><div><div class="toc-label">Données</div><div class="toc-desc">Export et import</div></div></div>
-    <div class="toc-item" data-sec="normes" onclick="showManuelSection('normes')" ontouchstart=""><span class="toc-icon">❤️</span><div><div class="toc-label">Normes tensionnelles</div><div class="toc-desc">Référence médicale</div></div></div>
-    <div class="toc-item" data-sec="faq" onclick="showManuelSection('faq')" ontouchstart=""><span class="toc-icon">💬</span><div><div class="toc-label">FAQ</div><div class="toc-desc">Questions fréquentes</div></div></div>
+    <div class="toc-item active" data-sec="demarrage"><span class="toc-icon">🚀</span><div><div class="toc-label">Démarrage</div><div class="toc-desc">Premiers pas</div></div></div>
+    <div class="toc-item" data-sec="periodes"><span class="toc-icon">📅</span><div><div class="toc-label">Périodes</div><div class="toc-desc">Créer et gérer</div></div></div>
+    <div class="toc-item" data-sec="mesures"><span class="toc-icon">🩺</span><div><div class="toc-label">Saisie des mesures</div><div class="toc-desc">Protocole 3 mesures</div></div></div>
+    <div class="toc-item" data-sec="resultats"><span class="toc-icon">📊</span><div><div class="toc-label">Résultats</div><div class="toc-desc">Historique et graphiques</div></div></div>
+    <div class="toc-item" data-sec="profils"><span class="toc-icon">👥</span><div><div class="toc-label">Profils</div><div class="toc-desc">Multi-utilisateurs</div></div></div>
+    <div class="toc-item" data-sec="donnees"><span class="toc-icon">💾</span><div><div class="toc-label">Données</div><div class="toc-desc">Export et import</div></div></div>
+    <div class="toc-item" data-sec="normes"><span class="toc-icon">❤️</span><div><div class="toc-label">Normes tensionnelles</div><div class="toc-desc">Référence médicale</div></div></div>
+    <div class="toc-item" data-sec="faq"><span class="toc-icon">💬</span><div><div class="toc-label">FAQ</div><div class="toc-desc">Questions fréquentes</div></div></div>
   </div>
   <div id="ms-demarrage" class="manual-section active">
     <div class="man-card">
@@ -1080,6 +1083,16 @@ function renderManuel(){
   </div>
   `;
   showManuelSection(manuelSection);
+
+  // Attacher les événements APRÈS le rendu — fiable sur iOS Safari
+  c.querySelectorAll('.toc-item').forEach(el=>{
+    const sec=el.dataset.sec;
+    el.addEventListener('click',()=>showManuelSection(sec));
+    el.addEventListener('touchend',(e)=>{
+      e.preventDefault(); // empêche le double-déclenchement sur iOS
+      showManuelSection(sec);
+    });
+  });
 }
 
 renderProfiles();
