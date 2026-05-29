@@ -384,7 +384,113 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
   </div>
   <!-- MANUEL -->
   <div id="tm" class="section">
-    <div id="manuel-content"></div>
+    <div id="manuel-content">
+      <div class="manual-hero">
+        <div class="manual-hero-icon">📖</div>
+        <div><h2>Manuel utilisateur <span class="version-badge">v22</span></h2><p>Guide complet de l'application Suivi tensionnel</p></div>
+      </div>
+      <div class="manual-toc">
+        <button type="button" class="toc-item active" data-sec="demarrage" onclick="showManuelSection('demarrage')"><span class="toc-icon">🚀</span><div><div class="toc-label">Démarrage</div><div class="toc-desc">Premiers pas</div></div></button>
+        <button type="button" class="toc-item" data-sec="periodes" onclick="showManuelSection('periodes')"><span class="toc-icon">📅</span><div><div class="toc-label">Périodes</div><div class="toc-desc">Créer et gérer</div></div></button>
+        <button type="button" class="toc-item" data-sec="mesures" onclick="showManuelSection('mesures')"><span class="toc-icon">🩺</span><div><div class="toc-label">Saisie des mesures</div><div class="toc-desc">Protocole 3 mesures</div></div></button>
+        <button type="button" class="toc-item" data-sec="resultats" onclick="showManuelSection('resultats')"><span class="toc-icon">📊</span><div><div class="toc-label">Résultats</div><div class="toc-desc">Historique et graphiques</div></div></button>
+        <button type="button" class="toc-item" data-sec="profils" onclick="showManuelSection('profils')"><span class="toc-icon">👥</span><div><div class="toc-label">Profils</div><div class="toc-desc">Multi-utilisateurs</div></div></button>
+        <button type="button" class="toc-item" data-sec="donnees" onclick="showManuelSection('donnees')"><span class="toc-icon">💾</span><div><div class="toc-label">Données</div><div class="toc-desc">Export et import</div></div></button>
+        <button type="button" class="toc-item" data-sec="normes" onclick="showManuelSection('normes')"><span class="toc-icon">❤️</span><div><div class="toc-label">Normes tensionnelles</div><div class="toc-desc">Référence médicale</div></div></button>
+        <button type="button" class="toc-item" data-sec="faq" onclick="showManuelSection('faq')"><span class="toc-icon">💬</span><div><div class="toc-label">FAQ</div><div class="toc-desc">Questions fréquentes</div></div></button>
+      </div>
+      <div id="ms-demarrage" class="manual-section active">
+        <div class="man-card"><div class="man-card-title">🚀 Premiers pas</div>
+          <div class="step-list">
+            <div class="step"><div class="step-num">1</div><div class="step-body"><div class="step-title">Créer votre profil</div><div class="step-desc">Entrez votre prénom, année de naissance et sexe, puis cliquez ➕ Créer.</div></div></div>
+            <div class="step"><div class="step-num">2</div><div class="step-body"><div class="step-title">Sélectionner votre profil</div><div class="step-desc">Cliquez sur votre carte de profil pour entrer dans votre espace personnel.</div></div></div>
+            <div class="step"><div class="step-num">3</div><div class="step-body"><div class="step-title">Créer une période de 3 jours</div><div class="step-desc">Dans l'onglet 📅 Périodes, donnez un nom, choisissez une date de début — fin calculée automatiquement à J+2.</div></div></div>
+            <div class="step"><div class="step-num">4</div><div class="step-body"><div class="step-title">Saisir vos mesures</div><div class="step-desc">Cliquez sur votre période pour l'ouvrir et accéder au formulaire de saisie.</div></div></div>
+            <div class="step"><div class="step-num">5</div><div class="step-body"><div class="step-title">Consulter vos résultats</div><div class="step-desc">Les onglets 📋 Historique et 📊 Graphiques affichent votre bilan avec interprétation personnalisée.</div></div></div>
+          </div>
+          <div class="tip-box"><span>💡</span><span>L'application fonctionne hors-ligne. Données sauvegardées automatiquement dans le navigateur.</span></div>
+        </div>
+      </div>
+      <div id="ms-periodes" class="manual-section">
+        <div class="man-card"><div class="man-card-title">📅 Créer et gérer les périodes</div>
+          <div class="step-list">
+            <div class="step"><div class="step-num">1</div><div class="step-body"><div class="step-title">Nommer la période (optionnel)</div><div class="step-desc">"Avant traitement", "Semaine de stress", "Contrôle mensuel"…</div></div></div>
+            <div class="step"><div class="step-num">2</div><div class="step-body"><div class="step-title">Choisir la date de début</div><div class="step-desc">La fin est calculée automatiquement à J+2. Modifiable manuellement.</div></div></div>
+            <div class="step"><div class="step-num">3</div><div class="step-body"><div class="step-title">Cliquer sur la période pour saisir</div><div class="step-desc">Un clic ouvre la carte et affiche le formulaire de saisie en bas.</div></div></div>
+          </div>
+          <div class="info-box"><span>ℹ️</span><span>La période en cours est marquée d'un indicateur vert ● en cours.</span></div>
+          <div class="warn-box" style="margin-top:.75rem;"><span>⚠️</span><span>Exportez vos données avant de supprimer une période importante.</span></div>
+        </div>
+      </div>
+      <div id="ms-mesures" class="manual-section">
+        <div class="man-card"><div class="man-card-title">🩺 Protocole de mesure</div>
+          <div class="step-list">
+            <div class="step"><div class="step-num">1</div><div class="step-body"><div class="step-title">Se préparer</div><div class="step-desc">Restez assis au calme 5 min. Évitez café, tabac, effort physique dans l'heure précédente.</div></div></div>
+            <div class="step"><div class="step-num">2</div><div class="step-body"><div class="step-title">Saisir M1 — minuteur démarre</div><div class="step-desc">Dès que SYS et DIA de M1 sont entrés, un minuteur de 90 secondes démarre. M2 reste grisée.</div></div></div>
+            <div class="step"><div class="step-num">3</div><div class="step-body"><div class="step-title">🔔 Triple bip — saisir M2</div><div class="step-desc">Après 90s, 3 bips retentissent et M2 se déverrouille. Prenez et saisissez la 2e mesure.</div></div></div>
+            <div class="step"><div class="step-num">4</div><div class="step-body"><div class="step-title">🔔 Triple bip — saisir M3</div><div class="step-desc">Même principe : 90s, 3 bips, M3 déverrouillée. Saisissez la 3e mesure.</div></div></div>
+            <div class="step"><div class="step-num">5</div><div class="step-body"><div class="step-title">Enregistrer la séance</div><div class="step-desc">Le bouton 💾 s'active quand les 3 mesures sont complètes. La moyenne M2+M3 est retenue.</div></div></div>
+          </div>
+          <div class="info-box"><span>🔔</span><span>Testez le son avec le bouton 🔔 Test son avant votre première séance. Sur iOS, ce test est obligatoire pour activer l'audio.</span></div>
+        </div>
+        <div class="man-card"><div class="man-card-title">🚫 Pourquoi M1 est-elle écartée ?</div><p style="font-size:13px;color:#555;">Première mesure souvent plus élevée (effet d'alerte). Le protocole ESH recommande de l'écarter et de retenir la moyenne de M2+M3.</p></div>
+      </div>
+      <div id="ms-resultats" class="manual-section">
+        <div class="man-card"><div class="man-card-title">📋 Historique</div><p style="font-size:13px;color:#555;margin-bottom:.75rem;">Toutes les séances d'une période : moment, date, détail des 3 mesures avec M1 barrée si écartée, moyenne retenue et statut tensionnel.</p><div class="info-box"><span>ℹ️</span><span>Utilisez les boutons de période en haut pour naviguer entre vos périodes.</span></div></div>
+        <div class="man-card"><div class="man-card-title">📊 Graphiques</div><p style="font-size:13px;color:#555;">Trois courbes : systolique, diastolique, pouls. Lignes de seuil en pointillés (140/90 mmHg). Cartes de moyennes globales et bilan coloré. Des alertes personnalisées s'affichent selon votre âge et sexe.</p></div>
+      </div>
+      <div id="ms-profils" class="manual-section">
+        <div class="man-card"><div class="man-card-title">👥 Gestion des profils</div>
+          <div class="step-list">
+            <div class="step"><div class="step-num">1</div><div class="step-body"><div class="step-title">Créer un profil</div><div class="step-desc">Prénom, année de naissance et sexe (optionnels mais recommandés pour l'interprétation).</div></div></div>
+            <div class="step"><div class="step-num">2</div><div class="step-body"><div class="step-title">Changer de profil</div><div class="step-desc">Cliquez sur le chip avatar + nom ▼ en haut à droite pour revenir à l'écran de sélection.</div></div></div>
+            <div class="step"><div class="step-num">3</div><div class="step-body"><div class="step-title">Supprimer un profil</div><div class="step-desc">Cliquez 🗑️ Supprimer sur la carte. Toutes les données associées sont effacées.</div></div></div>
+          </div>
+          <div class="tip-box"><span>💡</span><span>Jusqu'à 6 couleurs distinctes attribuées automatiquement.</span></div>
+        </div>
+      </div>
+      <div id="ms-donnees" class="manual-section">
+        <div class="man-card"><div class="man-card-title">⬇️ Exporter les données</div>
+          <div class="step-list">
+            <div class="step"><div class="step-num">1</div><div class="step-body"><div class="step-title">Aller dans ⚙️ Données</div><div class="step-desc">Accessible depuis n'importe quel profil.</div></div></div>
+            <div class="step"><div class="step-num">2</div><div class="step-body"><div class="step-title">Sélectionner les profils à exporter</div><div class="step-desc">Cochez les profils souhaités. Tous cochés par défaut.</div></div></div>
+            <div class="step"><div class="step-num">3</div><div class="step-body"><div class="step-title">Télécharger</div><div class="step-desc">Fichier tensions_AAAA-MM-JJ.json téléchargé automatiquement.</div></div></div>
+          </div>
+        </div>
+        <div class="man-card"><div class="man-card-title">⬆️ Importer des données</div>
+          <div class="step-list">
+            <div class="step"><div class="step-num">1</div><div class="step-body"><div class="step-title">Sélectionner le fichier</div><div class="step-desc">Cliquez sur la zone 📁 et choisissez un fichier tensions_*.json.</div></div></div>
+            <div class="step"><div class="step-num">2</div><div class="step-body"><div class="step-title">Choisir le mode</div><div class="step-desc">🔀 Fusionner : ajoute sans écraser. ♻️ Remplacer : efface tout et remplace.</div></div></div>
+            <div class="step"><div class="step-num">3</div><div class="step-body"><div class="step-title">Confirmer</div><div class="step-desc">Cliquez ⬆️ Importer. Message de confirmation affiché.</div></div></div>
+          </div>
+          <div class="warn-box"><span>⚠️</span><span>En mode Remplacer, exportez d'abord. Irréversible.</span></div>
+        </div>
+      </div>
+      <div id="ms-normes" class="manual-section">
+        <div class="man-card"><div class="man-card-title">❤️ Normes tensionnelles ESH/ESC</div>
+          <p style="font-size:13px;color:#555;margin-bottom:.75rem;">Normes pour mesures à domicile.</p>
+          <table class="norme-table"><thead><tr><th>Catégorie</th><th>Systolique</th><th>Diastolique</th><th>Statut</th></tr></thead><tbody>
+            <tr><td>Optimal</td><td>&lt;120</td><td>&lt;80</td><td><span class="pill p-ok">✅ Optimal</span></td></tr>
+            <tr><td>Normal</td><td>120–129</td><td>80–84</td><td><span class="pill p-ok">🟢 Normal</span></td></tr>
+            <tr><td>Normal élevé</td><td>130–139</td><td>85–89</td><td><span class="pill p-warn">🟡 Normal élevé</span></td></tr>
+            <tr><td>HTA grade 1</td><td>140–159</td><td>90–99</td><td><span class="pill p-warn">🟠 HTA grade 1</span></td></tr>
+            <tr><td>HTA grade 2+</td><td>≥160</td><td>≥100</td><td><span class="pill p-danger">🔴 HTA grade 2+</span></td></tr>
+          </tbody></table>
+          <div class="warn-box" style="margin-top:1rem;"><span>⚠️</span><span>Informations indicatives. Consultez toujours votre médecin.</span></div>
+        </div>
+      </div>
+      <div id="ms-faq" class="manual-section">
+        <div class="man-card"><div class="man-card-title">💬 Questions fréquentes</div>
+          <div class="faq-item"><div class="faq-q">❓ Mes données sont-elles sécurisées ?</div><div class="faq-a">Stockées localement sur votre appareil (localStorage). Jamais envoyées sur internet.</div></div>
+          <div class="faq-item"><div class="faq-q">❓ Que faire si le cache est vidé ?</div><div class="faq-a">Les données peuvent être perdues. Exportez régulièrement via ⚙️ Données.</div></div>
+          <div class="faq-item"><div class="faq-q">❓ Le son ne fonctionne pas ?</div><div class="faq-a">Sur iOS, appuyez sur 🔔 Test son avant votre séance pour déverrouiller l'audio.</div></div>
+          <div class="faq-item"><div class="faq-q">❓ Puis-je utiliser l'app sur mobile ?</div><div class="faq-a">Oui, dans Safari ou Chrome. Ajoutez à l'écran d'accueil pour un accès rapide.</div></div>
+          <div class="faq-item"><div class="faq-q">❓ Pourquoi indiquer l'âge et le sexe ?</div><div class="faq-a">Pour afficher des alertes personnalisées dans les graphiques selon votre profil.</div></div>
+          <div class="faq-item"><div class="faq-q">❓ Comment transférer vers un autre appareil ?</div><div class="faq-a">Exportez (JSON), puis importez sur l'autre appareil en mode Fusionner.</div></div>
+          <div class="faq-item"><div class="faq-q">❓ Pourquoi M1 est-elle écartée ?</div><div class="faq-a">Effet d'alerte — première mesure souvent plus élevée. Protocole ESH : retenir M2+M3.</div></div>
+        </div>
+      </div>
+    </div>
   </div>
 
 </div><!-- fin screen-app -->
@@ -696,11 +802,8 @@ function renderPerList(){
 
     const card=mk('div','per-card'+(isOpen?' open':'')+(isCur?' cur':''));
 
-    // EN-TÊTE — bouton natif pour garantir le clic sur iOS
-    const hd=mk('button','per-card-hd');
-    hd.type='button';
-    hd.style.cssText='width:100%;text-align:left;background:none;border:none;padding:.9rem 1.1rem;display:flex;align-items:center;gap:10px;cursor:pointer;';
-    hd.onclick=()=>togglePer(p.id);
+    const hd=mk('div','per-card-hd');
+    hd.setAttribute('onclick','togglePer(\''+p.id+'\')');
 
     const dot=mk('div','per-dot');
     const info=mk('div','per-info');
@@ -716,13 +819,13 @@ function renderPerList(){
 
     const btnAg=mk('button','btn-agenda');
     btnAg.type='button';btnAg.textContent='📆 Agenda';
-    btnAg.onclick=e=>{e.stopPropagation();ouvrirModalAgenda(p.id);};
+    btnAg.setAttribute('onclick','event.stopPropagation();ouvrirModalAgenda(\''+p.id+'\')');
 
     const caret=mk('span','per-caret');caret.textContent='▼';caret.style.pointerEvents='none';
 
     const btnDel=mk('button','per-del-btn');
     btnDel.type='button';btnDel.textContent='🗑️';
-    btnDel.onclick=e=>{e.stopPropagation();delPer(p.id);};
+    btnDel.setAttribute('onclick','event.stopPropagation();delPer(\''+p.id+'\')');
 
     meta.appendChild(cnt);meta.appendChild(btnAg);meta.appendChild(caret);meta.appendChild(btnDel);
     hd.appendChild(dot);hd.appendChild(info);hd.appendChild(meta);
@@ -738,7 +841,8 @@ function renderPerList(){
           const si=mk('div','seance-item');
           const shd=mk('div','seance-hd');
           shd.innerHTML=`<span>${s.mom==='matin'?'☀️':'🌙'}</span><span style="font-size:13px;font-weight:600;">${fmtDs(s.date)}</span><span style="font-size:11px;color:#888;">${s.bras==='gauche'?'👈':'👉'}</span><span style="margin-left:auto;font-size:13px;"><strong class="sys-val">${s.sys}</strong>/<strong class="dia-val">${s.dia}</strong> mmHg ${s.hr?'💓'+s.hr:''}</span><span class="badge badge-${cls}">${lbl}</span>`;
-          const bds=mk('button','seance-del');bds.type='button';bds.textContent='🗑️';bds.onclick=()=>delSeance(s.id);
+          const bds=mk('button','seance-del');bds.type='button';bds.textContent='🗑️';
+          bds.setAttribute('onclick','delSeance(\''+s.id+'\')');
           shd.appendChild(bds);
           let rows='';
           s.mesures.forEach((m,i)=>{
@@ -766,7 +870,7 @@ function renderPerList(){
       const btnTest=mk('button');btnTest.type='button';
       btnTest.textContent='🔔 Test son';
       btnTest.style.cssText='font-size:11px;padding:2px 8px;border-radius:6px;border:1px solid #dde1e7;background:#fff;cursor:pointer;color:#555;';
-      btnTest.onclick=()=>bip();
+      btnTest.setAttribute('onclick','bip()');
       titleRow.appendChild(btnTest);
       form.appendChild(titleRow);
 
@@ -817,7 +921,7 @@ function renderPerList(){
       const btnSave=mk('button','btn-save-sm');
       btnSave.type='button';btnSave.id='sbtn'+sid;btnSave.disabled=true;
       btnSave.textContent='💾 Enregistrer la séance';
-      btnSave.onclick=()=>enregistrerSeance(sid);
+      btnSave.setAttribute('onclick','enregistrerSeance(\''+sid+'\')');
       form.appendChild(btnSave);
       const hint=mk('p');hint.style.cssText='font-size:11px;color:#888;text-align:center;margin-top:6px;';
       hint.textContent="Le bouton s'active une fois les 3 mesures saisies";
@@ -1171,159 +1275,10 @@ function showManuelSection(id){
   manuelSection=id;
   document.querySelectorAll('.toc-item').forEach(el=>el.classList.toggle('active',el.dataset.sec===id));
   document.querySelectorAll('.manual-section').forEach(el=>el.classList.toggle('active',el.id==='ms-'+id));
-  // Scroll vers le haut de la section
-  const sec=document.getElementById('ms-'+id);
-  if(sec)sec.scrollIntoView({behavior:'smooth',block:'start'});
 }
 function renderManuel(){
-  const c=document.getElementById('manuel-content');
-  if(c.dataset.built==='1'){showManuelSection(manuelSection);return;}
-  c.dataset.built='1';
-  c.innerHTML=`
-  <div class="manual-hero">
-    <div class="manual-hero-icon">📖</div>
-    <div><h2>Manuel utilisateur <span class="version-badge">v13</span></h2><p>Guide complet de l'application Suivi tensionnel</p></div>
-  </div>
-  <div class="manual-toc">
-  <button type="button" class="toc-item active" data-sec="demarrage" onclick="showManuelSection('demarrage')"><span class="toc-icon">🚀</span><div><div class="toc-label">Démarrage</div><div class="toc-desc">Premiers pas</div></div></button>
-    <button type="button" class="toc-item" data-sec="periodes" onclick="showManuelSection('periodes')"><span class="toc-icon">📅</span><div><div class="toc-label">Périodes</div><div class="toc-desc">Créer et gérer</div></div></button>
-    <button type="button" class="toc-item" data-sec="mesures" onclick="showManuelSection('mesures')"><span class="toc-icon">🩺</span><div><div class="toc-label">Saisie des mesures</div><div class="toc-desc">Protocole 3 mesures</div></div></button>
-    <button type="button" class="toc-item" data-sec="resultats" onclick="showManuelSection('resultats')"><span class="toc-icon">📊</span><div><div class="toc-label">Résultats</div><div class="toc-desc">Historique et graphiques</div></div></button>
-    <button type="button" class="toc-item" data-sec="profils" onclick="showManuelSection('profils')"><span class="toc-icon">👥</span><div><div class="toc-label">Profils</div><div class="toc-desc">Multi-utilisateurs</div></div></button>
-    <button type="button" class="toc-item" data-sec="donnees" onclick="showManuelSection('donnees')"><span class="toc-icon">💾</span><div><div class="toc-label">Données</div><div class="toc-desc">Export et import</div></div></button>
-    <button type="button" class="toc-item" data-sec="normes" onclick="showManuelSection('normes')"><span class="toc-icon">❤️</span><div><div class="toc-label">Normes tensionnelles</div><div class="toc-desc">Référence médicale</div></div></button>
-    <button type="button" class="toc-item" data-sec="faq" onclick="showManuelSection('faq')"><span class="toc-icon">💬</span><div><div class="toc-label">FAQ</div><div class="toc-desc">Questions fréquentes</div></div></button>
-  </div>
-  <div id="ms-demarrage" class="manual-section active">
-    <div class="man-card">
-      <div class="man-card-title">🚀 Premiers pas</div>
-      <div class="step-list">
-        <div class="step"><div class="step-num">1</div><div class="step-body"><div class="step-title">Créer votre profil</div><div class="step-desc">Au premier lancement, entrez votre prénom ou nom, votre <strong>année de naissance</strong> et votre <strong>sexe</strong>, puis cliquez sur ➕ Créer. Ces informations permettent une interprétation personnalisée de vos résultats.</div></div></div>
-        <div class="step"><div class="step-num">2</div><div class="step-body"><div class="step-title">Sélectionner votre profil</div><div class="step-desc">Cliquez sur votre carte de profil pour entrer dans votre espace personnel. Toutes vos données sont isolées des autres profils.</div></div></div>
-        <div class="step"><div class="step-num">3</div><div class="step-body"><div class="step-title">Créer une période de 3 jours</div><div class="step-desc">Dans l'onglet 📅 Périodes, donnez un nom à votre période (ex. : "Semaine de repos"), choisissez une date de début — la date de fin est calculée automatiquement à J+2.</div></div></div>
-        <div class="step"><div class="step-num">4</div><div class="step-body"><div class="step-title">Saisir vos mesures</div><div class="step-desc">Cliquez sur votre période pour l'ouvrir. Le formulaire de saisie apparaît directement en bas. Saisissez les 3 mesures en respectant le minuteur de 90 secondes entre chaque.</div></div></div>
-        <div class="step"><div class="step-num">5</div><div class="step-body"><div class="step-title">Consulter vos résultats</div><div class="step-desc">Les onglets 📋 Historique et 📊 Graphiques vous donnent un bilan complet avec interprétation personnalisée selon votre âge et sexe.</div></div></div>
-      </div>
-      <div class="tip-box"><span>💡</span><span>L'application fonctionne entièrement hors-ligne. Vos données sont sauvegardées automatiquement dans votre navigateur.</span></div>
-    </div>
-  </div>
-  <div id="ms-periodes" class="manual-section">
-    <div class="man-card">
-      <div class="man-card-title">📅 Créer une période</div>
-      <div class="step-list">
-        <div class="step"><div class="step-num">1</div><div class="step-body"><div class="step-title">Nommer la période (optionnel)</div><div class="step-desc">Donnez un nom descriptif : "Avant traitement", "Semaine de stress", "Contrôle mensuel"…</div></div></div>
-        <div class="step"><div class="step-num">2</div><div class="step-body"><div class="step-title">Choisir la date de début</div><div class="step-desc">La date de fin est calculée automatiquement à J+2, soit exactement 3 jours. Vous pouvez la modifier manuellement si besoin.</div></div></div>
-        <div class="step"><div class="step-num">3</div><div class="step-body"><div class="step-title">Cliquer sur la période pour saisir</div><div class="step-desc">Chaque période est une carte cliquable. Un clic l'ouvre et affiche le formulaire de saisie et l'historique des séances.</div></div></div>
-      </div>
-      <div class="info-box"><span>ℹ️</span><span>La période <strong>en cours</strong> est marquée d'un indicateur vert ● en cours.</span></div>
-    </div>
-    <div class="man-card">
-      <div class="man-card-title">🗑️ Supprimer une période</div>
-      <p style="font-size:13px;color:#555;">Cliquez sur l'icône 🗑️ à droite de la carte. Attention : toutes les séances associées seront également supprimées.</p>
-      <div class="warn-box"><span>⚠️</span><span>Exportez vos données avant de supprimer une période importante.</span></div>
-    </div>
-  </div>
-  <div id="ms-mesures" class="manual-section">
-    <div class="man-card">
-      <div class="man-card-title">🩺 Protocole de mesure recommandé</div>
-      <p style="font-size:13px;color:#555;margin-bottom:.75rem;">Le protocole médical ESH/ESC recommande 3 mesures consécutives espacées d'au moins 90 secondes, matin et soir, pendant 3 jours.</p>
-      <div class="step-list">
-        <div class="step"><div class="step-num">1</div><div class="step-body"><div class="step-title">Se préparer</div><div class="step-desc">Restez assis au calme 5 minutes avant la mesure. Évitez café, tabac et effort physique dans l'heure précédente.</div></div></div>
-        <div class="step"><div class="step-num">2</div><div class="step-body"><div class="step-title">Saisir M1 — le minuteur démarre automatiquement</div><div class="step-desc">Dès que vous entrez les valeurs SYS et DIA de M1, un <strong>minuteur de 90 secondes</strong> démarre. M2 reste grisée et inaccessible pendant ce délai.</div></div></div>
-        <div class="step"><div class="step-num">3</div><div class="step-body"><div class="step-title">🔔 Triple bip — saisir M2</div><div class="step-desc">À la fin des 90 secondes, <strong>3 bips sonores</strong> retentissent et M2 se déverrouille automatiquement. Prenez votre deuxième mesure et saisissez-la.</div></div></div>
-        <div class="step"><div class="step-num">4</div><div class="step-body"><div class="step-title">🔔 Triple bip — saisir M3</div><div class="step-desc">Même principe : après 90 secondes, 3 bips retentissent et M3 se déverrouille. Prenez et saisissez la troisième mesure.</div></div></div>
-        <div class="step"><div class="step-num">5</div><div class="step-body"><div class="step-title">Enregistrer la séance</div><div class="step-desc">Le bouton 💾 Enregistrer s'active uniquement quand les <strong>3 mesures sont complètes</strong>. La moyenne de M2+M3 est calculée (M1 écartée). Cliquez pour enregistrer.</div></div></div>
-      </div>
-      <div class="info-box"><span>🔔</span><span>Avant votre première séance, testez le son avec le bouton <strong>🔔 Test son</strong> dans le formulaire. Sur iOS, ce test est obligatoire pour activer l'audio.</span></div>
-      <div class="tip-box"><span>💡</span><span>Vous pouvez poser l'appareil et vaquer à vos occupations entre les mesures — les 3 bips vous alerteront au bon moment.</span></div>
-    </div>
-    <div class="man-card">
-      <div class="man-card-title">💪 Quel bras utiliser ?</div>
-      <p style="font-size:13px;color:#555;">Mesurez toujours sur le même bras. Comparez les deux bras lors de la première séance et utilisez celui qui donne les valeurs les plus élevées. Indiquez le bras dans le champ dédié.</p>
-    </div>
-    <div class="man-card">
-      <div class="man-card-title">🚫 Pourquoi M1 est-elle écartée ?</div>
-      <p style="font-size:13px;color:#555;">La première mesure est souvent plus élevée car le patient n'est pas encore totalement détendu (<em>effet d'alerte</em>). Le protocole ESH recommande de l'écarter et de retenir la moyenne de M2+M3. M1 reste visible dans l'historique, barrée, à titre indicatif.</p>
-    </div>
-  </div>
-  <div id="ms-resultats" class="manual-section">
-    <div class="man-card">
-      <div class="man-card-title">📋 Onglet Historique</div>
-      <p style="font-size:13px;color:#555;margin-bottom:.75rem;">Présente toutes les séances d'une période. Pour chaque séance : le moment (☀️/🌙), la date, le détail des 3 mesures avec M1 barrée si écartée, la moyenne retenue et le statut tensionnel.</p>
-      <div class="info-box"><span>ℹ️</span><span>Utilisez les boutons de sélection de période en haut pour naviguer entre vos périodes.</span></div>
-    </div>
-    <div class="man-card">
-      <div class="man-card-title">📊 Onglet Graphiques</div>
-      <p style="font-size:13px;color:#555;margin-bottom:.75rem;">Trois graphiques : systolique, diastolique, pouls. Les moyennes retenues par séance sont tracées avec une ligne de seuil en pointillés (140 mmHg / 90 mmHg). En haut : cartes de moyennes globales et bilan coloré de la période.</p>
-    </div>
-  </div>
-  <div id="ms-profils" class="manual-section">
-    <div class="man-card">
-      <div class="man-card-title">👥 Gestion des profils</div>
-      <p style="font-size:13px;color:#555;margin-bottom:.75rem;">Plusieurs personnes peuvent partager le même appareil. Chaque profil possède ses propres périodes et séances, totalement isolées.</p>
-      <div class="step-list">
-        <div class="step"><div class="step-num">1</div><div class="step-body"><div class="step-title">Créer un profil</div><div class="step-desc">Sur l'écran d'accueil, entrez un prénom ou nom, votre <strong>année de naissance</strong> et votre <strong>sexe</strong> (optionnels mais recommandés pour l'interprétation personnalisée), puis cliquez ➕ Créer.</div></div></div>
-        <div class="step"><div class="step-num">2</div><div class="step-body"><div class="step-title">Changer de profil</div><div class="step-desc">Cliquez sur le chip en haut à droite du bandeau bleu (avatar + nom + ▼). Il affiche aussi l'âge et le sexe. Vous revenez à l'écran de sélection.</div></div></div>
-        <div class="step"><div class="step-num">3</div><div class="step-body"><div class="step-title">Supprimer un profil</div><div class="step-desc">Sur l'écran d'accueil, cliquez 🗑️ Supprimer sous la carte. Toutes les données associées sont effacées définitivement.</div></div></div>
-      </div>
-      <div class="info-box"><span>ℹ️</span><span>L'âge et le sexe permettent d'afficher des <strong>alertes personnalisées</strong> dans l'onglet Graphiques : femme après 50 ans, homme après 55 ans, sujet jeune avec HTA, etc.</span></div>
-      <div class="tip-box"><span>💡</span><span>Jusqu'à 6 couleurs distinctes sont attribuées automatiquement aux profils.</span></div>
-    </div>
-  </div>
-  <div id="ms-donnees" class="manual-section">
-    <div class="man-card">
-      <div class="man-card-title">⬇️ Exporter les données</div>
-      <div class="step-list">
-        <div class="step"><div class="step-num">1</div><div class="step-body"><div class="step-title">Aller dans ⚙️ Données</div><div class="step-desc">Accessible depuis l'onglet ⚙️ Données de n'importe quel profil.</div></div></div>
-        <div class="step"><div class="step-num">2</div><div class="step-body"><div class="step-title">Sélectionner les profils</div><div class="step-desc">Cochez les profils à inclure. Par défaut tous sont cochés.</div></div></div>
-        <div class="step"><div class="step-num">3</div><div class="step-body"><div class="step-title">Télécharger</div><div class="step-desc">Cliquez ⬇️ Télécharger. Un fichier tensions_AAAA-MM-JJ.json est téléchargé.</div></div></div>
-      </div>
-    </div>
-    <div class="man-card">
-      <div class="man-card-title">⬆️ Importer des données</div>
-      <div class="step-list">
-        <div class="step"><div class="step-num">1</div><div class="step-body"><div class="step-title">Sélectionner le fichier</div><div class="step-desc">Cliquez sur la zone 📁 et choisissez un fichier tensions_*.json.</div></div></div>
-        <div class="step"><div class="step-num">2</div><div class="step-body"><div class="step-title">Choisir le mode</div><div class="step-desc"><strong>🔀 Fusionner</strong> : ajoute sans écraser. <strong>♻️ Remplacer</strong> : efface tout et remplace.</div></div></div>
-        <div class="step"><div class="step-num">3</div><div class="step-body"><div class="step-title">Confirmer l'import</div><div class="step-desc">Cliquez ⬆️ Importer. Un message confirme le nombre de profils importés.</div></div></div>
-      </div>
-      <div class="warn-box"><span>⚠️</span><span>En mode Remplacer, exportez d'abord vos données. L'opération est irréversible.</span></div>
-    </div>
-  </div>
-  <div id="ms-normes" class="manual-section">
-    <div class="man-card">
-      <div class="man-card-title">❤️ Normes tensionnelles ESH/ESC</div>
-      <p style="font-size:13px;color:#555;margin-bottom:.75rem;">Ces normes sont établies par la Société Européenne d'Hypertension (ESH) et la Société Européenne de Cardiologie (ESC). Elles s'appliquent aux mesures effectuées à domicile.</p>
-      <table class="norme-table">
-        <thead><tr><th>Catégorie</th><th>Systolique</th><th>Diastolique</th><th>Statut</th></tr></thead>
-        <tbody>
-          <tr><td>Optimal</td><td>&lt; 120 mmHg</td><td>&lt; 80 mmHg</td><td><span class="pill p-ok">✅ Optimal</span></td></tr>
-          <tr><td>Normal</td><td>120–129 mmHg</td><td>80–84 mmHg</td><td><span class="pill p-ok">🟢 Normal</span></td></tr>
-          <tr><td>Normal élevé</td><td>130–139 mmHg</td><td>85–89 mmHg</td><td><span class="pill p-warn">🟡 Normal élevé</span></td></tr>
-          <tr><td>HTA grade 1</td><td>140–159 mmHg</td><td>90–99 mmHg</td><td><span class="pill p-warn">🟠 HTA grade 1</span></td></tr>
-          <tr><td>HTA grade 2+</td><td>≥ 160 mmHg</td><td>≥ 100 mmHg</td><td><span class="pill p-danger">🔴 HTA grade 2+</span></td></tr>
-        </tbody>
-      </table>
-      <div class="warn-box" style="margin-top:1rem;"><span>⚠️</span><span>Ces informations sont fournies à titre indicatif. Consultez toujours votre médecin pour l'interprétation de vos résultats.</span></div>
-      <div class="info-box"><span>ℹ️</span><span>Le statut affiché se base sur la valeur la plus élevée. Ex : 125/95 mmHg → 🟠 HTA grade 1 (diastolique ≥ 90).</span></div>
-    </div>
-  </div>
-  <div id="ms-faq" class="manual-section">
-    <div class="man-card">
-      <div class="man-card-title">💬 Questions fréquentes</div>
-      <div class="faq-item"><div class="faq-q">❓ Mes données sont-elles sécurisées ?</div><div class="faq-a">Toutes vos données restent sur votre appareil dans la mémoire locale du navigateur (localStorage). Elles ne sont jamais envoyées sur internet.</div></div>
-      <div class="faq-item"><div class="faq-q">❓ Que se passe-t-il si je vide le cache du navigateur ?</div><div class="faq-a">Les données peuvent être effacées lors du vidage du cache. Exportez régulièrement vos données via ⚙️ Données pour ne rien perdre.</div></div>
-      <div class="faq-item"><div class="faq-q">❓ Le son ne fonctionne pas, que faire ?</div><div class="faq-a">Sur iOS (iPhone/iPad), le son doit être activé par une interaction manuelle. Avant votre séance, appuyez sur le bouton <strong>🔔 Test son</strong> dans le formulaire. Cela déverrouille l'audio pour toute la session.</div></div>
-      <div class="faq-item"><div class="faq-q">❓ Puis-je passer à une autre app pendant le minuteur ?</div><div class="faq-a">Oui, le minuteur continue. Mais le bip sonore ne se déclenche que si l'onglet est actif au moment où il se termine. Restez dans l'onglet pour entendre les bips.</div></div>
-      <div class="faq-item"><div class="faq-q">❓ Pourquoi indiquer l'âge et le sexe ?</div><div class="faq-a">Ces informations permettent d'afficher des alertes personnalisées dans l'onglet Graphiques — par exemple, une attention particulière pour une femme de plus de 50 ans ou un homme de plus de 55 ans avec une systolique élevée.</div></div>
-      <div class="faq-item"><div class="faq-q">❓ Puis-je utiliser l'application sur mobile ?</div><div class="faq-a">Oui, le fichier HTML fonctionne dans tout navigateur mobile (Safari, Chrome). Ajoutez la page à l'écran d'accueil pour un accès rapide.</div></div>
-      <div class="faq-item"><div class="faq-q">❓ Pourquoi la 1ère mesure est-elle écartée ?</div><div class="faq-a">La première mesure est souvent plus élevée (effet d'alerte). Le protocole ESH recommande de l'écarter et de retenir la moyenne de M2+M3.</div></div>
-      <div class="faq-item"><div class="faq-q">❓ Comment transférer mes données sur un autre appareil ?</div><div class="faq-a">Exportez depuis ⚙️ Données (fichier JSON), puis importez ce fichier sur l'autre appareil en mode Fusionner.</div></div>
-    </div>
-  </div>
-  `;
   showManuelSection(manuelSection);
 }
-
 /* ===== AGENDA ICS ===== */
 let agendaPerId=null;
 
