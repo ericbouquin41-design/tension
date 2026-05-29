@@ -27,7 +27,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 /* PROFILES */
 .profiles-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:1rem;}
 .pcard{background:#fff;border:1px solid #e2e8f0;border-radius:14px;overflow:hidden;}
-.pcard-top{padding:1.2rem 1rem 0.75rem;text-align:center;cursor:pointer;-webkit-tap-highlight-color:rgba(12,68,124,0.1);}
+.pcard-top{width:100%;padding:1.2rem 1rem 0.75rem;text-align:center;cursor:pointer;-webkit-tap-highlight-color:rgba(12,68,124,0.1);background:none;border:none;display:block;}
 .pcard-top:active{background:#f0f7ff;}
 .pav{width:50px;height:50px;border-radius:50%;margin:0 auto 10px;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:600;color:#fff;}
 .pcard-name{font-size:14px;font-weight:600;color:#1a1a2e;margin-bottom:3px;}
@@ -86,7 +86,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .per-card.open{border:2px solid #0C447C;}
 .per-hd-row{display:flex;align-items:center;background:none;border-bottom:1px solid transparent;}
 .per-card.open .per-hd-row{background:#E6F1FB;}
-.per-hd-click{flex:1;display:flex;align-items:center;gap:10px;padding:.9rem 0 .9rem 1.1rem;cursor:pointer;-webkit-tap-highlight-color:rgba(12,68,124,0.08);}
+.per-hd-click{flex:1;display:flex;align-items:center;gap:10px;padding:.9rem 0 .9rem 1.1rem;cursor:pointer;-webkit-tap-highlight-color:rgba(12,68,124,0.08);background:none;border:none;text-align:left;}
 .per-hd-click:active{opacity:.75;}
 .per-hd-actions{display:flex;align-items:center;gap:8px;padding:.9rem 1rem .9rem 0;flex-shrink:0;}
 .per-dot{width:9px;height:9px;border-radius:50%;background:#ccc;flex-shrink:0;pointer-events:none;}
@@ -316,11 +316,11 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
     <div><h1>🩺 Suivi tensionnel</h1><p>Protocole 3 jours · ☀️ matin &amp; 🌙 soir</p></div>
     <div class="hero-right">
       <div class="hero-icon">❤️‍🩹</div>
-      <div class="pchip" onclick="showScreen('profiles')">
+      <button class="pchip" onclick="showScreen('profiles')" style="background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.25);border-radius:99px;padding:5px 12px 5px 8px;display:flex;align-items:center;gap:7px;cursor:pointer;-webkit-tap-highlight-color:transparent;">
         <div class="pavs" id="chip-av"></div>
         <div class="chip-txt"><span class="chip-name" id="chip-name"></span><span class="chip-meta" id="chip-meta"></span></div>
         <span style="font-size:10px;color:rgba(255,255,255,.6);">▼</span>
-      </div>
+      </button>
     </div>
   </div>
   <div class="tabs">
@@ -398,10 +398,10 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
     </div>
     <div class="card">
       <div class="card-hd"><span class="card-hd-icon">⬆️</span><span class="card-hd-title">Importer des données</span><span class="card-hd-sub">Fichier .json</span></div>
-      <div class="import-zone" onclick="document.getElementById('file-input').click()"><div style="font-size:32px;">📁</div><p style="font-size:13px;color:#888;margin-top:8px;">Cliquez pour sélectionner un fichier tensions_*.json</p></div>
+      <button class="import-zone" onclick="document.getElementById('file-input').click()" style="width:100%;border:2px dashed #b5d4f4;border-radius:10px;padding:1.5rem;text-align:center;cursor:pointer;margin-bottom:.75rem;background:#f8fafc;-webkit-tap-highlight-color:rgba(12,68,124,0.05);"><div style="font-size:32px;">📁</div><p style="font-size:13px;color:#888;margin-top:8px;">Cliquez pour sélectionner un fichier tensions_*.json</p></button>
       <div id="import-filename" style="font-size:12px;color:#888;margin-bottom:.75rem;display:none;"></div>
-      <div class="radio-opt sel" id="ro-merge" onclick="setImportMode('merge')"><input type="radio" name="imode" checked><div><div style="font-size:13px;font-weight:600;color:#1a1a2e;">🔀 Fusionner</div><div style="font-size:11px;color:#888;">Ajoute sans écraser les données existantes.</div></div></div>
-      <div class="radio-opt" id="ro-replace" onclick="setImportMode('replace')"><input type="radio" name="imode"><div><div style="font-size:13px;font-weight:600;color:#1a1a2e;">♻️ Remplacer</div><div style="font-size:11px;color:#888;">Efface tout et remplace par le fichier importé.</div></div></div>
+      <button class="radio-opt sel" id="ro-merge" onclick="setImportMode('merge')" style="width:100%;text-align:left;"><input type="radio" name="imode" checked><div><div style="font-size:13px;font-weight:600;color:#1a1a2e;">🔀 Fusionner</div><div style="font-size:11px;color:#888;">Ajoute sans écraser les données existantes.</div></div></button>
+      <button class="radio-opt" id="ro-replace" onclick="setImportMode('replace')" style="width:100%;text-align:left;"><input type="radio" name="imode"><div><div style="font-size:13px;font-weight:600;color:#1a1a2e;">♻️ Remplacer</div><div style="font-size:11px;color:#888;">Efface tout et remplace par le fichier importé.</div></div></button>
       <button class="btn-green" onclick="importData()">⬆️ Importer le fichier</button>
     </div>
     <div class="card">
@@ -703,12 +703,12 @@ function renderProfiles(){
     var age=getAge(p.annee);
     var meta=[age?age+' ans':null,p.sexe==='H'?'Homme':p.sexe==='F'?'Femme':null].filter(Boolean).join(' · ');
     h+='<div class="pcard">'
-      +'<div class="pcard-top" onclick="selectProfil(\''+p.id+'\')">'
+      +'<button class="pcard-top" onclick="selectProfil(\''+p.id+'\')">'
       +'<div class="pav" style="background:'+p.color+'">'+ini(p.nom)+'</div>'
       +'<div class="pcard-name">'+p.nom+'</div>'
       +(meta?'<div class="pcard-sub">'+meta+'</div>':'')
       +'<div class="pcard-sub">'+nP+' période'+(nP!==1?'s':'')+' · '+nS+' séance'+(nS!==1?'s':'')+'</div>'
-      +'</div>'
+      +'</button>'
       +'<div class="pcard-actions">'
       +'<button class="pcard-edit" onclick="openEditProfil(\''+p.id+'\')">✏️ Modifier</button>'
       +'<button class="pcard-del" onclick="delProfil(\''+p.id+'\')">🗑️ Supprimer</button>'
@@ -773,7 +773,7 @@ function renderPerList(){
     var isOpen=p.id===OPEN_PER;
     var isCur=p.debut<=today&&today<=p.fin;
     h+='<div class="per-card'+(isOpen?' open':'')+(isCur?' cur':'')+'"><div class="per-hd-row">'
-      +'<div class="per-hd-click" onclick="togglePer(\''+p.id+'\')">'
+      +'<button class="per-hd-click" onclick="togglePer(\''+p.id+'\')">'
       +'<div class="per-dot"></div>'
       +'<div class="per-info">'
       +'<div class="per-name">'+p.nom+(isCur?' <span style="font-size:10px;color:#1D9E75;font-weight:600;">● en cours</span>':'')+'</div>'
@@ -781,7 +781,7 @@ function renderPerList(){
       +'</div>'
       +'<span class="per-cnt">'+seances.length+' séance'+(seances.length!==1?'s':'')+'</span>'
       +'<span class="per-caret">▼</span>'
-      +'</div>'
+      +'</button>'
       +'<div class="per-hd-actions">'
       +'<button class="btn-agenda" onclick="openAgenda(\''+p.id+'\')">📆 Agenda</button>'
       +'<button class="btn-del-sm" onclick="delPer(\''+p.id+'\')">🗑️</button>'
