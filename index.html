@@ -326,6 +326,31 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
   <!-- DONNÉES -->
   <div id="t-data" class="section">
     <div class="card">
+      <div class="card-hd"><span class="card-hd-icon">⏱️</span><span class="card-hd-title">Paramètres du minuteur</span></div>
+      <p style="font-size:13px;color:#555;margin-bottom:1rem;">Durée d'attente entre chaque mesure. Votre médecin recommande généralement entre 1 et 3 minutes.</p>
+      <div class="form-grid">
+        <div class="field">
+          <label>⏱️ Durée entre les mesures</label>
+          <select id="timer-setting" onchange="saveTimerSetting()">
+            <option value="60">1 minute</option>
+            <option value="90">1 min 30 s (défaut)</option>
+            <option value="120">2 minutes</option>
+            <option value="180">3 minutes</option>
+            <option value="300">5 minutes</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>⏰ Rappel agenda avant la mesure</label>
+          <select id="agenda-rappel-global" onchange="saveTimerSetting()">
+            <option value="5">5 min avant</option>
+            <option value="10" selected>10 min avant</option>
+            <option value="15">15 min avant</option>
+            <option value="30">30 min avant</option>
+          </select>
+        </div>
+      </div>
+      <div id="timer-info" style="margin-top:.75rem;padding:10px 14px;background:#E6F1FB;border:1px solid #B5D4F4;border-radius:10px;font-size:12px;color:#185FA5;"></div>
+    </div>
       <div class="card-hd"><span class="card-hd-icon">⬇️</span><span class="card-hd-title">Exporter les données</span><span class="card-hd-sub">JSON</span></div>
       <div class="info-banner">📦 Exporte les profils, périodes et séances sélectionnés.</div>
       <div id="export-list"></div>
@@ -462,6 +487,32 @@ var AGENDA_PER=null;
 var timers={};
 var cS=null,cD=null,cH=null;
 
+// Durée minuteur (en secondes) — chargée depuis localStorage
+var TIMER_SEC=90;
+function loadTimerSetting(){
+  var v=parseInt(localStorage.getItem('st_timer')||'90');
+  TIMER_SEC=v;
+  var sel=document.getElementById('timer-setting');
+  if(sel)sel.value=String(v);
+  updateTimerInfo();
+}
+function saveTimerSetting(){
+  var sel=document.getElementById('timer-setting');
+  if(!sel)return;
+  TIMER_SEC=parseInt(sel.value);
+  localStorage.setItem('st_timer',String(TIMER_SEC));
+  updateTimerInfo();
+  toast('✅ Réglage sauvegardé','success');
+}
+function updateTimerInfo(){
+  var el=document.getElementById('timer-info');
+  if(!el)return;
+  var min=Math.floor(TIMER_SEC/60);
+  var sec=TIMER_SEC%60;
+  var label=min>0?(min+' minute'+(min>1?'s':'')+(sec>0?' '+sec+' s':'')):(TIMER_SEC+' secondes');
+  el.textContent='⏱️ Minuteur actuel : '+label+' entre chaque mesure (M1→M2 et M2→M3)';
+}
+
 function save(){try{localStorage.setItem('st_v1',JSON.stringify(db));}catch(e){}}
 function uid(){return Date.now().toString(36)+Math.random().toString(36).slice(2,7);}
 function pad2(n){return String(n).padStart(2,'0');}
@@ -517,7 +568,7 @@ function goTab(id,btn){
   if(id==='t-per')renderPerList();
   if(id==='t-hist')renderHist();
   if(id==='t-graph')renderGraph();
-  if(id==='t-data')renderExport();
+  if(id==='t-data'){renderExport();loadTimerSetting();}
 }
 
 // ═══════════════════════════════════════════════════════════
@@ -684,7 +735,7 @@ function renderPerList(){
       // FORMULAIRE SAISIE
       var sid=p.id;
       h+='<div class="saisie-form">'
-        +'<div class="saisie-title">✏️ Nouvelle séance — 3 mesures × 90 secondes &nbsp;'
+        +'<div class="saisie-title">✏️ Nouvelle séance — 3 mesures × '+Math.floor(TIMER_SEC/60)+(TIMER_SEC%60?' min '+TIMER_SEC%60+' s':' min')+' &nbsp;'
         +'<button style="font-size:11px;padding:2px 8px;border-radius:6px;border:1px solid #dde1e7;background:#fff;cursor:pointer;color:#555;" onclick="bip()">🔔 Test son</button>'
         +'</div>'
         +'<div class="saisie-top">'
@@ -706,8 +757,8 @@ function renderPerList(){
       });
 
       h+='</div>'
-        +'<div class="timer-wrap timer-waiting" id="tw2-'+sid+'" style="display:none"><span id="tl2-'+sid+'">⏱️ Saisissez M1 pour démarrer</span><div class="timer-bar-bg"><div class="timer-bar" id="tb2-'+sid+'" style="width:0%"></div></div></div>'
-        +'<div class="timer-wrap timer-waiting" id="tw3-'+sid+'" style="display:none"><span id="tl3-'+sid+'">⏱️ Saisissez M2 pour démarrer</span><div class="timer-bar-bg"><div class="timer-bar" id="tb3-'+sid+'" style="width:0%"></div></div></div>'
+        +'<div class="timer-wrap timer-waiting" id="tw2-'+sid+'" style="display:none"><span id="tl2-'+sid+'">⏱️ Saisissez M1 pour démarrer ('+Math.floor(TIMER_SEC/60)+(TIMER_SEC%60?' min '+TIMER_SEC%60+' s':' min')+')</span><div class="timer-bar-bg"><div class="timer-bar" id="tb2-'+sid+'" style="width:0%"></div></div></div>'
+        +'<div class="timer-wrap timer-waiting" id="tw3-'+sid+'" style="display:none"><span id="tl3-'+sid+'">⏱️ Saisissez M2 pour démarrer ('+Math.floor(TIMER_SEC/60)+(TIMER_SEC%60?' min '+TIMER_SEC%60+' s':' min')+')</span><div class="timer-bar-bg"><div class="timer-bar" id="tb3-'+sid+'" style="width:0%"></div></div></div>'
         +'<div class="preview-moy" id="prev-'+sid+'">'
         +'<span style="font-size:12px;color:#888;">Moyenne retenue :</span>'
         +'<span class="preview-sys" id="psys-'+sid+'"></span>'
@@ -729,8 +780,6 @@ function renderPerList(){
 // ═══════════════════════════════════════════════════════════
 // SAISIE MESURES + TIMER
 // ═══════════════════════════════════════════════════════════
-var TIMER_SEC=90;
-
 function bip(){
   try{
     if(!window._ac)window._ac=new(window.AudioContext||window.webkitAudioContext)();
@@ -1143,6 +1192,7 @@ function genICS(){
 // INIT
 // ═══════════════════════════════════════════════════════════
 initPerDates();
+loadTimerSetting();
 renderProfiles();
 </script>
 </body>
