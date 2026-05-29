@@ -121,7 +121,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .mesures-table tr:last-child td{border-bottom:none;}
 .moy-row td{background:#f8fafc;font-weight:600;}
 .excluded{opacity:.4;text-decoration:line-through;}
-.btn-del-sm{background:none;border:none;cursor:pointer;font-size:13px;padding:3px 6px;border-radius:6px;-webkit-tap-highlight-color:transparent;}
+.btn-del-sm{background:none;border:none;cursor:pointer;font-size:13px;padding:3px 6px;border-radius:6px;-webkit-tap-highlight-color:transparent;pointer-events:all !important;opacity:1 !important;color:#888;}
 .btn-del-sm:active{background:#FCEBEB;}
 
 /* SAISIE FORM */
@@ -250,6 +250,23 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 
 <!-- MODAL AGENDA -->
 <div class="modal-overlay hidden" id="modal-agenda" onclick="if(event.target===this)closeAgenda()">
+  <div class="modal-box">
+    <div class="modal-title">📆 Ajouter à l'agenda</div>
+    <div class="modal-sub" id="agenda-sub"></div>
+    <div class="modal-grid">
+      <div class="field-sm"><label>☀️ Heure matin</label><input type="time" id="agenda-matin" value="08:00" oninput="updateAgendaPreview()"></div>
+      <div class="field-sm"><label>🌙 Heure soir</label><input type="time" id="agenda-soir" value="20:00" oninput="updateAgendaPreview()"></div>
+      <div class="field-sm" style="grid-column:1/-1"><label>⏰ Rappel avant la mesure</label>
+        <select id="agenda-rappel"><option value="5">5 min avant</option><option value="10" selected>10 min avant</option><option value="15">15 min avant</option><option value="30">30 min avant</option></select>
+      </div>
+    </div>
+    <div class="modal-preview"><div class="modal-preview-title">Aperçu des événements</div><div id="agenda-preview"></div></div>
+    <div class="modal-btns">
+      <button class="modal-btn-cancel" onclick="closeAgenda()">Annuler</button>
+      <button class="modal-btn-ok" onclick="genICS()">⬇️ Télécharger .ics</button>
+    </div>
+  </div>
+</div>
 
 <!-- MODAL ÉDITION PROFIL -->
 <div class="modal-overlay hidden" id="modal-edit-profil" onclick="if(event.target===this)closeEditProfil()">
@@ -271,23 +288,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
     <div class="modal-btns">
       <button class="modal-btn-cancel" onclick="closeEditProfil()">Annuler</button>
       <button class="modal-btn-ok" onclick="sauvegarderProfil()">💾 Enregistrer</button>
-    </div>
-  </div>
-</div>
-  <div class="modal-box">
-    <div class="modal-title">📆 Ajouter à l'agenda</div>
-    <div class="modal-sub" id="agenda-sub"></div>
-    <div class="modal-grid">
-      <div class="field-sm"><label>☀️ Heure matin</label><input type="time" id="agenda-matin" value="08:00" oninput="updateAgendaPreview()"></div>
-      <div class="field-sm"><label>🌙 Heure soir</label><input type="time" id="agenda-soir" value="20:00" oninput="updateAgendaPreview()"></div>
-      <div class="field-sm" style="grid-column:1/-1"><label>⏰ Rappel avant la mesure</label>
-        <select id="agenda-rappel"><option value="5">5 min avant</option><option value="10" selected>10 min avant</option><option value="15">15 min avant</option><option value="30">30 min avant</option></select>
-      </div>
-    </div>
-    <div class="modal-preview"><div class="modal-preview-title">Aperçu des événements</div><div id="agenda-preview"></div></div>
-    <div class="modal-btns">
-      <button class="modal-btn-cancel" onclick="closeAgenda()">Annuler</button>
-      <button class="modal-btn-ok" onclick="genICS()">⬇️ Télécharger .ics</button>
     </div>
   </div>
 </div>
