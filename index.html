@@ -78,12 +78,21 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .per-list{display:flex;flex-direction:column;gap:10px;}
 .per-card{border-radius:14px;border:1px solid #e2e8f0;background:#fff;overflow:hidden;}
 .per-card.open{border:2px solid #0C447C;}
-.per-hd{width:100%;text-align:left;background:none;border:none;padding:.9rem 1.1rem;display:flex;align-items:center;gap:10px;cursor:pointer;-webkit-tap-highlight-color:rgba(12,68,124,0.08);}
-.per-hd:active{background:#f0f7ff;}
-.per-card.open .per-hd{background:#E6F1FB;}
+.per-hd-row{display:flex;align-items:center;background:none;border-bottom:1px solid transparent;}
+.per-card.open .per-hd-row{background:#E6F1FB;}
+.per-hd-click{flex:1;display:flex;align-items:center;gap:10px;padding:.9rem 0 .9rem 1.1rem;cursor:pointer;-webkit-tap-highlight-color:rgba(12,68,124,0.08);}
+.per-hd-click:active{opacity:.75;}
+.per-hd-actions{display:flex;align-items:center;gap:8px;padding:.9rem 1rem .9rem 0;flex-shrink:0;}
 .per-dot{width:9px;height:9px;border-radius:50%;background:#ccc;flex-shrink:0;pointer-events:none;}
 .per-card.open .per-dot{background:#0C447C;}
 .per-card.cur .per-dot{background:#1D9E75;}
+.per-info{flex:1;min-width:0;pointer-events:none;}
+.per-name{font-size:14px;font-weight:600;color:#1a1a2e;}
+.per-card.open .per-name{color:#0C447C;}
+.per-dates{font-size:11px;color:#888;margin-top:1px;}
+.per-meta{display:flex;align-items:center;gap:8px;}
+.per-cnt{font-size:11px;color:#888;pointer-events:none;}
+.per-caret{font-size:11px;color:#888;pointer-events:none;}
 .per-info{flex:1;min-width:0;pointer-events:none;}
 .per-name{font-size:14px;font-weight:600;color:#1a1a2e;}
 .per-card.open .per-name{color:#0C447C;}
@@ -693,19 +702,21 @@ function renderPerList(){
     var seances=(pd.seances||[]).filter(function(s){return s.perId===p.id;});
     var isOpen=p.id===OPEN_PER;
     var isCur=p.debut<=today&&today<=p.fin;
-    h+='<div class="per-card'+(isOpen?' open':'')+(isCur?' cur':'')+'"><button class="per-hd" onclick="togglePer(\''+p.id+'\')">'
+    h+='<div class="per-card'+(isOpen?' open':'')+(isCur?' cur':'')+'"><div class="per-hd-row">'
+      +'<div class="per-hd-click" onclick="togglePer(\''+p.id+'\')">'
       +'<div class="per-dot"></div>'
       +'<div class="per-info">'
       +'<div class="per-name">'+p.nom+(isCur?' <span style="font-size:10px;color:#1D9E75;font-weight:600;">● en cours</span>':'')+'</div>'
       +'<div class="per-dates">📅 '+fmtD(p.debut)+' → '+fmtD(p.fin)+'</div>'
       +'</div>'
-      +'<div class="per-meta">'
       +'<span class="per-cnt">'+seances.length+' séance'+(seances.length!==1?'s':'')+'</span>'
-      +'<button class="btn-agenda" onclick="event.stopPropagation();openAgenda(\''+p.id+'\')">📆 Agenda</button>'
       +'<span class="per-caret">▼</span>'
-      +'<button class="btn-del-sm" onclick="event.stopPropagation();delPer(\''+p.id+'\')">🗑️</button>'
       +'</div>'
-      +'</button>';
+      +'<div class="per-hd-actions">'
+      +'<button class="btn-agenda" onclick="openAgenda(\''+p.id+'\')">📆 Agenda</button>'
+      +'<button class="btn-del-sm" onclick="delPer(\''+p.id+'\')">🗑️</button>'
+      +'</div>'
+      +'</div>';
 
     if(isOpen){
       h+='<div class="per-body"><div class="per-body-in">';
