@@ -31,8 +31,10 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .pav{width:50px;height:50px;border-radius:50%;margin:0 auto 10px;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:600;color:#fff;}
 .pcard-name{font-size:14px;font-weight:600;color:#1a1a2e;margin-bottom:3px;}
 .pcard-sub{font-size:12px;color:#888;}
-.pcard-del{font-size:12px;color:#888;background:none;border:none;cursor:pointer;margin-top:6px;padding:3px 8px;border-radius:6px;display:inline-block;}
+.pcard-del{font-size:12px;color:#888;background:none;border:none;cursor:pointer;padding:3px 8px;border-radius:6px;display:inline-block;}
 .pcard-del:active{background:#FCEBEB;color:#A32D2D;}
+.pcard-edit{font-size:12px;color:#185FA5;background:none;border:none;cursor:pointer;padding:3px 8px;border-radius:6px;display:inline-block;}
+.pcard-edit:active{background:#E6F1FB;}
 
 /* CARDS */
 .card{background:#fff;border:1px solid #e2e8f0;border-radius:14px;padding:1.1rem 1.25rem;margin-bottom:1rem;}
@@ -244,6 +246,30 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 
 <!-- MODAL AGENDA -->
 <div class="modal-overlay hidden" id="modal-agenda" onclick="if(event.target===this)closeAgenda()">
+
+<!-- MODAL ÉDITION PROFIL -->
+<div class="modal-overlay hidden" id="modal-edit-profil" onclick="if(event.target===this)closeEditProfil()">
+  <div class="modal-box">
+    <div class="modal-title">✏️ Modifier le profil</div>
+    <div class="modal-sub">Corrigez les informations ci-dessous.</div>
+    <input type="hidden" id="edit-profil-id">
+    <div style="display:flex;flex-direction:column;gap:12px;margin-bottom:1rem;">
+      <div class="field-sm"><label>👤 Prénom ou nom</label><input type="text" id="edit-profil-nom" placeholder="ex : Marie, Papa…"></div>
+      <div class="field-sm"><label>📅 Année de naissance</label><input type="number" id="edit-profil-annee" placeholder="ex : 1965" min="1900" max="2010"></div>
+      <div class="field-sm"><label>⚧ Sexe</label>
+        <select id="edit-profil-sexe">
+          <option value="">— Non renseigné —</option>
+          <option value="H">👨 Homme</option>
+          <option value="F">👩 Femme</option>
+        </select>
+      </div>
+    </div>
+    <div class="modal-btns">
+      <button class="modal-btn-cancel" onclick="closeEditProfil()">Annuler</button>
+      <button class="modal-btn-ok" onclick="sauvegarderProfil()">💾 Enregistrer</button>
+    </div>
+  </div>
+</div>
   <div class="modal-box">
     <div class="modal-title">📆 Ajouter à l'agenda</div>
     <div class="modal-sub" id="agenda-sub"></div>
@@ -619,6 +645,41 @@ function selectProfil(id){
   goTab('t-per',document.querySelector('#screen-app .tab'));
 }
 
+function openEditProfil(id){
+  var p=db.profiles.find(function(x){return x.id===id;});
+  if(!p)return;
+  document.getElementById('edit-profil-id').value=id;
+  document.getElementById('edit-profil-nom').value=p.nom;
+  document.getElementById('edit-profil-annee').value=p.annee||'';
+  document.getElementById('edit-profil-sexe').value=p.sexe||'';
+  document.getElementById('modal-edit-profil').classList.remove('hidden');
+}
+
+function closeEditProfil(){
+  document.getElementById('modal-edit-profil').classList.add('hidden');
+}
+
+function sauvegarderProfil(){
+  var id=document.getElementById('edit-profil-id').value;
+  var nom=document.getElementById('edit-profil-nom').value.trim();
+  if(!nom){toast('⚠️ Le nom est requis','error');return;}
+  var annee=parseInt(document.getElementById('edit-profil-annee').value)||null;
+  var sexe=document.getElementById('edit-profil-sexe').value||null;
+  var p=db.profiles.find(function(x){return x.id===id;});
+  if(!p)return;
+  p.nom=nom;p.annee=annee;p.sexe=sexe;
+  save();closeEditProfil();
+  // Mettre à jour le chip si c'est le profil actif
+  if(id===CUR_PROF){
+    document.getElementById('chip-name').textContent=nom;
+    var age=getAge(annee);
+    var meta=[age?age+' ans':null,sexe==='H'?'Homme':sexe==='F'?'Femme':null].filter(Boolean).join(' · ');
+    document.getElementById('chip-meta').textContent=meta;
+  }
+  toast('✅ Profil mis à jour !','success');
+  renderProfiles();
+}
+
 function delProfil(id){
   if(!confirm('Supprimer ce profil et toutes ses données ?'))return;
   db.profiles=db.profiles.filter(function(p){return p.id!==id;});
@@ -642,7 +703,10 @@ function renderProfiles(){
       +'<div class="pcard-name">'+p.nom+'</div>'
       +(meta?'<div class="pcard-sub">'+meta+'</div>':'')
       +'<div class="pcard-sub">'+nP+' période'+(nP!==1?'s':'')+' · '+nS+' séance'+(nS!==1?'s':'')+'</div>'
+      +'<div style="display:flex;gap:6px;justify-content:center;margin-top:6px;">'
+      +'<button class="pcard-edit" onclick="event.stopPropagation();openEditProfil(\''+p.id+'\')">✏️ Modifier</button>'
       +'<button class="pcard-del" onclick="event.stopPropagation();delProfil(\''+p.id+'\')">🗑️ Supprimer</button>'
+      +'</div>'
       +'</div>';
   });
   w.innerHTML=h+'</div>';
