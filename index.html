@@ -123,6 +123,19 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .excluded{opacity:.4;text-decoration:line-through;}
 .btn-del-sm{background:none;border:none;cursor:pointer;font-size:13px;padding:3px 6px;border-radius:6px;-webkit-tap-highlight-color:transparent;pointer-events:all !important;opacity:1 !important;color:#888;}
 .btn-del-sm:active{background:#FCEBEB;}
+.wellbeing-row{display:flex;align-items:center;gap:10px;margin-bottom:.75rem;flex-wrap:wrap;}
+.wellbeing-label{font-size:12px;font-weight:500;color:#555;white-space:nowrap;}
+.wellbeing-btns{display:flex;gap:6px;}
+.wb-btn{font-size:24px;padding:4px 6px;border-radius:8px;border:2px solid transparent;background:none;cursor:pointer;line-height:1;-webkit-tap-highlight-color:transparent;}
+.wb-btn.selected{border-color:#0C447C;background:#E6F1FB;}
+.wb-btn:active{background:#f0f7ff;}
+.comment-row{margin-bottom:.75rem;}
+.comment-row label{display:block;font-size:12px;font-weight:500;color:#555;margin-bottom:5px;}
+.comment-row input{width:100%;padding:8px 10px;border:1px solid #dde1e7;border-radius:8px;font-size:13px;background:#fff;color:#1a1a2e;outline:none;}
+.comment-row input:focus{border-color:#0C447C;}
+.seance-footer{padding:6px 12px 8px;display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+.seance-wb{font-size:18px;}
+.seance-comment{font-size:12px;color:#666;font-style:italic;}
 
 /* SAISIE FORM */
 .saisie-form{background:#f8fafc;border-radius:10px;padding:.9rem 1rem;border:1px solid #e8ecf0;}
@@ -284,6 +297,9 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
           <option value="F">👩 Femme</option>
         </select>
       </div>
+      <div class="field-sm"><label>⚖️ Poids (kg)</label><input type="number" id="edit-profil-poids" placeholder="ex : 70" min="20" max="300" step="0.1"></div>
+      <div class="field-sm"><label>🩺 Médecin traitant</label><input type="text" id="edit-profil-medecin" placeholder="ex : Dr Dupont"></div>
+      <div class="field-sm"><label>💊 Traitements en cours</label><input type="text" id="edit-profil-traitement" placeholder="ex : Amlodipine 5mg…"></div>
     </div>
     <div class="modal-btns">
       <button class="modal-btn-cancel" onclick="closeEditProfil()">Annuler</button>
@@ -304,6 +320,9 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
       <div class="field" style="grid-column:1/-1"><label>Prénom ou nom</label><input type="text" id="p-nom" placeholder="ex : Marie, Papa…"></div>
       <div class="field"><label>📅 Année de naissance</label><input type="number" id="p-annee" placeholder="ex : 1965" min="1900" max="2010"></div>
       <div class="field"><label>⚧ Sexe</label><select id="p-sexe"><option value="">— Non renseigné —</option><option value="H">👨 Homme</option><option value="F">👩 Femme</option></select></div>
+      <div class="field"><label>⚖️ Poids (kg)</label><input type="number" id="p-poids" placeholder="ex : 70" min="20" max="300" step="0.1"></div>
+      <div class="field"><label>🩺 Médecin traitant</label><input type="text" id="p-medecin" placeholder="ex : Dr Dupont"></div>
+      <div class="field" style="grid-column:1/-1"><label>💊 Traitements en cours</label><input type="text" id="p-traitement" placeholder="ex : Amlodipine 5mg, Ramipril 10mg…"></div>
     </div>
     <button class="btn btn-primary" onclick="creerProfil()">➕ Créer le profil</button>
   </div>
@@ -328,6 +347,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
     <button class="tab" onclick="goTab('t-hist',this)">📋 Historique</button>
     <button class="tab" onclick="goTab('t-graph',this)">📊 Graphiques</button>
     <button class="tab" onclick="goTab('t-data',this)">⚙️ Données</button>
+    <button class="tab" onclick="goTab('t-rapport',this)">📄 Rapport</button>
     <button class="tab" onclick="goTab('t-man',this)">❓ Manuel</button>
   </div>
 
@@ -412,76 +432,174 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
     </div>
   </div>
 
+  <!-- RAPPORT -->
+  <div id="t-rapport" class="section">
+    <div class="card">
+      <div class="card-hd"><span class="card-hd-icon">📄</span><span class="card-hd-title">Générer un rapport patient</span></div>
+      <p style="font-size:13px;color:#555;margin-bottom:1rem;">Sélectionnez les périodes à inclure dans le rapport, puis choisissez le format.</p>
+      <div id="rapport-per-list" style="margin-bottom:1rem;"></div>
+      <div style="display:flex;flex-direction:column;gap:.75rem;">
+        <button class="btn btn-primary" style="margin-top:0;background:#0C447C;" onclick="genRapport('html')">🌐 Ouvrir le rapport (HTML)</button>
+        <button class="btn btn-primary" style="margin-top:0;background:#1D9E75;" onclick="genRapport('pdf')">📄 Télécharger PDF</button>
+      </div>
+      <div class="info-box" style="margin-top:.75rem;"><span>ℹ️</span><span>Pour le PDF : dans la fenêtre qui s'ouvre, utilisez <strong>Fichier → Imprimer → Enregistrer en PDF</strong> dans votre navigateur.</span></div>
+    </div>
+  </div>
+
   <!-- MANUEL -->
   <div id="t-man" class="section">
-    <div class="manual-hero"><div class="manual-hero-icon">📖</div><div><h2>Manuel utilisateur<span class="vbadge">v1</span></h2><p>Guide complet de l'application Suivi tensionnel</p></div></div>
+    <div class="manual-hero"><div class="manual-hero-icon">📖</div><div><h2>Manuel utilisateur<span class="vbadge">v2</span></h2><p>Guide complet de l'application Suivi tensionnel</p></div></div>
     <div class="manual-toc">
       <button class="toc-btn active" onclick="showMan('demarrage')"><span class="toc-icon">🚀</span><div><div class="toc-label">Démarrage</div><div class="toc-desc">Premiers pas</div></div></button>
+      <button class="toc-btn" onclick="showMan('profils')"><span class="toc-icon">👥</span><div><div class="toc-label">Profils</div><div class="toc-desc">Créer et modifier</div></div></button>
       <button class="toc-btn" onclick="showMan('periodes')"><span class="toc-icon">📅</span><div><div class="toc-label">Périodes</div><div class="toc-desc">Créer et gérer</div></div></button>
       <button class="toc-btn" onclick="showMan('mesures')"><span class="toc-icon">🩺</span><div><div class="toc-label">Saisie des mesures</div><div class="toc-desc">Protocole 3 mesures</div></div></button>
+      <button class="toc-btn" onclick="showMan('bienetre')"><span class="toc-icon">😊</span><div><div class="toc-label">Bien-être</div><div class="toc-desc">Ressenti et commentaire</div></div></button>
       <button class="toc-btn" onclick="showMan('resultats')"><span class="toc-icon">📊</span><div><div class="toc-label">Résultats</div><div class="toc-desc">Historique et graphiques</div></div></button>
-      <button class="toc-btn" onclick="showMan('profils')"><span class="toc-icon">👥</span><div><div class="toc-label">Profils</div><div class="toc-desc">Multi-utilisateurs</div></div></button>
-      <button class="toc-btn" onclick="showMan('donnees')"><span class="toc-icon">💾</span><div><div class="toc-label">Données</div><div class="toc-desc">Export et import</div></div></button>
+      <button class="toc-btn" onclick="showMan('rapport')"><span class="toc-icon">📄</span><div><div class="toc-label">Rapport médecin</div><div class="toc-desc">Générer un PDF</div></div></button>
+      <button class="toc-btn" onclick="showMan('donnees')"><span class="toc-icon">💾</span><div><div class="toc-label">Données</div><div class="toc-desc">Export, import, réglages</div></div></button>
+      <button class="toc-btn" onclick="showMan('agenda')"><span class="toc-icon">📆</span><div><div class="toc-label">Agenda</div><div class="toc-desc">Rappels calendrier</div></div></button>
       <button class="toc-btn" onclick="showMan('normes')"><span class="toc-icon">❤️</span><div><div class="toc-label">Normes</div><div class="toc-desc">Référence médicale</div></div></button>
       <button class="toc-btn" onclick="showMan('faq')"><span class="toc-icon">💬</span><div><div class="toc-label">FAQ</div><div class="toc-desc">Questions fréquentes</div></div></button>
     </div>
+
+    <!-- DÉMARRAGE -->
     <div id="man-demarrage" class="msec active">
       <div class="man-card"><div class="man-card-title">🚀 Premiers pas</div>
         <div class="step-list">
-          <div class="step"><div class="step-num">1</div><div class="step-body"><div class="step-title">Créer votre profil</div><div class="step-desc">Entrez votre prénom, année de naissance et sexe, puis cliquez ➕ Créer.</div></div></div>
-          <div class="step"><div class="step-num">2</div><div class="step-body"><div class="step-title">Sélectionner votre profil</div><div class="step-desc">Cliquez sur votre carte pour entrer dans votre espace personnel.</div></div></div>
-          <div class="step"><div class="step-num">3</div><div class="step-body"><div class="step-title">Créer une période de 3 jours</div><div class="step-desc">Dans l'onglet 📅 Périodes, donnez un nom et choisissez une date de début — fin calculée automatiquement à J+2.</div></div></div>
-          <div class="step"><div class="step-num">4</div><div class="step-body"><div class="step-title">Saisir vos mesures</div><div class="step-desc">Cliquez sur une période pour l'ouvrir. Le formulaire de saisie apparaît directement en bas.</div></div></div>
-          <div class="step"><div class="step-num">5</div><div class="step-body"><div class="step-title">Consulter vos résultats</div><div class="step-desc">Les onglets 📋 Historique et 📊 Graphiques affichent votre bilan avec interprétation personnalisée.</div></div></div>
+          <div class="step"><div class="step-num">1</div><div class="step-body"><div class="step-title">Créer votre profil</div><div class="step-desc">Entrez votre prénom, année de naissance, sexe, poids, médecin traitant et traitements en cours, puis cliquez ➕ Créer le profil.</div></div></div>
+          <div class="step"><div class="step-num">2</div><div class="step-body"><div class="step-title">Sélectionner votre profil</div><div class="step-desc">Cliquez sur votre carte pour entrer dans votre espace personnel. Toutes vos données sont isolées des autres profils.</div></div></div>
+          <div class="step"><div class="step-num">3</div><div class="step-body"><div class="step-title">Créer une période de 3 jours</div><div class="step-desc">Dans l'onglet 📅 Périodes, donnez un nom et choisissez une date de début — la fin est calculée automatiquement à J+2.</div></div></div>
+          <div class="step"><div class="step-num">4</div><div class="step-body"><div class="step-title">Saisir vos mesures</div><div class="step-desc">Cliquez sur une période pour l'ouvrir. Le formulaire apparaît directement en bas : 3 mesures espacées par un minuteur.</div></div></div>
+          <div class="step"><div class="step-num">5</div><div class="step-body"><div class="step-title">Renseigner le bien-être et un commentaire</div><div class="step-desc">Après les 3 mesures, indiquez votre ressenti 😁🙂😐😟😰 et un commentaire libre (optionnel).</div></div></div>
+          <div class="step"><div class="step-num">6</div><div class="step-body"><div class="step-title">Générer un rapport pour votre médecin</div><div class="step-desc">Dans l'onglet 📄 Rapport, sélectionnez les périodes souhaitées et téléchargez le rapport en HTML ou PDF.</div></div></div>
         </div>
         <div class="tip-box"><span>💡</span><span>Application 100% hors-ligne. Données sauvegardées automatiquement dans le navigateur.</span></div>
       </div>
     </div>
+
+    <!-- PROFILS -->
+    <div id="man-profils" class="msec">
+      <div class="man-card"><div class="man-card-title">👥 Créer un profil</div>
+        <div class="step-list">
+          <div class="step"><div class="step-num">1</div><div class="step-body"><div class="step-title">Informations personnelles</div><div class="step-desc">Entrez votre <strong>prénom ou nom</strong>, <strong>année de naissance</strong>, <strong>sexe</strong> et <strong>poids en kg</strong>. Ces données enrichissent l'interprétation et le rapport médecin.</div></div></div>
+          <div class="step"><div class="step-num">2</div><div class="step-body"><div class="step-title">Informations médicales</div><div class="step-desc">Renseignez le <strong>médecin traitant</strong> (ex : Dr Dupont) et les <strong>traitements en cours</strong> (ex : Amlodipine 5mg). Ces informations apparaissent dans le rapport.</div></div></div>
+          <div class="step"><div class="step-num">3</div><div class="step-body"><div class="step-title">Modifier un profil</div><div class="step-desc">Sur la carte profil, cliquez ✏️ Modifier pour corriger n'importe quel champ à tout moment.</div></div></div>
+          <div class="step"><div class="step-num">4</div><div class="step-body"><div class="step-title">Changer de profil</div><div class="step-desc">Cliquez sur le chip avatar ▼ en haut à droite du bandeau bleu pour revenir à l'écran de sélection.</div></div></div>
+        </div>
+        <div class="info-box"><span>ℹ️</span><span>L'âge et le sexe génèrent des <strong>alertes personnalisées</strong> dans les graphiques (femme &gt;50 ans, homme &gt;55 ans, sujet jeune avec HTA…).</span></div>
+        <div class="tip-box"><span>💡</span><span>Plusieurs personnes peuvent partager le même appareil — chaque profil a ses données complètement isolées.</span></div>
+      </div>
+    </div>
+
+    <!-- PÉRIODES -->
     <div id="man-periodes" class="msec">
       <div class="man-card"><div class="man-card-title">📅 Créer et gérer les périodes</div>
         <div class="step-list">
-          <div class="step"><div class="step-num">1</div><div class="step-body"><div class="step-title">Nommer la période (optionnel)</div><div class="step-desc">"Avant traitement", "Semaine de stress", "Contrôle mensuel"…</div></div></div>
-          <div class="step"><div class="step-num">2</div><div class="step-body"><div class="step-title">Choisir la date de début</div><div class="step-desc">La fin est calculée automatiquement à J+2. Modifiable manuellement.</div></div></div>
-          <div class="step"><div class="step-num">3</div><div class="step-body"><div class="step-title">Bouton 📆 Agenda</div><div class="step-desc">Génère un fichier .ics à importer dans votre calendrier iOS/Google pour recevoir des rappels.</div></div></div>
+          <div class="step"><div class="step-num">1</div><div class="step-body"><div class="step-title">Nommer la période (optionnel)</div><div class="step-desc">"Avant traitement", "Semaine de stress", "Contrôle mensuel", "Après ajustement posologie"…</div></div></div>
+          <div class="step"><div class="step-num">2</div><div class="step-body"><div class="step-title">Choisir la date de début</div><div class="step-desc">La date de fin est calculée automatiquement à J+2 (3 jours au total). Elle est modifiable manuellement.</div></div></div>
+          <div class="step"><div class="step-num">3</div><div class="step-body"><div class="step-title">Cliquer sur la période pour saisir</div><div class="step-desc">Un clic sur la carte ouvre le formulaire de saisie directement en bas — pas besoin de changer d'onglet.</div></div></div>
+          <div class="step"><div class="step-num">4</div><div class="step-body"><div class="step-title">Ajouter à l'agenda</div><div class="step-desc">Le bouton 📆 Agenda génère un fichier .ics avec 6 rappels (matin et soir × 3 jours) importable dans votre calendrier.</div></div></div>
         </div>
-        <div class="info-box"><span>ℹ️</span><span>La période en cours est marquée ● en cours en vert.</span></div>
-        <div class="warn-box" style="margin-top:.75rem;"><span>⚠️</span><span>Exportez vos données avant de supprimer une période importante.</span></div>
+        <div class="info-box"><span>ℹ️</span><span>La période en cours est marquée <span style="color:#1D9E75;font-weight:600;">● en cours</span> en vert.</span></div>
+        <div class="warn-box" style="margin-top:.75rem;"><span>⚠️</span><span>Exportez vos données avant de supprimer une période importante — cette action est irréversible.</span></div>
       </div>
     </div>
+
+    <!-- MESURES -->
     <div id="man-mesures" class="msec">
       <div class="man-card"><div class="man-card-title">🩺 Protocole de mesure ESH/ESC</div>
         <div class="step-list">
-          <div class="step"><div class="step-num">1</div><div class="step-body"><div class="step-title">Se préparer</div><div class="step-desc">Restez assis au calme 5 minutes. Évitez café, tabac, effort dans l'heure précédente.</div></div></div>
-          <div class="step"><div class="step-num">2</div><div class="step-body"><div class="step-title">Saisir M1 — minuteur démarre</div><div class="step-desc">Dès que SYS et DIA de M1 sont entrés, un minuteur de 90 secondes démarre. M2 reste grisée.</div></div></div>
-          <div class="step"><div class="step-num">3</div><div class="step-body"><div class="step-title">🔔 Triple bip — saisir M2</div><div class="step-desc">Après 90s, 3 bips retentissent et M2 se déverrouille.</div></div></div>
-          <div class="step"><div class="step-num">4</div><div class="step-body"><div class="step-title">🔔 Triple bip — saisir M3</div><div class="step-desc">Même principe : 90s, 3 bips, M3 déverrouillée.</div></div></div>
-          <div class="step"><div class="step-num">5</div><div class="step-body"><div class="step-title">Enregistrer la séance</div><div class="step-desc">Le bouton 💾 s'active quand les 3 mesures sont saisies. M1 est écartée, la moyenne M2+M3 est retenue.</div></div></div>
+          <div class="step"><div class="step-num">1</div><div class="step-body"><div class="step-title">Se préparer</div><div class="step-desc">Restez assis au calme 5 minutes avant la mesure. Évitez café, tabac et effort physique dans l'heure précédente.</div></div></div>
+          <div class="step"><div class="step-num">2</div><div class="step-body"><div class="step-title">Tester le son (iOS uniquement)</div><div class="step-desc">Appuyez sur le bouton 🔔 Test son dans le formulaire de saisie avant votre première séance. Cela déverrouille l'audio pour les bips.</div></div></div>
+          <div class="step"><div class="step-num">3</div><div class="step-body"><div class="step-title">Saisir M1 — minuteur démarre automatiquement</div><div class="step-desc">Dès que SYS et DIA de M1 sont entrés, un minuteur démarre (durée réglable dans ⚙️ Données). M2 reste grisée pendant ce délai.</div></div></div>
+          <div class="step"><div class="step-num">4</div><div class="step-body"><div class="step-title">🔔 Triple bip — saisir M2 puis M3</div><div class="step-desc">À la fin de chaque minuteur, 3 bips retentissent et la mesure suivante se déverrouille. Même principe entre M2 et M3.</div></div></div>
+          <div class="step"><div class="step-num">5</div><div class="step-body"><div class="step-title">Enregistrer la séance</div><div class="step-desc">Le bouton 💾 s'active quand les 3 mesures sont complètes. M1 est automatiquement écartée (effet d'alerte) — la moyenne M2+M3 est retenue.</div></div></div>
         </div>
-        <div class="info-box"><span>🔔</span><span>Sur iOS, appuyez sur le bouton 🔔 Test son avant votre première séance pour déverrouiller l'audio.</span></div>
-        <div class="tip-box"><span>💡</span><span>Vous pouvez poser l'appareil entre les mesures — les 3 bips vous alerteront au bon moment.</span></div>
+        <div class="info-box"><span>ℹ️</span><span>La durée du minuteur est paramétrable dans ⚙️ Données. Votre médecin peut recommander 1, 2 ou 3 minutes entre les mesures.</span></div>
+        <div class="tip-box"><span>💡</span><span>Posez l'appareil entre les mesures — les 3 bips vous alerteront au bon moment sans surveiller l'écran.</span></div>
       </div>
     </div>
-    <div id="man-resultats" class="msec">
-      <div class="man-card"><div class="man-card-title">📋 Historique</div><p style="font-size:13px;color:#555;">Toutes les séances d'une période : moment, date, 3 mesures avec M1 barrée si écartée, moyenne retenue et statut tensionnel.</p></div>
-      <div class="man-card"><div class="man-card-title">📊 Graphiques</div><p style="font-size:13px;color:#555;">Courbes systolique, diastolique et pouls. Seuils en pointillés (140/90 mmHg). Moyennes globales et bilan coloré. Alertes personnalisées selon âge et sexe.</p></div>
-    </div>
-    <div id="man-profils" class="msec">
-      <div class="man-card"><div class="man-card-title">👥 Gestion des profils</div>
+
+    <!-- BIEN-ÊTRE -->
+    <div id="man-bienetre" class="msec">
+      <div class="man-card"><div class="man-card-title">😊 Échelle de bien-être</div>
+        <p style="font-size:13px;color:#555;margin-bottom:.75rem;">Après chaque séance de mesure, vous pouvez indiquer votre ressenti global du moment. Ces informations aident le médecin à contextualiser les valeurs tensionnelles.</p>
+        <div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:1rem;">
+          <div style="text-align:center;"><div style="font-size:28px;">😁</div><div style="font-size:11px;color:#27500A;font-weight:600;">Très bien</div></div>
+          <div style="text-align:center;"><div style="font-size:28px;">🙂</div><div style="font-size:11px;color:#3B6D11;font-weight:600;">Bien</div></div>
+          <div style="text-align:center;"><div style="font-size:28px;">😐</div><div style="font-size:11px;color:#888;font-weight:600;">Moyen</div></div>
+          <div style="text-align:center;"><div style="font-size:28px;">😟</div><div style="font-size:11px;color:#633806;font-weight:600;">Fatigué</div></div>
+          <div style="text-align:center;"><div style="font-size:28px;">😰</div><div style="font-size:11px;color:#791F1F;font-weight:600;">Très stressé</div></div>
+        </div>
         <div class="step-list">
-          <div class="step"><div class="step-num">1</div><div class="step-body"><div class="step-title">Créer un profil</div><div class="step-desc">Prénom, année de naissance et sexe (optionnels mais recommandés pour l'interprétation personnalisée).</div></div></div>
-          <div class="step"><div class="step-num">2</div><div class="step-body"><div class="step-title">Changer de profil</div><div class="step-desc">Cliquez sur le chip avatar ▼ en haut à droite pour revenir à l'écran de sélection.</div></div></div>
-          <div class="step"><div class="step-num">3</div><div class="step-body"><div class="step-title">Supprimer un profil</div><div class="step-desc">Bouton 🗑️ Supprimer sur la carte profil. Toutes les données associées sont effacées.</div></div></div>
+          <div class="step"><div class="step-num">1</div><div class="step-body"><div class="step-title">Sélectionner l'émoji</div><div class="step-desc">Tapez sur l'émoji qui correspond le mieux à votre ressenti au moment de la séance. Il s'encadre en bleu.</div></div></div>
+          <div class="step"><div class="step-num">2</div><div class="step-body"><div class="step-title">Ajouter un commentaire (optionnel)</div><div class="step-desc">Le champ texte libre permet de noter un contexte : "mauvaise nuit", "sport ce matin", "journée stressante", "prise de médicament décalée"…</div></div></div>
         </div>
-        <div class="info-box"><span>ℹ️</span><span>L'âge et le sexe permettent d'afficher des alertes personnalisées dans les graphiques.</span></div>
+        <div class="tip-box"><span>💡</span><span>Le bien-être et les commentaires apparaissent dans l'historique, les graphiques et le rapport médecin. Ces informations sont très précieuses pour votre médecin.</span></div>
       </div>
     </div>
-    <div id="man-donnees" class="msec">
-      <div class="man-card"><div class="man-card-title">⬇️ Exporter</div><p style="font-size:13px;color:#555;margin-bottom:.75rem;">Sélectionnez les profils à exporter, puis téléchargez le fichier tensions_AAAA-MM-JJ.json.</p></div>
-      <div class="man-card"><div class="man-card-title">⬆️ Importer</div><p style="font-size:13px;color:#555;margin-bottom:.5rem;">Sélectionnez un fichier tensions_*.json. Choisissez le mode :</p><p style="font-size:12px;color:#555;">🔀 <strong>Fusionner</strong> : ajoute sans écraser.<br>♻️ <strong>Remplacer</strong> : efface tout et remplace.</p><div class="warn-box"><span>⚠️</span><span>En mode Remplacer, exportez d'abord. Irréversible.</span></div></div>
+
+    <!-- RÉSULTATS -->
+    <div id="man-resultats" class="msec">
+      <div class="man-card"><div class="man-card-title">📋 Onglet Historique</div>
+        <p style="font-size:13px;color:#555;margin-bottom:.75rem;">Affiche toutes les séances d'une période sélectionnée. Pour chaque séance : moment (☀️/🌙), date, bras utilisé, détail des 3 mesures avec M1 barrée si écartée, moyenne retenue, statut tensionnel, émoji de bien-être et commentaire.</p>
+        <div class="info-box"><span>ℹ️</span><span>Utilisez les boutons de période en haut pour naviguer entre vos différentes périodes.</span></div>
+      </div>
+      <div class="man-card"><div class="man-card-title">📊 Onglet Graphiques</div>
+        <p style="font-size:13px;color:#555;margin-bottom:.75rem;">Trois courbes d'évolution : systolique, diastolique et pouls. Des lignes de seuil en pointillés indiquent les valeurs limites (140 mmHg / 90 mmHg). Des cartes récapitulent les moyennes globales et un bilan coloré résume la période.</p>
+        <div class="info-box"><span>ℹ️</span><span>Des alertes personnalisées s'affichent automatiquement selon votre âge et sexe (femme &gt;50 ans, homme &gt;55 ans, sujet jeune avec HTA).</span></div>
+      </div>
     </div>
+
+    <!-- RAPPORT -->
+    <div id="man-rapport" class="msec">
+      <div class="man-card"><div class="man-card-title">📄 Générer un rapport médecin</div>
+        <div class="step-list">
+          <div class="step"><div class="step-num">1</div><div class="step-body"><div class="step-title">Aller dans l'onglet 📄 Rapport</div><div class="step-desc">Accessible depuis le menu principal de l'application.</div></div></div>
+          <div class="step"><div class="step-num">2</div><div class="step-body"><div class="step-title">Sélectionner les périodes</div><div class="step-desc">Cochez les périodes à inclure dans le rapport. Vous pouvez en sélectionner plusieurs pour une vue d'ensemble sur la durée.</div></div></div>
+          <div class="step"><div class="step-num">3</div><div class="step-body"><div class="step-title">Choisir le format</div><div class="step-desc"><strong>🌐 Ouvrir HTML</strong> : s'ouvre dans un nouvel onglet, idéal pour consulter ou imprimer.<br><strong>📄 Télécharger</strong> : enregistre le fichier .html sur l'appareil.</div></div></div>
+          <div class="step"><div class="step-num">4</div><div class="step-body"><div class="step-title">Imprimer ou enregistrer en PDF</div><div class="step-desc">Dans le rapport ouvert, cliquez le bouton 🖨️ Imprimer/PDF, puis dans votre navigateur choisissez <strong>Enregistrer en PDF</strong> comme imprimante.</div></div></div>
+        </div>
+        <div class="info-box"><span>📋</span><span>Le rapport contient : identité patient, traitements, périodes, statistiques (moyennes, matin/soir, % HTA, tendance), graphiques, tableau détaillé des séances avec bien-être et commentaires, et les normes ESH/ESC.</span></div>
+      </div>
+    </div>
+
+    <!-- DONNÉES -->
+    <div id="man-donnees" class="msec">
+      <div class="man-card"><div class="man-card-title">⏱️ Réglage du minuteur</div>
+        <p style="font-size:13px;color:#555;">Dans l'onglet ⚙️ Données, la carte <strong>Paramètres du minuteur</strong> permet de choisir la durée d'attente entre les mesures : 1 min, 1 min 30 s, 2 min, 3 min ou 5 min. Suivez les recommandations de votre médecin. Le réglage est sauvegardé automatiquement.</p>
+      </div>
+      <div class="man-card"><div class="man-card-title">⬇️ Exporter les données</div>
+        <div class="step-list">
+          <div class="step"><div class="step-num">1</div><div class="step-body"><div class="step-title">Sélectionner les profils</div><div class="step-desc">Cochez les profils à inclure. Tous sont cochés par défaut.</div></div></div>
+          <div class="step"><div class="step-num">2</div><div class="step-body"><div class="step-title">Télécharger</div><div class="step-desc">Cliquez ⬇️ Télécharger. Le fichier tensions_AAAA-MM-JJ.json est sauvegardé sur l'appareil.</div></div></div>
+        </div>
+      </div>
+      <div class="man-card"><div class="man-card-title">⬆️ Importer des données</div>
+        <p style="font-size:13px;color:#555;margin-bottom:.5rem;">Sélectionnez un fichier tensions_*.json. Deux modes :</p>
+        <p style="font-size:12px;color:#555;">🔀 <strong>Fusionner</strong> : ajoute sans écraser les données existantes.<br>♻️ <strong>Remplacer</strong> : efface tout et remplace par le fichier importé.</p>
+        <div class="warn-box"><span>⚠️</span><span>En mode Remplacer, exportez d'abord vos données. Cette action est irréversible.</span></div>
+      </div>
+    </div>
+
+    <!-- AGENDA -->
+    <div id="man-agenda" class="msec">
+      <div class="man-card"><div class="man-card-title">📆 Ajouter des rappels dans l'agenda</div>
+        <div class="step-list">
+          <div class="step"><div class="step-num">1</div><div class="step-body"><div class="step-title">Cliquer sur 📆 Agenda</div><div class="step-desc">Sur chaque carte de période, le bouton 📆 Agenda ouvre la fenêtre de configuration des rappels.</div></div></div>
+          <div class="step"><div class="step-num">2</div><div class="step-body"><div class="step-title">Configurer les horaires</div><div class="step-desc">Choisissez l'heure du matin (ex : 08:00) et l'heure du soir (ex : 20:00). Un aperçu des 6 événements s'affiche en temps réel.</div></div></div>
+          <div class="step"><div class="step-num">3</div><div class="step-body"><div class="step-title">Choisir le rappel</div><div class="step-desc">Sélectionnez combien de minutes avant la mesure vous souhaitez être alerté : 5, 10, 15 ou 30 minutes.</div></div></div>
+          <div class="step"><div class="step-num">4</div><div class="step-body"><div class="step-title">Télécharger et importer</div><div class="step-desc">Cliquez ⬇️ Télécharger .ics. Ouvrez le fichier sur votre appareil — il s'importe automatiquement dans votre calendrier (iOS, Google, Outlook).</div></div></div>
+        </div>
+        <div class="tip-box"><span>💡</span><span>Chaque événement dure 30 minutes et contient les instructions du protocole dans sa description.</span></div>
+      </div>
+    </div>
+
+    <!-- NORMES -->
     <div id="man-normes" class="msec">
       <div class="man-card"><div class="man-card-title">❤️ Normes tensionnelles ESH/ESC</div>
-        <p style="font-size:13px;color:#555;margin-bottom:.75rem;">Ces normes s'appliquent aux mesures à domicile.</p>
+        <p style="font-size:13px;color:#555;margin-bottom:.75rem;">Normes de la Société Européenne d'Hypertension, applicables aux mesures à domicile.</p>
         <table class="norme-table"><thead><tr><th>Catégorie</th><th>Systolique</th><th>Diastolique</th><th>Statut</th></tr></thead><tbody>
           <tr><td>Optimal</td><td>&lt;120</td><td>&lt;80</td><td><span class="pill p-ok">✅ Optimal</span></td></tr>
           <tr><td>Normal</td><td>120–129</td><td>80–84</td><td><span class="pill p-ok">🟢 Normal</span></td></tr>
@@ -489,18 +607,23 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
           <tr><td>HTA grade 1</td><td>140–159</td><td>90–99</td><td><span class="pill p-warn">🟠 HTA grade 1</span></td></tr>
           <tr><td>HTA grade 2+</td><td>≥160</td><td>≥100</td><td><span class="pill p-danger">🔴 HTA grade 2+</span></td></tr>
         </tbody></table>
-        <div class="warn-box" style="margin-top:1rem;"><span>⚠️</span><span>Informations indicatives. Consultez toujours votre médecin.</span></div>
+        <div class="info-box" style="margin-top:1rem;"><span>ℹ️</span><span>Le statut affiché se base sur la valeur la plus défavorable. Ex : 125/95 mmHg → 🟠 HTA grade 1 (diastolique ≥ 90).</span></div>
+        <div class="warn-box" style="margin-top:.75rem;"><span>⚠️</span><span>Ces informations sont indicatives. Consultez toujours votre médecin pour l'interprétation de vos résultats et toute décision médicale.</span></div>
       </div>
     </div>
+
+    <!-- FAQ -->
     <div id="man-faq" class="msec">
       <div class="man-card"><div class="man-card-title">💬 Questions fréquentes</div>
-        <div class="faq-item"><div class="faq-q">❓ Mes données sont-elles sécurisées ?</div><div class="faq-a">Stockées localement sur votre appareil (localStorage). Jamais envoyées sur internet.</div></div>
-        <div class="faq-item"><div class="faq-q">❓ Que faire si le cache est vidé ?</div><div class="faq-a">Les données peuvent être perdues. Exportez régulièrement via ⚙️ Données.</div></div>
-        <div class="faq-item"><div class="faq-q">❓ Le son ne fonctionne pas ?</div><div class="faq-a">Sur iOS, appuyez sur 🔔 Test son dans le formulaire de saisie avant votre première séance pour déverrouiller l'audio du navigateur.</div></div>
-        <div class="faq-item"><div class="faq-q">❓ Puis-je utiliser l'app sur mobile ?</div><div class="faq-a">Oui, dans Safari ou Chrome. Ajoutez à l'écran d'accueil pour un accès rapide.</div></div>
-        <div class="faq-item"><div class="faq-q">❓ Pourquoi indiquer l'âge et le sexe ?</div><div class="faq-a">Pour afficher des alertes personnalisées dans les graphiques selon votre profil de risque cardiovasculaire.</div></div>
-        <div class="faq-item"><div class="faq-q">❓ Comment transférer vers un autre appareil ?</div><div class="faq-a">Exportez (JSON) depuis ⚙️ Données, puis importez sur l'autre appareil en mode Fusionner.</div></div>
-        <div class="faq-item"><div class="faq-q">❓ Pourquoi M1 est-elle écartée ?</div><div class="faq-a">Effet d'alerte — la 1re mesure est souvent plus élevée. Le protocole ESH recommande de retenir la moyenne de M2+M3.</div></div>
+        <div class="faq-item"><div class="faq-q">❓ Mes données sont-elles sécurisées ?</div><div class="faq-a">Toutes les données restent sur votre appareil (localStorage). Elles ne sont jamais envoyées sur internet.</div></div>
+        <div class="faq-item"><div class="faq-q">❓ Que faire si le cache du navigateur est vidé ?</div><div class="faq-a">Les données peuvent être perdues. Exportez régulièrement via ⚙️ Données pour garder une sauvegarde.</div></div>
+        <div class="faq-item"><div class="faq-q">❓ Le son ne fonctionne pas sur iPhone ?</div><div class="faq-a">Sur iOS Safari, le son doit être activé par une interaction manuelle. Avant votre séance, appuyez sur 🔔 Test son dans le formulaire. Cela déverrouille l'audio pour toute la session.</div></div>
+        <div class="faq-item"><div class="faq-q">❓ Comment changer la durée du minuteur ?</div><div class="faq-a">Dans l'onglet ⚙️ Données, la carte "Paramètres du minuteur" propose 1 min, 1 min 30 s, 2 min, 3 min ou 5 min. Choisissez selon la recommandation de votre médecin.</div></div>
+        <div class="faq-item"><div class="faq-q">❓ Pourquoi M1 est-elle écartée ?</div><div class="faq-a">La première mesure est souvent plus élevée (effet d'alerte ou "blouse blanche"). Le protocole ESH recommande de l'écarter et de retenir la moyenne de M2+M3. M1 reste visible dans l'historique, barrée.</div></div>
+        <div class="faq-item"><div class="faq-q">❓ À quoi sert le champ bien-être ?</div><div class="faq-a">Il permet de contextualiser les mesures tensionnelles. Une tension élevée lors d'une séance notée 😰 "très stressé" sera interprétée différemment par le médecin qu'une tension élevée lors d'une séance notée 😁 "très bien".</div></div>
+        <div class="faq-item"><div class="faq-q">❓ Comment générer un rapport PDF ?</div><div class="faq-a">Dans l'onglet 📄 Rapport, sélectionnez les périodes souhaitées, puis cliquez 🌐 Ouvrir HTML. Dans la page qui s'ouvre, cliquez le bouton 🖨️ Imprimer/PDF et choisissez "Enregistrer en PDF" comme destination d'impression.</div></div>
+        <div class="faq-item"><div class="faq-q">❓ Comment transférer les données vers un autre appareil ?</div><div class="faq-a">Exportez depuis ⚙️ Données (fichier JSON), puis importez ce fichier sur l'autre appareil en mode 🔀 Fusionner pour ne pas écraser les données existantes.</div></div>
+        <div class="faq-item"><div class="faq-q">❓ Puis-je installer l'app sur mon téléphone ?</div><div class="faq-a">Oui. Dans Safari, ouvrez le fichier HTML, appuyez sur Partager → "Sur l'écran d'accueil". L'app s'installe comme une application native.</div></div>
       </div>
     </div>
   </div>
@@ -609,6 +732,7 @@ function goTab(id,btn){
   if(id==='t-hist')renderHist();
   if(id==='t-graph')renderGraph();
   if(id==='t-data'){renderExport();loadTimerSetting();}
+  if(id==='t-rapport')renderRapportPerList();
 }
 
 // ═══════════════════════════════════════════════════════════
@@ -627,11 +751,17 @@ function creerProfil(){
   if(!nom){toast('⚠️ Entrez un nom','error');return;}
   var annee=parseInt(document.getElementById('p-annee').value)||null;
   var sexe=document.getElementById('p-sexe').value||null;
-  var p={id:uid(),nom:nom,color:COLORS[db.profiles.length%COLORS.length],annee:annee,sexe:sexe};
+  var poids=parseFloat(document.getElementById('p-poids').value)||null;
+  var medecin=document.getElementById('p-medecin').value.trim()||null;
+  var traitement=document.getElementById('p-traitement').value.trim()||null;
+  var p={id:uid(),nom:nom,color:COLORS[db.profiles.length%COLORS.length],annee:annee,sexe:sexe,poids:poids,medecin:medecin,traitement:traitement};
   db.profiles.push(p);save();
   document.getElementById('p-nom').value='';
   document.getElementById('p-annee').value='';
   document.getElementById('p-sexe').value='';
+  document.getElementById('p-poids').value='';
+  document.getElementById('p-medecin').value='';
+  document.getElementById('p-traitement').value='';
   toast('✅ Profil créé !','success');
   renderProfiles();
 }
@@ -656,6 +786,9 @@ function openEditProfil(id){
   document.getElementById('edit-profil-nom').value=p.nom;
   document.getElementById('edit-profil-annee').value=p.annee||'';
   document.getElementById('edit-profil-sexe').value=p.sexe||'';
+  document.getElementById('edit-profil-poids').value=p.poids||'';
+  document.getElementById('edit-profil-medecin').value=p.medecin||'';
+  document.getElementById('edit-profil-traitement').value=p.traitement||'';
   document.getElementById('modal-edit-profil').classList.remove('hidden');
 }
 
@@ -669,15 +802,17 @@ function sauvegarderProfil(){
   if(!nom){toast('⚠️ Le nom est requis','error');return;}
   var annee=parseInt(document.getElementById('edit-profil-annee').value)||null;
   var sexe=document.getElementById('edit-profil-sexe').value||null;
+  var poids=parseFloat(document.getElementById('edit-profil-poids').value)||null;
+  var medecin=document.getElementById('edit-profil-medecin').value.trim()||null;
+  var traitement=document.getElementById('edit-profil-traitement').value.trim()||null;
   var p=db.profiles.find(function(x){return x.id===id;});
   if(!p)return;
-  p.nom=nom;p.annee=annee;p.sexe=sexe;
+  p.nom=nom;p.annee=annee;p.sexe=sexe;p.poids=poids;p.medecin=medecin;p.traitement=traitement;
   save();closeEditProfil();
-  // Mettre à jour le chip si c'est le profil actif
   if(id===CUR_PROF){
     document.getElementById('chip-name').textContent=nom;
     var age=getAge(annee);
-    var meta=[age?age+' ans':null,sexe==='H'?'Homme':sexe==='F'?'Femme':null].filter(Boolean).join(' · ');
+    var meta=[age?age+' ans':null,sexe==='H'?'Homme':sexe==='F'?'Femme':null,poids?poids+' kg':null].filter(Boolean).join(' · ');
     document.getElementById('chip-meta').textContent=meta;
   }
   toast('✅ Profil mis à jour !','success');
@@ -799,9 +934,12 @@ function renderPerList(){
             +'<span style="font-size:13px;font-weight:600;">'+fmtDs(s.date)+'</span>'
             +'<span style="font-size:11px;color:#888;">'+(s.bras==='gauche'?'👈':'👉')+'</span>'
             +'<span style="margin-left:auto;font-size:13px;"><strong class="sys-val">'+s.sys+'</strong>/<strong class="dia-val">'+s.dia+'</strong> mmHg '+(s.hr?'💓'+s.hr:'')+'</span>'
+            +(s.wb!=null?'<span title="'+WB_LABELS[s.wb]+'">'+WB_EMOJIS[s.wb]+'</span>':'')
             +'<span class="badge badge-'+cr[1]+'">'+cr[0]+'</span>'
             +'<button class="btn-del-sm" onclick="delSeance(\''+s.id+'\')">🗑️</button>'
-            +'</div><table class="mesures-table"><thead><tr><th>Mesure</th><th>❤️ SYS</th><th>💙 DIA</th><th>💓</th></tr></thead><tbody>';
+            +'</div>'
+            +(s.comment?'<div class="seance-footer"><span style="font-size:11px;color:#888;">💬</span><span class="seance-comment">'+s.comment+'</span></div>':'')
+            +'<table class="mesures-table"><thead><tr><th>Mesure</th><th>❤️ SYS</th><th>💙 DIA</th><th>💓</th></tr></thead><tbody>';
           s.mesures.forEach(function(m,i){
             if(!m.sys&&!m.dia)return;
             var excl=i===0&&s.mesures.filter(function(x){return x.sys;}).length>=2;
@@ -849,6 +987,16 @@ function renderPerList(){
         +'<span style="font-size:12px;color:#888;">mmHg</span>'
         +'<span class="badge" id="pbadge-'+sid+'"></span>'
         +'<span style="font-size:11px;color:#888;margin-left:auto;">M2+M3</span>'
+        +'</div>'
+        +'<div class="wellbeing-row">'
+        +'<span class="wellbeing-label">😊 Bien-être :</span>'
+        +'<div class="wellbeing-btns">'
+        +WB_EMOJIS.map(function(e,i){return '<button class="wb-btn" id="wb-'+sid+'-'+i+'" onclick="selectWB(\''+sid+'\','+i+')" title="'+WB_LABELS[i]+'">'+e+'</button>';}).join('')
+        +'</div>'
+        +'</div>'
+        +'<div class="comment-row">'
+        +'<label>💬 Commentaire (optionnel)</label>'
+        +'<input type="text" id="sc-'+sid+'" placeholder="ex : mauvaise nuit, sport ce matin, stress…" maxlength="120">'
         +'</div>'
         +'<button class="btn-save-seance" id="bsave-'+sid+'" disabled onclick="saveSeance(\''+sid+'\')">💾 Enregistrer la séance</button>'
         +'<p style="font-size:11px;color:#888;text-align:center;margin-top:6px;">Le bouton s\'active une fois les 3 mesures saisies</p>'
@@ -959,6 +1107,24 @@ function onMesureInput(sid){
   if(btn)btn.disabled=!(s1&&d1&&s2&&d2&&s3&&d3);
 }
 
+var WB_EMOJIS=['😁','🙂','😐','😟','😰'];
+var WB_LABELS=['Très bien','Bien','Moyen','Fatigué','Très stressé'];
+
+function selectWB(sid, idx){
+  WB_EMOJIS.forEach(function(e,i){
+    var btn=document.getElementById('wb-'+sid+'-'+i);
+    if(btn)btn.classList.toggle('selected', i===idx);
+  });
+}
+
+function getSelectedWB(sid){
+  for(var i=0;i<WB_EMOJIS.length;i++){
+    var btn=document.getElementById('wb-'+sid+'-'+i);
+    if(btn&&btn.classList.contains('selected'))return i;
+  }
+  return null;
+}
+
 function saveSeance(sid){
   var s1=parseInt(document.getElementById('s1s-'+sid).value)||null;
   var d1=parseInt(document.getElementById('s1d-'+sid).value)||null;
@@ -976,6 +1142,9 @@ function saveSeance(sid){
 
   [2,3].forEach(function(n){var k=sid+'_'+n;if(timers[k]){clearInterval(timers[k].iv);delete timers[k];}});
 
+  var wb=getSelectedWB(sid);
+  var comment=document.getElementById('sc-'+sid)?document.getElementById('sc-'+sid).value.trim():'';
+
   var mesures=[{sys:s1,dia:d1,hr:h1},{sys:s2,dia:d2,hr:h2},{sys:s3,dia:d3,hr:h3}];
   var used=mesures.slice(1);
   var sys=avg(used.map(function(x){return x.sys;}));
@@ -983,7 +1152,7 @@ function saveSeance(sid){
   var hr=avg(used.filter(function(x){return x.hr;}).map(function(x){return x.hr;}));
 
   var pd=getPD();
-  pd.seances.push({id:uid(),perId:sid,date:date,mom:mom,bras:bras,mesures:mesures,sys:sys,dia:dia,hr:hr});
+  pd.seances.push({id:uid(),perId:sid,date:date,mom:mom,bras:bras,mesures:mesures,sys:sys,dia:dia,hr:hr,wb:wb,comment:comment});
   save();toast('✅ Séance enregistrée !','success');renderPerList();
 }
 
@@ -1026,8 +1195,11 @@ function renderHist(){
       +'<span>'+(s.mom==='matin'?'☀️':'🌙')+'</span>'
       +'<span style="font-size:13px;font-weight:600;">'+fmtDs(s.date)+'</span>'
       +'<span style="margin-left:auto;"><strong class="sys-val">'+s.sys+'</strong>/<strong class="dia-val">'+s.dia+'</strong> mmHg '+(s.hr?'💓'+s.hr:'')+'</span>'
+      +(s.wb!=null?'<span title="'+WB_LABELS[s.wb]+'">'+WB_EMOJIS[s.wb]+'</span>':'')
       +'<span class="badge badge-'+cr[1]+'">'+cr[0]+'</span>'
-      +'</div><table class="mesures-table"><thead><tr><th>Mesure</th><th>❤️ SYS</th><th>💙 DIA</th><th>💓</th></tr></thead><tbody>';
+      +'</div>'
+      +(s.comment?'<div class="seance-footer"><span style="font-size:11px;color:#888;">💬</span><span class="seance-comment">'+s.comment+'</span></div>':'')
+      +'<table class="mesures-table"><thead><tr><th>Mesure</th><th>❤️ SYS</th><th>💙 DIA</th><th>💓</th></tr></thead><tbody>';
     s.mesures.forEach(function(m,i){
       if(!m.sys&&!m.dia)return;
       var excl=i===0&&s.mesures.filter(function(x){return x.sys;}).length>=2;
@@ -1268,6 +1440,263 @@ function genICS(){
   document.body.appendChild(a);a.click();document.body.removeChild(a);URL.revokeObjectURL(url);
   closeAgenda();
   toast('✅ Fichier .ics téléchargé !','success');
+}
+
+// ═══════════════════════════════════════════════════════════
+// RAPPORT
+// ═══════════════════════════════════════════════════════════
+function renderRapportPerList(){
+  var pd=getPD();
+  var w=document.getElementById('rapport-per-list');
+  if(!pd.periodes||!pd.periodes.length){
+    w.innerHTML='<div class="empty-state" style="padding:1rem;"><span class="empty-icon">📭</span><p>Aucune période disponible.</p></div>';return;
+  }
+  var h='<div style="display:flex;flex-direction:column;gap:8px;">';
+  pd.periodes.forEach(function(p){
+    var cnt=(pd.seances||[]).filter(function(s){return s.perId===p.id;}).length;
+    h+='<div style="display:flex;align-items:center;gap:10px;padding:8px 12px;border:1px solid #e2e8f0;border-radius:8px;background:#fff;">'
+      +'<input type="checkbox" id="rp-'+p.id+'" checked style="width:16px;height:16px;cursor:pointer;">'
+      +'<label for="rp-'+p.id+'" style="flex:1;font-size:13px;font-weight:500;cursor:pointer;">'+p.nom+'</label>'
+      +'<span style="font-size:11px;color:#888;">'+fmtDs(p.debut)+' → '+fmtDs(p.fin)+' · '+cnt+' séance'+(cnt!==1?'s':'')+'</span>'
+      +'</div>';
+  });
+  w.innerHTML=h+'</div>';
+}
+
+function genRapport(format){
+  var pd=getPD();
+  var prof=db.profiles.find(function(x){return x.id===CUR_PROF;})||{nom:'Patient'};
+  var selectedPers=pd.periodes.filter(function(p){
+    var cb=document.getElementById('rp-'+p.id);
+    return cb&&cb.checked;
+  });
+  if(!selectedPers.length){toast('⚠️ Sélectionnez au moins une période','error');return;}
+
+  var age=getAge(prof.annee);
+  var today=new Date().toLocaleDateString('fr-FR',{day:'2-digit',month:'long',year:'numeric'});
+
+  // Calculer stats globales
+  var allSeances=[];
+  selectedPers.forEach(function(p){
+    var s=(pd.seances||[]).filter(function(s){return s.perId===p.id;});
+    allSeances=allSeances.concat(s);
+  });
+  allSeances.sort(function(a,b){return a.date.localeCompare(b.date)||(a.mom==='matin'?-1:1);});
+
+  var sysList=allSeances.map(function(s){return s.sys;});
+  var diaList=allSeances.map(function(s){return s.dia;});
+  var hrList=allSeances.filter(function(s){return s.hr;}).map(function(s){return s.hr;});
+  var matinSeances=allSeances.filter(function(s){return s.mom==='matin';});
+  var soirSeances=allSeances.filter(function(s){return s.mom==='soir';});
+  var sysMoy=avg(sysList),diaMoy=avg(diaList),hrMoy=avg(hrList);
+  var sysMatin=avg(matinSeances.map(function(s){return s.sys;}));
+  var diaMatin=avg(matinSeances.map(function(s){return s.dia;}));
+  var sysSoir=avg(soirSeances.map(function(s){return s.sys;}));
+  var diaSoir=avg(soirSeances.map(function(s){return s.dia;}));
+
+  var htaCount=allSeances.filter(function(s){return s.sys>=140||s.dia>=90;}).length;
+  var htaPct=allSeances.length?Math.round(htaCount/allSeances.length*100):0;
+
+  // Tendance
+  var tendance='—';
+  if(allSeances.length>=4){
+    var first=allSeances.slice(0,Math.floor(allSeances.length/2));
+    var last=allSeances.slice(Math.floor(allSeances.length/2));
+    var sysFirst=avg(first.map(function(s){return s.sys;}));
+    var sysLast=avg(last.map(function(s){return s.sys;}));
+    var diff=sysLast-sysFirst;
+    tendance=diff<=-5?'📉 En baisse':diff>=5?'📈 En hausse':'➡️ Stable';
+  }
+
+  // Bien-être stats
+  var wbSeances=allSeances.filter(function(s){return s.wb!=null;});
+  var wbMoy=wbSeances.length?avg(wbSeances.map(function(s){return s.wb;})):null;
+  var wbLabel=wbMoy!=null?WB_EMOJIS[Math.round(wbMoy)]+' '+WB_LABELS[Math.round(wbMoy)]:'Non renseigné';
+
+  var cr=cat(sysMoy||0,diaMoy||0);
+  var crColor={ok:'#27500A',warn:'#633806',danger:'#791F1F'}[cr[1]];
+  var crBg={ok:'#EAF3DE',warn:'#FAEEDA',danger:'#FCEBEB'}[cr[1]];
+
+  // Données graphiques
+  var labels=allSeances.map(function(s){return fmtDs(s.date)+' '+(s.mom==='matin'?'☀':'🌙');});
+  var sysData=allSeances.map(function(s){return s.sys;});
+  var diaData=allSeances.map(function(s){return s.dia;});
+  var hrData=allSeances.map(function(s){return s.hr||null;});
+  var wbData=allSeances.map(function(s){return s.wb!=null?(4-s.wb):null;});// inversé: 4=très bien
+
+  var html='<!DOCTYPE html><html lang="fr"><head>'
+    +'<meta charset="UTF-8">'
+    +'<title>Rapport tensionnel — '+prof.nom+'</title>'
+    +'<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"><\/script>'
+    +'<style>'
+    +'*{box-sizing:border-box;margin:0;padding:0;}'
+    +'body{font-family:Arial,sans-serif;font-size:13px;color:#1a1a2e;padding:20px;max-width:800px;margin:0 auto;}'
+    +'@media print{body{padding:0;} .no-print{display:none;} .page-break{page-break-before:always;}}'
+    +'.header{background:#0C447C;color:#fff;padding:20px 24px;border-radius:12px;margin-bottom:20px;display:flex;justify-content:space-between;align-items:flex-start;}'
+    +'.header h1{font-size:20px;margin-bottom:4px;}'
+    +'.header p{font-size:12px;opacity:.8;}'
+    +'.header-right{text-align:right;font-size:12px;opacity:.85;}'
+    +'.section{margin-bottom:20px;}'
+    +'.section-title{font-size:14px;font-weight:700;color:#0C447C;border-bottom:2px solid #0C447C;padding-bottom:4px;margin-bottom:12px;}'
+    +'.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;}'
+    +'.grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:12px;}'
+    +'.grid-4{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:12px;}'
+    +'.info-box{background:#f8f9fa;border:1px solid #e2e8f0;border-radius:8px;padding:10px 14px;}'
+    +'.info-label{font-size:11px;color:#888;margin-bottom:3px;}'
+    +'.info-val{font-size:15px;font-weight:700;color:#1a1a2e;}'
+    +'.metric-box{border-radius:10px;padding:10px 14px;text-align:center;border:1px solid transparent;}'
+    +'.m-sys{background:#FAECE7;border-color:#F5C4B3;} .m-dia{background:#E6F1FB;border-color:#B5D4F4;} .m-hr{background:#EAF3DE;border-color:#C0DD97;}'
+    +'.metric-lbl{font-size:11px;font-weight:600;margin-bottom:4px;}'
+    +'.m-sys .metric-lbl{color:#993C1D;} .m-dia .metric-lbl{color:#185FA5;} .m-hr .metric-lbl{color:#3B6D11;}'
+    +'.metric-val{font-size:22px;font-weight:700;}'
+    +'.m-sys .metric-val{color:#712B13;} .m-dia .metric-val{color:#0C447C;} .m-hr .metric-val{color:#27500A;}'
+    +'.metric-unit{font-size:11px;}'
+    +'.bilan-box{padding:12px 16px;border-radius:10px;margin-bottom:12px;display:flex;align-items:center;gap:10px;}'
+    +'.seance-table{width:100%;border-collapse:collapse;font-size:12px;}'
+    +'.seance-table th{background:#f8f9fa;text-align:left;padding:6px 8px;border:1px solid #e2e8f0;font-weight:600;color:#555;}'
+    +'.seance-table td{padding:6px 8px;border:1px solid #e2e8f0;vertical-align:top;}'
+    +'.seance-table tr:nth-child(even) td{background:#fafafa;}'
+    +'.sys-val{color:#712B13;font-weight:700;} .dia-val{color:#0C447C;font-weight:700;}'
+    +'.badge{display:inline-block;padding:1px 7px;border-radius:99px;font-size:10px;font-weight:700;}'
+    +'.badge-ok{background:#EAF3DE;color:#27500A;} .badge-warn{background:#FAEEDA;color:#633806;} .badge-danger{background:#FCEBEB;color:#791F1F;}'
+    +'.chart-wrap{background:#fff;border:1px solid #e2e8f0;border-radius:8px;padding:12px;margin-bottom:12px;}'
+    +'.chart-title{font-size:12px;font-weight:600;color:#555;margin-bottom:8px;}'
+    +'.normes-table{width:100%;border-collapse:collapse;font-size:12px;}'
+    +'.normes-table th,.normes-table td{padding:5px 8px;border:1px solid #e2e8f0;}'
+    +'.normes-table th{background:#f8f9fa;font-weight:600;color:#555;}'
+    +'.footer{margin-top:24px;padding-top:12px;border-top:1px solid #e2e8f0;font-size:11px;color:#888;text-align:center;}'
+    +'.print-btn{position:fixed;bottom:20px;right:20px;background:#0C447C;color:#fff;border:none;padding:12px 20px;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer;box-shadow:0 4px 12px rgba(0,0,0,.2);}'
+    +'</style></head><body>'
+
+    // BOUTON IMPRESSION
+    +'<button class="print-btn no-print" onclick="window.print()">🖨️ Imprimer / PDF</button>'
+
+    // EN-TÊTE
+    +'<div class="header">'
+    +'<div><h1>🩺 Rapport tensionnel</h1><p>Généré le '+today+'</p></div>'
+    +'<div class="header-right">'
+    +(prof.medecin?'<div>Médecin : '+prof.medecin+'</div>':'')
+    +'<div>Application : Suivi tensionnel</div>'
+    +'</div></div>'
+
+    // IDENTITÉ PATIENT
+    +'<div class="section"><div class="section-title">👤 Patient</div>'
+    +'<div class="grid-4">'
+    +'<div class="info-box"><div class="info-label">Nom</div><div class="info-val">'+prof.nom+'</div></div>'
+    +'<div class="info-box"><div class="info-label">Âge</div><div class="info-val">'+(age?age+' ans':'—')+'</div></div>'
+    +'<div class="info-box"><div class="info-label">Sexe</div><div class="info-val">'+(prof.sexe==='H'?'Homme':prof.sexe==='F'?'Femme':'—')+'</div></div>'
+    +'<div class="info-box"><div class="info-label">Poids</div><div class="info-val">'+(prof.poids?prof.poids+' kg':'—')+'</div></div>'
+    +'</div>'
+    +(prof.traitement?'<div class="info-box"><div class="info-label">💊 Traitements en cours</div><div class="info-val" style="font-size:13px;">'+prof.traitement+'</div></div>':'')
+    +'</div>'
+
+    // PÉRIODES ANALYSÉES
+    +'<div class="section"><div class="section-title">📅 Périodes analysées</div>'
+    +'<div class="grid-2">'
+    +selectedPers.map(function(p){
+      var cnt=(pd.seances||[]).filter(function(s){return s.perId===p.id;}).length;
+      return '<div class="info-box"><div class="info-val" style="font-size:13px;">'+p.nom+'</div><div class="info-label">'+fmtD(p.debut)+' → '+fmtD(p.fin)+' · '+cnt+' séance'+(cnt!==1?'s':'')+'</div></div>';
+    }).join('')
+    +'</div></div>'
+
+    // RÉSUMÉ STATISTIQUES
+    +'<div class="section"><div class="section-title">📊 Résumé statistiques</div>'
+    +'<div class="grid-3">'
+    +'<div class="metric-box m-sys"><div class="metric-lbl">❤️ Systolique moy.</div><div class="metric-val">'+(sysMoy||'—')+'</div><div class="metric-unit">mmHg</div></div>'
+    +'<div class="metric-box m-dia"><div class="metric-lbl">💙 Diastolique moy.</div><div class="metric-val">'+(diaMoy||'—')+'</div><div class="metric-unit">mmHg</div></div>'
+    +'<div class="metric-box m-hr"><div class="metric-lbl">💓 Pouls moyen</div><div class="metric-val">'+(hrMoy||'—')+'</div><div class="metric-unit">bpm</div></div>'
+    +'</div>'
+    +'<div class="grid-4">'
+    +'<div class="info-box"><div class="info-label">☀️ Moy. matin (SYS/DIA)</div><div class="info-val" style="font-size:13px;">'+(sysMatin&&diaMatin?sysMatin+'/'+diaMatin+' mmHg':'—')+'</div></div>'
+    +'<div class="info-box"><div class="info-label">🌙 Moy. soir (SYS/DIA)</div><div class="info-val" style="font-size:13px;">'+(sysSoir&&diaSoir?sysSoir+'/'+diaSoir+' mmHg':'—')+'</div></div>'
+    +'<div class="info-box"><div class="info-label">⚠️ Séances en zone HTA</div><div class="info-val" style="font-size:13px;">'+htaCount+' / '+allSeances.length+' ('+htaPct+'%)</div></div>'
+    +'<div class="info-box"><div class="info-label">📈 Tendance</div><div class="info-val" style="font-size:13px;">'+tendance+'</div></div>'
+    +'</div>'
+    +'<div class="bilan-box" style="background:'+crBg+';border:1px solid;border-color:'+(cr[1]==='ok'?'#C0DD97':cr[1]==='warn'?'#FAC775':'#F09595')+'">'
+    +'<span style="font-size:20px;">'+cr[0].split(' ')[0]+'</span>'
+    +'<div><strong style="color:'+crColor+';font-size:14px;">Bilan global : '+cr[0].replace(/^\S+\s/,'')+'</strong>'
+    +'<div style="font-size:12px;color:'+crColor+';">sur '+allSeances.length+' séance'+(allSeances.length>1?'s':'')+' — '+selectedPers.length+' période'+(selectedPers.length>1?'s':'')+'</div></div>'
+    +'<div style="margin-left:auto;text-align:right;font-size:12px;color:'+crColor+';">Bien-être moyen<br><strong>'+wbLabel+'</strong></div>'
+    +'</div></div>'
+
+    // GRAPHIQUES
+    +'<div class="section"><div class="section-title">📈 Graphiques</div>'
+    +'<div class="chart-wrap"><div class="chart-title">❤️ Systolique et 💙 Diastolique (mmHg)</div><div style="position:relative;height:220px;"><canvas id="c1"></canvas></div></div>'
+    +'<div class="grid-2">'
+    +'<div class="chart-wrap"><div class="chart-title">💓 Pouls (bpm)</div><div style="position:relative;height:160px;"><canvas id="c2"></canvas></div></div>'
+    +'<div class="chart-wrap"><div class="chart-title">😊 Bien-être (4=très bien, 0=très stressé)</div><div style="position:relative;height:160px;"><canvas id="c3"></canvas></div></div>'
+    +'</div></div>'
+
+    // DÉTAIL SÉANCES
+    +'<div class="section page-break"><div class="section-title">📋 Détail des séances</div>'
+    +selectedPers.map(function(p){
+      var seances=(pd.seances||[]).filter(function(s){return s.perId===p.id;}).sort(function(a,b){return a.date.localeCompare(b.date)||(a.mom==='matin'?-1:1);});
+      if(!seances.length)return '';
+      var rows=seances.map(function(s){
+        var cr2=cat(s.sys,s.dia);
+        return '<tr>'
+          +'<td>'+(s.mom==='matin'?'☀️':'🌙')+' '+fmtDs(s.date)+'</td>'
+          +'<td style="text-align:center;"><span class="sys-val">'+s.sys+'</span>/<span class="dia-val">'+s.dia+'</span></td>'
+          +'<td style="text-align:center;">'+(s.hr||'—')+'</td>'
+          +'<td style="text-align:center;"><span class="badge badge-'+cr2[1]+'">'+cr2[0]+'</span></td>'
+          +'<td style="text-align:center;">'+(s.wb!=null?WB_EMOJIS[s.wb]+' '+WB_LABELS[s.wb]:'—')+'</td>'
+          +'<td style="font-style:italic;color:#666;">'+(s.comment||'')+'</td>'
+          +'</tr>';
+      }).join('');
+      return '<div style="margin-bottom:16px;">'
+        +'<div style="font-weight:700;color:#0C447C;margin-bottom:6px;">📅 '+p.nom+' ('+fmtD(p.debut)+' → '+fmtD(p.fin)+')</div>'
+        +'<table class="seance-table"><thead><tr>'
+        +'<th>Date</th><th>SYS/DIA (mmHg)</th><th>Pouls</th><th>Statut</th><th>Bien-être</th><th>Commentaire</th>'
+        +'</tr></thead><tbody>'+rows+'</tbody></table></div>';
+    }).join('')
+    +'</div>'
+
+    // NORMES
+    +'<div class="section"><div class="section-title">📖 Normes de référence ESH/ESC</div>'
+    +'<table class="normes-table"><thead><tr><th>Catégorie</th><th>Systolique</th><th>Diastolique</th><th>Classification</th></tr></thead><tbody>'
+    +'<tr><td>Optimal</td><td>&lt;120 mmHg</td><td>&lt;80 mmHg</td><td><span class="badge badge-ok">✅ Optimal</span></td></tr>'
+    +'<tr><td>Normal</td><td>120–129 mmHg</td><td>80–84 mmHg</td><td><span class="badge badge-ok">🟢 Normal</span></td></tr>'
+    +'<tr><td>Normal élevé</td><td>130–139 mmHg</td><td>85–89 mmHg</td><td><span class="badge badge-warn">🟡 Normal élevé</span></td></tr>'
+    +'<tr><td>HTA grade 1</td><td>140–159 mmHg</td><td>90–99 mmHg</td><td><span class="badge badge-warn">🟠 HTA grade 1</span></td></tr>'
+    +'<tr><td>HTA grade 2+</td><td>≥160 mmHg</td><td>≥100 mmHg</td><td><span class="badge badge-danger">🔴 HTA grade 2+</span></td></tr>'
+    +'</tbody></table></div>'
+
+    // FOOTER
+    +'<div class="footer">Rapport généré le '+today+' par l\'application Suivi tensionnel · Ces données sont fournies à titre indicatif · Consultez votre médecin pour toute interprétation médicale</div>'
+
+    // SCRIPTS GRAPHIQUES
+    +'<script>'
+    +'var labels='+JSON.stringify(labels)+';'
+    +'var sysData='+JSON.stringify(sysData)+';'
+    +'var diaData='+JSON.stringify(diaData)+';'
+    +'var hrData='+JSON.stringify(hrData)+';'
+    +'var wbData='+JSON.stringify(wbData)+';'
+    +'var axOpts={ticks:{font:{size:10},maxRotation:45,autoSkip:true},grid:{color:"rgba(128,128,128,0.1)"}};'
+    +'var baseOpts={responsive:true,maintainAspectRatio:false,plugins:{legend:{display:true,labels:{font:{size:11}}}},scales:{x:axOpts,y:{grid:{color:"rgba(128,128,128,0.1)"}}}};'
+    +'new Chart(document.getElementById("c1"),{type:"line",data:{labels:labels,datasets:['
+    +'{label:"Systolique",data:sysData,borderColor:"#D85A30",backgroundColor:"rgba(216,90,48,0.07)",pointRadius:4,tension:0.35},'
+    +'{label:"Diastolique",data:diaData,borderColor:"#185FA5",backgroundColor:"rgba(24,95,165,0.07)",pointRadius:4,tension:0.35},'
+    +'{label:"Seuil 140",data:sysData.map(function(){return 140;}),borderColor:"rgba(216,90,48,0.3)",borderDash:[5,4],pointRadius:0},'
+    +'{label:"Seuil 90",data:diaData.map(function(){return 90;}),borderColor:"rgba(24,95,165,0.3)",borderDash:[5,4],pointRadius:0}'
+    +']},options:baseOpts});'
+    +'new Chart(document.getElementById("c2"),{type:"line",data:{labels:labels,datasets:[{label:"Pouls",data:hrData,borderColor:"#1D9E75",backgroundColor:"rgba(29,158,117,0.07)",pointRadius:4,tension:0.35}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:axOpts,y:{grid:{color:"rgba(128,128,128,0.1)"}}}}});'
+    +'new Chart(document.getElementById("c3"),{type:"bar",data:{labels:labels,datasets:[{label:"Bien-être",data:wbData,backgroundColor:wbData.map(function(v){return v==null?"transparent":v>=3?"#EAF3DE":v>=2?"#FAEEDA":"#FCEBEB";}),borderRadius:4}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:axOpts,y:{min:0,max:4,ticks:{callback:function(v){return ["😰","😟","😐","🙂","😁"][v]||"";},font:{size:14}},grid:{color:"rgba(128,128,128,0.1)"}}}}});'
+    +'<\/script>'
+    +'</body></html>';
+
+  var blob=new Blob([html],{type:'text/html;charset=utf-8'});
+  var url=URL.createObjectURL(blob);
+  if(format==='pdf'){
+    var a=document.createElement('a');
+    a.href=url;
+    a.download='rapport_'+prof.nom.replace(/[^a-zA-Z0-9]/g,'_')+'_'+new Date().toISOString().slice(0,10)+'.html';
+    document.body.appendChild(a);a.click();document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    toast('✅ Rapport téléchargé — ouvrez le fichier puis Imprimer → PDF','success');
+  } else {
+    window.open(url,'_blank');
+    toast('✅ Rapport ouvert dans un nouvel onglet','success');
+  }
 }
 
 // ═══════════════════════════════════════════════════════════
