@@ -793,11 +793,11 @@ function getPD(){
 }
 
 function cat(s,d){
-  if(s<120&&d<80)return['✅ Optimal','ok'];
-  if(s<130&&d<85)return['🟢 Normal','ok'];
-  if(s<140&&d<90)return['🟡 Normal élevé','warn'];
-  if(s<160&&d<100)return['🟠 HTA grade 1','warn'];
-  return['🔴 HTA grade 2+','danger'];
+  if(s<120&&d<80)return['Optimal','ok'];
+  if(s<130&&d<85)return['Normal','ok'];
+  if(s<140&&d<90)return['Normal eleve','warn'];
+  if(s<160&&d<100)return['HTA grade 1','warn'];
+  return['HTA grade 2+','danger'];
 }
 
 function avg(arr){
@@ -1601,7 +1601,7 @@ function renderGraph(){
     +'<div class="bilan" style="'+bc[cr[1]]+'"><span style="font-size:16px;">'+cr[0].split(' ')[0]+'</span><span style="font-size:13px;font-weight:600;">'+cr[0].replace(/^\S+\s/,'')+'</span><span style="margin-left:auto;font-size:12px;">'+seances.length+' séance'+(seances.length>1?'s':'')+' · '+p.nom+'</span></div>'
     +interp;
 
-  var labels=seances.map(function(s){return fmtDs(s.date)+' '+(s.mom==='matin'?'☀':'🌙');});
+  var labels=seances.map(function(s){return fmtDs(s.date)+' '+(s.mom==='matin'?' M':' S');});
   var axOpts={ticks:{font:{size:10},maxRotation:45,autoSkip:true},grid:{color:'rgba(128,128,128,0.08)'}};
   var opts={responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:axOpts,y:{grid:{color:'rgba(128,128,128,0.08)'}}}};
   if(cS)cS.destroy();if(cD)cD.destroy();if(cH)cH.destroy();
@@ -1871,7 +1871,7 @@ function genRapport(format){
   var crBg={ok:'#EAF3DE',warn:'#FAEEDA',danger:'#FCEBEB'}[cr[1]];
 
   // Données graphiques
-  var labels=allSeances.map(function(s){return fmtDs(s.date)+' '+(s.mom==='matin'?'☀':'🌙');});
+  var labels=allSeances.map(function(s){return fmtDs(s.date)+' '+(s.mom==='matin'?' M':' S');});
   var sysData=allSeances.map(function(s){return s.sys;});
   var diaData=allSeances.map(function(s){return s.dia;});
   var hrData=allSeances.map(function(s){return s.hr||null;});
@@ -1992,7 +1992,7 @@ function genRapport(format){
           +'<td style="text-align:center;"><span class="sys-val">'+s.sys+'</span>/<span class="dia-val">'+s.dia+'</span></td>'
           +'<td style="text-align:center;">'+(s.hr||'—')+'</td>'
           +'<td style="text-align:center;"><span class="badge badge-'+cr2[1]+'">'+cr2[0]+'</span></td>'
-          +'<td style="text-align:center;">'+(s.wb!=null?WB_EMOJIS[s.wb]+' '+WB_LABELS[s.wb]:'—')+'</td>'
+          +'<td style="text-align:center;">'+(s.wb!=null?WB_LABELS[s.wb]:'—')+'</td>'
           +'<td style="font-style:italic;color:#666;">'+(s.comment||'')+'</td>'
           +'</tr>';
       }).join('');
@@ -2058,7 +2058,7 @@ function genRapport(format){
 }
 
 function genRapportPDF(selectedPers, prof, pd){
-  toast('⏳ Génération du PDF…','ok');
+  toast('Generation du PDF...','ok');
   setTimeout(function(){
     try{
       var jsPDF=window.jspdf.jsPDF;
@@ -2084,13 +2084,13 @@ function genRapportPDF(selectedPers, prof, pd){
       doc.text('Généré le '+today,M+5,y+17);
       if(prof.medecin){doc.text('Médecin : '+prof.medecin,M+5,y+23);}
       // Icône cœur
-      doc.setFontSize(22);doc.text('🩺',W-M-12,y+17);
+      doc.setFontSize(22);// pas d'icone emoji
       y+=34;
 
       // ── PATIENT ──
       doc.setTextColor(BLUE[0],BLUE[1],BLUE[2]);
       doc.setFontSize(11);doc.setFont('helvetica','bold');
-      doc.text('👤  Patient',M,y);
+      doc.text('PATIENT',M,y);
       y+=4;
       doc.setDrawColor(BLUE[0],BLUE[1],BLUE[2]);
       doc.setLineWidth(0.5);doc.line(M,y,M+CW,y);y+=4;
@@ -2110,7 +2110,7 @@ function genRapportPDF(selectedPers, prof, pd){
         doc.setFillColor(LGRAY[0],LGRAY[1],LGRAY[2]);
         doc.roundedRect(M,y,CW,10,2,2,'F');
         doc.setTextColor(GRAY[0],GRAY[1],GRAY[2]);doc.setFontSize(7);doc.setFont('helvetica','normal');
-        doc.text('💊 Traitements en cours',M+3,y+4);
+        doc.text('Traitements en cours',M+3,y+4);
         doc.setTextColor(DARK[0],DARK[1],DARK[2]);doc.setFontSize(8);doc.setFont('helvetica','normal');
         doc.text(prof.traitement.substring(0,90),M+3,y+9);
         y+=14;
@@ -2120,7 +2120,7 @@ function genRapportPDF(selectedPers, prof, pd){
       y+=2;
       doc.setTextColor(BLUE[0],BLUE[1],BLUE[2]);
       doc.setFontSize(11);doc.setFont('helvetica','bold');
-      doc.text('📅  Périodes analysées',M,y);y+=4;
+      doc.text('PERIODES ANALYSEES',M,y);y+=4;
       doc.setLineWidth(0.5);doc.line(M,y,M+CW,y);y+=4;
       var pcw=CW/selectedPers.length;
       selectedPers.forEach(function(p,i){
@@ -2163,7 +2163,7 @@ function genRapportPDF(selectedPers, prof, pd){
       y+=2;
       doc.setTextColor(BLUE[0],BLUE[1],BLUE[2]);
       doc.setFontSize(11);doc.setFont('helvetica','bold');
-      doc.text('📊  Résumé statistiques',M,y);y+=4;
+      doc.text('RESUME STATISTIQUES',M,y);y+=4;
       doc.setLineWidth(0.5);doc.line(M,y,M+CW,y);y+=4;
 
       // 3 métriques
@@ -2183,14 +2183,14 @@ function genRapportPDF(selectedPers, prof, pd){
       doc.roundedRect(M,y,CW,10,2,2,'F');
       doc.setTextColor(crC[0],crC[1],crC[2]);
       doc.setFontSize(9);doc.setFont('helvetica','bold');
-      doc.text('Bilan global : '+cr[0].replace(/^\S+\s/,''),M+4,y+7);
+      doc.text('Bilan : '+cr[0].replace(/^\S+\s/,''),M+4,y+7);
       doc.setFont('helvetica','normal');doc.setFontSize(8);
       doc.text(allSeances.length+' séances · '+tendance,M+CW-50,y+7);
       y+=14;
 
       // Stats secondaires
       var sw=CW/4-1;
-      [['☀️ Matin SYS/DIA',sysMat&&diaMat?sysMat+'/'+diaMat+' mmHg':'—'],['🌙 Soir SYS/DIA',sysSoi&&diaSoi?sysSoi+'/'+diaSoi+' mmHg':'—'],['⚠️ Séances HTA',htaN+'/'+allSeances.length+' ('+htaPct+'%)'],['📈 Tendance',tendance]].forEach(function(s,i){
+      [['Matin SYS/DIA',sysMat&&diaMat?sysMat+'/'+diaMat+' mmHg':'—'],['Soir SYS/DIA',sysSoi&&diaSoi?sysSoi+'/'+diaSoi+' mmHg':'—'],['Séances HTA',htaN+'/'+allSeances.length+' ('+htaPct+'%)'],['Tendance',tendance]].forEach(function(s,i){
         doc.setFillColor(LGRAY[0],LGRAY[1],LGRAY[2]);
         doc.roundedRect(M+i*(sw+1.3),y,sw,12,2,2,'F');
         doc.setTextColor(GRAY[0],GRAY[1],GRAY[2]);doc.setFontSize(6.5);doc.setFont('helvetica','normal');
@@ -2205,7 +2205,7 @@ function genRapportPDF(selectedPers, prof, pd){
         y+=2;
         doc.setTextColor(BLUE[0],BLUE[1],BLUE[2]);
         doc.setFontSize(11);doc.setFont('helvetica','bold');
-        doc.text('📈  Évolution tensionnelle',M,y);y+=4;
+        doc.text('EVOLUTION TENSIONNELLE',M,y);y+=4;
         doc.setLineWidth(0.5);doc.line(M,y,M+CW,y);y+=4;
 
         var GH=35; var GW=CW;
@@ -2245,16 +2245,16 @@ function genRapportPDF(selectedPers, prof, pd){
 
         // Légende
         doc.setFontSize(7);doc.setFont('helvetica','normal');
-        doc.setTextColor(RED_S[0],RED_S[1],RED_S[2]);doc.text('— Systolique',M+4,y+GH-1);
-        doc.setTextColor(BLUE_D[0],BLUE_D[1],BLUE_D[2]);doc.text('— Diastolique',M+38,y+GH-1);
-        doc.setTextColor(216,90,48);doc.text('- - Seuil 140',M+75,y+GH-1);
+        doc.setTextColor(RED_S[0],RED_S[1],RED_S[2]);doc.text('-- Systolique',M+4,y+GH-1);
+        doc.setTextColor(BLUE_D[0],BLUE_D[1],BLUE_D[2]);doc.text('-- Diastolique',M+38,y+GH-1);
+        doc.setTextColor(216,90,48);doc.text('-- Seuil 140',M+75,y+GH-1);
 
         // Labels X (dates)
         doc.setTextColor(GRAY[0],GRAY[1],GRAY[2]);doc.setFontSize(5.5);
         var step=Math.ceil(vals.length/8);
         allSeances.forEach(function(s,i){
           if(i%step===0||i===vals.length-1){
-            var lbl=fmtDs(s.date)+(s.mom==='matin'?'☀':'🌙');
+            var lbl=fmtDs(s.date)+(s.mom==='matin'?' M':' S');
             doc.text(lbl,px(i)-4,y+GH+3);
           }
         });
@@ -2266,11 +2266,11 @@ function genRapportPDF(selectedPers, prof, pd){
       if(y>200){doc.addPage();y=M;}
       doc.setTextColor(BLUE[0],BLUE[1],BLUE[2]);
       doc.setFontSize(11);doc.setFont('helvetica','bold');
-      doc.text('📋  Détail des séances',M,y);y+=4;
+      doc.text('DETAIL DES SEANCES',M,y);y+=4;
       doc.setLineWidth(0.5);doc.line(M,y,M+CW,y);y+=3;
 
       // En-têtes tableau
-      var cols2=['Date','Moment','SYS/DIA','Pouls','Statut','Bien-être','Commentaire'];
+      var cols2=['Date','Moment','SYS/DIA','Pouls','Statut','Bien-etre','Commentaire'];
       var cws2=[22,14,22,14,24,16,CW-22-14-22-14-24-16];
       doc.setFillColor(BLUE[0],BLUE[1],BLUE[2]);
       doc.rect(M,y,CW,6,'F');
@@ -2294,7 +2294,7 @@ function genRapportPDF(selectedPers, prof, pd){
         doc.setFillColor(bg[0],bg[1],bg[2]);
         doc.rect(M,y,CW,6,'F');
         doc.setTextColor(DARK[0],DARK[1],DARK[2]);doc.setFontSize(7);doc.setFont('helvetica','normal');
-        var cells=[fmtDs(s.date),s.mom==='matin'?'☀️ Matin':'🌙 Soir',s.sys+'/'+s.dia+' mmHg',(s.hr||'—')+' bpm','',s.wb!=null?WB_EMOJIS[s.wb]+' '+WB_LABELS[s.wb]:'—',(s.comment||'').substring(0,28)];
+        var cells=[fmtDs(s.date),s.mom==='matin'?'Matin':'Soir',s.sys+'/'+s.dia+' mmHg',(s.hr||'—')+' bpm','',s.wb!=null?WB_LABELS[s.wb]:'—',(s.comment||'').substring(0,28)];
         cx=M;
         cells.forEach(function(c,i){
           if(i===4){
@@ -2314,9 +2314,9 @@ function genRapportPDF(selectedPers, prof, pd){
       if(y>250){doc.addPage();y=M;}
       doc.setTextColor(BLUE[0],BLUE[1],BLUE[2]);
       doc.setFontSize(11);doc.setFont('helvetica','bold');
-      doc.text('📖  Normes de référence ESH/ESC',M,y);y+=4;
+      doc.text('NORMES DE REFERENCE ESH/ESC',M,y);y+=4;
       doc.setLineWidth(0.5);doc.line(M,y,M+CW,y);y+=3;
-      var normes=[['Optimal','< 120','< 80','✅ Optimal','ok'],['Normal','120–129','80–84','🟢 Normal','ok'],['Normal élevé','130–139','85–89','🟡 Normal élevé','warn'],['HTA grade 1','140–159','90–99','🟠 HTA grade 1','warn'],['HTA grade 2+','≥ 160','≥ 100','🔴 HTA grade 2+','danger']];
+      var normes=[['Optimal','< 120','< 80','Optimal','ok'],['Normal','120–129','80–84','Normal','ok'],['Normal élevé','130–139','85–89','Normal eleve','warn'],['HTA grade 1','140–159','90–99','HTA grade 1','warn'],['HTA grade 2+','≥ 160','≥ 100','HTA grade 2+','danger']];
       var ncw=[40,35,35,CW-40-35-35];
       doc.setFillColor(BLUE[0],BLUE[1],BLUE[2]);doc.rect(M,y,CW,6,'F');
       doc.setTextColor(255,255,255);doc.setFontSize(7);doc.setFont('helvetica','bold');
@@ -2344,10 +2344,10 @@ function genRapportPDF(selectedPers, prof, pd){
       }
 
       doc.save('rapport_'+prof.nom.replace(/[^a-zA-Z0-9]/g,'_')+'_'+new Date().toISOString().slice(0,10)+'.pdf');
-      toast('✅ PDF téléchargé !','success');
+      toast('PDF telecharge !','success');
     } catch(e){
       console.error(e);
-      toast('❌ Erreur PDF : '+e.message,'error');
+      toast('Erreur generation PDF','error');
     }
   },100);
 }
