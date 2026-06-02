@@ -614,9 +614,9 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
         <div class="step-list">
           <div class="step"><div class="step-num">1</div><div class="step-body"><div class="step-title">Se préparer</div><div class="step-desc">Restez assis au calme 5 minutes avant la mesure. Évitez café, tabac et effort physique dans l'heure précédente.</div></div></div>
           <div class="step"><div class="step-num">2</div><div class="step-body"><div class="step-title">Tester le son (iOS uniquement)</div><div class="step-desc">Appuyez sur le bouton 🔔 Test son dans le formulaire de saisie avant votre première séance. Cela déverrouille l'audio pour les bips.</div></div></div>
-          <div class="step"><div class="step-num">3</div><div class="step-body"><div class="step-title">Saisir M1 complète — minuteur démarre</div><div class="step-desc">Remplissez les <strong>3 champs de M1 : SYS, DIA et bpm</strong>. Dès que les trois sont renseignés, le minuteur démarre automatiquement (durée réglable dans ⚙️ Données). M2 reste grisée pendant ce délai.</div></div></div>
-          <div class="step"><div class="step-num">4</div><div class="step-body"><div class="step-title">🔔 Triple bip — saisir M2 puis M3</div><div class="step-desc">À la fin du minuteur, 3 bips retentissent et M2 se déverrouille. Remplissez les 3 champs de M2 (SYS + DIA + bpm) pour déclencher le minuteur de M3. Même principe.</div></div></div>
-          <div class="step"><div class="step-num">5</div><div class="step-body"><div class="step-title">Enregistrer la séance</div><div class="step-desc">Le bouton 💾 s'active uniquement quand les <strong>9 champs sont remplis</strong> (SYS + DIA + bpm × 3 mesures). M1 est automatiquement écartée — la moyenne M2+M3 est retenue.</div></div></div>
+          <div class="step"><div class="step-num">3</div><div class="step-body"><div class="step-title">Saisir M1 — minuteur démarre dès SYS + DIA</div><div class="step-desc">Remplissez au minimum <strong>SYS et DIA</strong> de M1. Dès que ces deux valeurs sont saisies, le minuteur démarre automatiquement (durée réglable dans ⚙️ Données). Le bpm est optionnel. M2 reste grisée pendant le délai.</div></div></div>
+          <div class="step"><div class="step-num">4</div><div class="step-body"><div class="step-title">🔔 Triple bip — saisir M2 puis M3</div><div class="step-desc">À la fin du minuteur, 3 bips retentissent et M2 se déverrouille. Saisissez SYS + DIA de M2 pour déclencher le minuteur de M3. Même principe.</div></div></div>
+          <div class="step"><div class="step-num">5</div><div class="step-body"><div class="step-title">Enregistrer la séance</div><div class="step-desc">Le bouton 💾 s'active quand <strong>SYS et DIA des 3 mesures</strong> sont remplis. M1 est automatiquement écartée — la moyenne M2+M3 est retenue. Le bpm est enregistré s'il est saisi.</div></div></div>
         </div>
         <div class="info-box"><span>ℹ️</span><span>La durée du minuteur est paramétrable dans ⚙️ Données. Votre médecin peut recommander 1, 2 ou 3 minutes entre les mesures.</span></div>
         <div class="tip-box"><span>💡</span><span>Posez l'appareil entre les mesures — les 3 bips vous alerteront au bon moment sans surveiller l'écran.</span></div>
@@ -1237,7 +1237,7 @@ function saveSlotSeance(perId, date, mom){
   var s1=valInput('s1s-'+sid), d1=valInput('s1d-'+sid), h1=valInput('s1h-'+sid);
   var s2=valInput('s2s-'+sid), d2=valInput('s2d-'+sid), h2=valInput('s2h-'+sid);
   var s3=valInput('s3s-'+sid), d3=valInput('s3d-'+sid), h3=valInput('s3h-'+sid);
-  if(!s1||!d1||!h1||!s2||!d2||!h2||!s3||!d3||!h3){toast('⚠️ Les 3 mesures complètes (SYS, DIA et bpm) sont requises','error');return;}
+  if(!s1||!d1||!s2||!d2||!s3||!d3){toast('⚠️ Les valeurs SYS et DIA des 3 mesures sont requises','error');return;}
   var bras=document.getElementById('sb-'+sid).value;
   var wb=getSelectedWB(sid);
   var comment=document.getElementById('sc-'+sid)?document.getElementById('sc-'+sid).value.trim():'';
@@ -1343,13 +1343,13 @@ function stopBtnChecker(sid){
 }
 
 function checkBtnState(sid){
-  var s1=valInput('s1s-'+sid), d1=valInput('s1d-'+sid), h1=valInput('s1h-'+sid);
-  var s2=valInput('s2s-'+sid), d2=valInput('s2d-'+sid), h2=valInput('s2h-'+sid);
-  var s3=valInput('s3s-'+sid), d3=valInput('s3d-'+sid), h3=valInput('s3h-'+sid);
+  var s1=valInput('s1s-'+sid), d1=valInput('s1d-'+sid);
+  var s2=valInput('s2s-'+sid), d2=valInput('s2d-'+sid);
+  var s3=valInput('s3s-'+sid), d3=valInput('s3d-'+sid);
   var btn=document.getElementById('bsave-'+sid);
   if(!btn)return stopBtnChecker(sid);
-  // Les 3 mesures complètes = SYS + DIA + bpm pour chaque mesure
-  var ok=!!(s1&&d1&&h1&&s2&&d2&&h2&&s3&&d3&&h3);
+  // Bouton actif quand SYS + DIA des 3 mesures sont remplis (bpm optionnel)
+  var ok=!!(s1&&d1&&s2&&d2&&s3&&d3);
   if(ok){
     btn.removeAttribute('disabled');
     btn.style.opacity='1';
@@ -1367,10 +1367,9 @@ function onMesureInput(sid){
   var s2=valInput('s2s-'+sid), d2=valInput('s2d-'+sid), h2=valInput('s2h-'+sid);
   var s3=valInput('s3s-'+sid), d3=valInput('s3d-'+sid), h3=valInput('s3h-'+sid);
 
-  // Timer démarre quand les 3 champs M1 sont remplis (SYS + DIA + bpm)
-  if(s1&&d1&&h1&&!timers[sid+'_2']){startTimer(sid,2);startBtnChecker(sid);}
-  // Timer M3 démarre quand les 3 champs M2 sont remplis
-  if(s2&&d2&&h2&&!timers[sid+'_3']){startTimer(sid,3);startBtnChecker(sid);}
+  // Timer démarre dès que SYS + DIA sont remplis (bpm optionnel pour le déclenchement)
+  if(s1&&d1&&!timers[sid+'_2']){startTimer(sid,2);startBtnChecker(sid);}
+  if(s2&&d2&&!timers[sid+'_3']){startTimer(sid,3);startBtnChecker(sid);}
 
   // Calcul moyenne (M2+M3 prioritaires)
   var used=[];
