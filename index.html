@@ -123,6 +123,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .excluded{opacity:.4;text-decoration:line-through;}
 .btn-del-sm{background:none;border:none;cursor:pointer;font-size:13px;padding:3px 6px;border-radius:6px;-webkit-tap-highlight-color:transparent;pointer-events:all !important;opacity:1 !important;color:#888;}
 .btn-del-sm:active{background:#FCEBEB;}
+.btn-edit-sm{background:none;border:none;cursor:pointer;font-size:13px;padding:3px 6px;border-radius:6px;-webkit-tap-highlight-color:transparent;pointer-events:all !important;opacity:1 !important;color:#888;}
+.btn-edit-sm:active{background:#E6F1FB;}
 .wellbeing-row{display:flex;align-items:center;gap:10px;margin-bottom:.75rem;flex-wrap:wrap;}
 .wellbeing-label{font-size:12px;font-weight:500;color:#555;white-space:nowrap;}
 .wellbeing-btns{display:flex;gap:6px;}
@@ -277,6 +279,58 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
     <div class="modal-btns">
       <button class="modal-btn-cancel" onclick="closeAgenda()">Annuler</button>
       <button class="modal-btn-ok" onclick="genICS()">⬇️ Télécharger .ics</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL ÉDITION SÉANCE -->
+<div class="modal-overlay hidden" id="modal-edit-seance" onclick="if(event.target===this)closeEditSeance()">
+  <div class="modal-box" style="max-width:480px;">
+    <div class="modal-title">✏️ Modifier la séance</div>
+    <div class="modal-sub">Corrigez les valeurs ci-dessous.</div>
+    <input type="hidden" id="es-id">
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:12px;">
+      <div class="field-sm"><label>📆 Date</label><input type="date" id="es-date"></div>
+      <div class="field-sm"><label>🕐 Moment</label><select id="es-mom"><option value="matin">☀️ Matin</option><option value="soir">🌙 Soir</option></select></div>
+      <div class="field-sm"><label>💪 Bras</label><select id="es-bras"><option value="gauche">👈 Gauche</option><option value="droit">👉 Droit</option></select></div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:12px;">
+      <div style="background:#f8fafc;border-radius:8px;padding:8px;border:1px solid #e2e8f0;">
+        <div style="font-size:11px;font-weight:600;color:#888;text-align:center;margin-bottom:6px;">M1 (écartée)</div>
+        <div class="field-sm"><label>❤️ SYS</label><input type="number" id="es-s1" min="60" max="250"></div>
+        <div class="field-sm" style="margin-top:5px;"><label>💙 DIA</label><input type="number" id="es-d1" min="40" max="160"></div>
+        <div class="field-sm" style="margin-top:5px;"><label>💓 bpm</label><input type="number" id="es-h1" min="30" max="220"></div>
+      </div>
+      <div style="background:#f8fafc;border-radius:8px;padding:8px;border:1px solid #e2e8f0;">
+        <div style="font-size:11px;font-weight:600;color:#888;text-align:center;margin-bottom:6px;">M2 (retenue)</div>
+        <div class="field-sm"><label>❤️ SYS</label><input type="number" id="es-s2" min="60" max="250"></div>
+        <div class="field-sm" style="margin-top:5px;"><label>💙 DIA</label><input type="number" id="es-d2" min="40" max="160"></div>
+        <div class="field-sm" style="margin-top:5px;"><label>💓 bpm</label><input type="number" id="es-h2" min="30" max="220"></div>
+      </div>
+      <div style="background:#f8fafc;border-radius:8px;padding:8px;border:1px solid #e2e8f0;">
+        <div style="font-size:11px;font-weight:600;color:#888;text-align:center;margin-bottom:6px;">M3 (retenue)</div>
+        <div class="field-sm"><label>❤️ SYS</label><input type="number" id="es-s3" min="60" max="250"></div>
+        <div class="field-sm" style="margin-top:5px;"><label>💙 DIA</label><input type="number" id="es-d3" min="40" max="160"></div>
+        <div class="field-sm" style="margin-top:5px;"><label>💓 bpm</label><input type="number" id="es-h3" min="30" max="220"></div>
+      </div>
+    </div>
+    <div class="wellbeing-row" style="margin-bottom:10px;">
+      <span class="wellbeing-label">😊 Bien-être :</span>
+      <div class="wellbeing-btns">
+        <button class="wb-btn" id="es-wb-0" onclick="selectWBEdit(0)" title="Très bien">😁</button>
+        <button class="wb-btn" id="es-wb-1" onclick="selectWBEdit(1)" title="Bien">🙂</button>
+        <button class="wb-btn" id="es-wb-2" onclick="selectWBEdit(2)" title="Moyen">😐</button>
+        <button class="wb-btn" id="es-wb-3" onclick="selectWBEdit(3)" title="Fatigué">😟</button>
+        <button class="wb-btn" id="es-wb-4" onclick="selectWBEdit(4)" title="Très stressé">😰</button>
+      </div>
+    </div>
+    <div class="field-sm" style="margin-bottom:14px;">
+      <label>💬 Commentaire (optionnel)</label>
+      <input type="text" id="es-comment" placeholder="ex : mauvaise nuit, stress…" maxlength="120">
+    </div>
+    <div class="modal-btns">
+      <button class="modal-btn-cancel" onclick="closeEditSeance()">Annuler</button>
+      <button class="modal-btn-ok" onclick="updateSeance()">💾 Enregistrer</button>
     </div>
   </div>
 </div>
@@ -936,6 +990,7 @@ function renderPerList(){
             +'<span style="margin-left:auto;font-size:13px;"><strong class="sys-val">'+s.sys+'</strong>/<strong class="dia-val">'+s.dia+'</strong> mmHg '+(s.hr?'💓'+s.hr:'')+'</span>'
             +(s.wb!=null?'<span title="'+WB_LABELS[s.wb]+'">'+WB_EMOJIS[s.wb]+'</span>':'')
             +'<span class="badge badge-'+cr[1]+'">'+cr[0]+'</span>'
+            +'<button class="btn-edit-sm" onclick="openEditSeance(\''+s.id+'\')">✏️</button>'
             +'<button class="btn-del-sm" onclick="delSeance(\''+s.id+'\')">🗑️</button>'
             +'</div>'
             +(s.comment?'<div class="seance-footer"><span style="font-size:11px;color:#888;">💬</span><span class="seance-comment">'+s.comment+'</span></div>':'')
@@ -1066,18 +1121,24 @@ function startTimer(sid,step){
       if(lbl)lbl.textContent='✅ Vous pouvez saisir M'+step;
       if(col){col.classList.remove('locked');col.classList.add('unlocked');}
       bip();
+      // Recalculer l'état du bouton après déverrouillage
+      onMesureInput(sid);
     }
   },500);
 }
 
+function valInput(id){
+  var el=document.getElementById(id);
+  if(!el)return null;
+  var v=parseFloat(el.value);
+  return (!isNaN(v)&&v>0)?v:null;
+}
+
 function onMesureInput(sid){
   unlockAudio();
-  var s1=parseInt(document.getElementById('s1s-'+sid).value)||null;
-  var d1=parseInt(document.getElementById('s1d-'+sid).value)||null;
-  var s2=parseInt(document.getElementById('s2s-'+sid).value)||null;
-  var d2=parseInt(document.getElementById('s2d-'+sid).value)||null;
-  var s3=parseInt(document.getElementById('s3s-'+sid).value)||null;
-  var d3=parseInt(document.getElementById('s3d-'+sid).value)||null;
+  var s1=valInput('s1s-'+sid), d1=valInput('s1d-'+sid);
+  var s2=valInput('s2s-'+sid), d2=valInput('s2d-'+sid);
+  var s3=valInput('s3s-'+sid), d3=valInput('s3d-'+sid);
 
   if(s1&&d1&&!timers[sid+'_2'])startTimer(sid,2);
   if(s2&&d2&&!timers[sid+'_3'])startTimer(sid,3);
@@ -1102,9 +1163,9 @@ function onMesureInput(sid){
     prev.classList.remove('visible');
   }
 
-  // Activer bouton save si 3 mesures complètes
+  // Activer bouton save : les 3 SYS et DIA doivent être valides (> 0)
   var btn=document.getElementById('bsave-'+sid);
-  if(btn)btn.disabled=!(s1&&d1&&s2&&d2&&s3&&d3);
+  if(btn) btn.disabled=!(s1&&d1&&s2&&d2&&s3&&d3);
 }
 
 var WB_EMOJIS=['😁','🙂','😐','😟','😰'];
@@ -1126,25 +1187,18 @@ function getSelectedWB(sid){
 }
 
 function saveSeance(sid){
-  var s1=parseInt(document.getElementById('s1s-'+sid).value)||null;
-  var d1=parseInt(document.getElementById('s1d-'+sid).value)||null;
-  var h1=parseInt(document.getElementById('s1h-'+sid).value)||null;
-  var s2=parseInt(document.getElementById('s2s-'+sid).value)||null;
-  var d2=parseInt(document.getElementById('s2d-'+sid).value)||null;
-  var h2=parseInt(document.getElementById('s2h-'+sid).value)||null;
-  var s3=parseInt(document.getElementById('s3s-'+sid).value)||null;
-  var d3=parseInt(document.getElementById('s3d-'+sid).value)||null;
-  var h3=parseInt(document.getElementById('s3h-'+sid).value)||null;
+  var s1=valInput('s1s-'+sid), d1=valInput('s1d-'+sid), h1=valInput('s1h-'+sid);
+  var s2=valInput('s2s-'+sid), d2=valInput('s2d-'+sid), h2=valInput('s2h-'+sid);
+  var s3=valInput('s3s-'+sid), d3=valInput('s3d-'+sid), h3=valInput('s3h-'+sid);
   var date=document.getElementById('sd-'+sid).value;
   var mom=document.getElementById('sm-'+sid).value;
   var bras=document.getElementById('sb-'+sid).value;
-  if(!s1||!d1||!s2||!d2||!s3||!d3){toast('⚠️ Les 3 mesures sont requises','error');return;}
+  if(!s1||!d1||!s2||!d2||!s3||!d3){toast('⚠️ Les 3 mesures SYS et DIA sont requises','error');return;}
 
   [2,3].forEach(function(n){var k=sid+'_'+n;if(timers[k]){clearInterval(timers[k].iv);delete timers[k];}});
 
   var wb=getSelectedWB(sid);
   var comment=document.getElementById('sc-'+sid)?document.getElementById('sc-'+sid).value.trim():'';
-
   var mesures=[{sys:s1,dia:d1,hr:h1},{sys:s2,dia:d2,hr:h2},{sys:s3,dia:d3,hr:h3}];
   var used=mesures.slice(1);
   var sys=avg(used.map(function(x){return x.sys;}));
@@ -1154,6 +1208,74 @@ function saveSeance(sid){
   var pd=getPD();
   pd.seances.push({id:uid(),perId:sid,date:date,mom:mom,bras:bras,mesures:mesures,sys:sys,dia:dia,hr:hr,wb:wb,comment:comment});
   save();toast('✅ Séance enregistrée !','success');renderPerList();
+}
+
+function openEditSeance(seanceId){
+  var pd=getPD();
+  var s=pd.seances.find(function(x){return x.id===seanceId;});
+  if(!s)return;
+  document.getElementById('es-id').value=seanceId;
+  document.getElementById('es-date').value=s.date;
+  document.getElementById('es-mom').value=s.mom;
+  document.getElementById('es-bras').value=s.bras;
+  // Mesures
+  [0,1,2].forEach(function(i){
+    var m=s.mesures[i]||{};
+    document.getElementById('es-s'+(i+1)).value=m.sys||'';
+    document.getElementById('es-d'+(i+1)).value=m.dia||'';
+    document.getElementById('es-h'+(i+1)).value=m.hr||'';
+  });
+  // Bien-être
+  WB_EMOJIS.forEach(function(e,i){
+    var btn=document.getElementById('es-wb-'+i);
+    if(btn)btn.classList.toggle('selected',s.wb===i);
+  });
+  document.getElementById('es-comment').value=s.comment||'';
+  document.getElementById('modal-edit-seance').classList.remove('hidden');
+}
+
+function closeEditSeance(){
+  document.getElementById('modal-edit-seance').classList.add('hidden');
+}
+
+function selectWBEdit(idx){
+  WB_EMOJIS.forEach(function(e,i){
+    var btn=document.getElementById('es-wb-'+i);
+    if(btn)btn.classList.toggle('selected',i===idx);
+  });
+}
+
+function getSelectedWBEdit(){
+  for(var i=0;i<WB_EMOJIS.length;i++){
+    var btn=document.getElementById('es-wb-'+i);
+    if(btn&&btn.classList.contains('selected'))return i;
+  }
+  return null;
+}
+
+function updateSeance(){
+  var id=document.getElementById('es-id').value;
+  var s1=valInput('es-s1'), d1=valInput('es-d1'), h1=valInput('es-h1');
+  var s2=valInput('es-s2'), d2=valInput('es-d2'), h2=valInput('es-h2');
+  var s3=valInput('es-s3'), d3=valInput('es-d3'), h3=valInput('es-h3');
+  if(!s1||!d1||!s2||!d2||!s3||!d3){toast('⚠️ Les 3 mesures SYS et DIA sont requises','error');return;}
+  var pd=getPD();
+  var s=pd.seances.find(function(x){return x.id===id;});
+  if(!s)return;
+  s.date=document.getElementById('es-date').value;
+  s.mom=document.getElementById('es-mom').value;
+  s.bras=document.getElementById('es-bras').value;
+  var mesures=[{sys:s1,dia:d1,hr:h1},{sys:s2,dia:d2,hr:h2},{sys:s3,dia:d3,hr:h3}];
+  s.mesures=mesures;
+  var used=mesures.slice(1);
+  s.sys=avg(used.map(function(x){return x.sys;}));
+  s.dia=avg(used.map(function(x){return x.dia;}));
+  s.hr=avg(used.filter(function(x){return x.hr;}).map(function(x){return x.hr;}));
+  s.wb=getSelectedWBEdit();
+  s.comment=document.getElementById('es-comment').value.trim();
+  save();closeEditSeance();
+  toast('✅ Séance modifiée !','success');
+  renderPerList();renderHist();
 }
 
 function delSeance(id){
