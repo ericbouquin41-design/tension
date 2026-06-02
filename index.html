@@ -2058,6 +2058,30 @@ function genRapport(format){
 }
 
 function genRapportPDF(selectedPers, prof, pd){
+  // Nettoie tout texte pour jsPDF (Helvetica = Latin-1 uniquement)
+  function s(t){
+    if(t===null||t===undefined)return '';
+    return String(t)
+      .replace(/[--]/g,'-')
+      .replace(/[≥]/g,'>=')
+      .replace(/[≤]/g,'<=')
+      .replace(/[…]/g,'...')
+      .replace(/[\u2019\u2018]/g,"'")
+      .replace(/[\u201C\u201D]/g,'"')
+      .replace(/é/g,'e').replace(/è/g,'e').replace(/ê/g,'e').replace(/ë/g,'e')
+      .replace(/à/g,'a').replace(/â/g,'a').replace(/ä/g,'a')
+      .replace(/î/g,'i').replace(/ï/g,'i')
+      .replace(/ô/g,'o').replace(/ö/g,'o')
+      .replace(/ù/g,'u').replace(/û/g,'u').replace(/ü/g,'u')
+      .replace(/ç/g,'c')
+      .replace(/É/g,'E').replace(/È/g,'E').replace(/Ê/g,'E')
+      .replace(/À/g,'A').replace(/Â/g,'A')
+      .replace(/Î/g,'I').replace(/Ô/g,'O')
+      .replace(/Ù/g,'U').replace(/Û/g,'U')
+      .replace(/Ç/g,'C')
+      .replace(/[^\x00-\xFF]/g,'?'); // tout ce qui reste hors Latin-1
+  }
+
   toast('Generation du PDF...','ok');
   setTimeout(function(){
     try{
@@ -2079,10 +2103,10 @@ function genRapportPDF(selectedPers, prof, pd){
       doc.roundedRect(M,y,CW,28,3,3,'F');
       doc.setTextColor(255,255,255);
       doc.setFontSize(18);doc.setFont('helvetica','bold');
-      doc.text('Rapport tensionnel',M+5,y+10);
+      doc.text(s('Rapport tensionnel'),M+5,y+10);
       doc.setFontSize(9);doc.setFont('helvetica','normal');
-      doc.text('Généré le '+today,M+5,y+17);
-      if(prof.medecin){doc.text('Médecin : '+prof.medecin,M+5,y+23);}
+      doc.text(s('Genere le '+today),M+5,y+17);
+      if(prof.medecin){doc.text(s('Medecin : '+prof.medecin),M+5,y+23);}
       // Icône cœur
       doc.setFontSize(22);// pas d'icone emoji
       y+=34;
@@ -2090,29 +2114,29 @@ function genRapportPDF(selectedPers, prof, pd){
       // ── PATIENT ──
       doc.setTextColor(BLUE[0],BLUE[1],BLUE[2]);
       doc.setFontSize(11);doc.setFont('helvetica','bold');
-      doc.text('PATIENT',M,y);
+      doc.text(s('PATIENT'),M,y);
       y+=4;
       doc.setDrawColor(BLUE[0],BLUE[1],BLUE[2]);
       doc.setLineWidth(0.5);doc.line(M,y,M+CW,y);y+=4;
 
-      var cols=[[prof.nom||'—','Nom'],[age?age+' ans':'—','Âge'],[prof.sexe==='H'?'Homme':prof.sexe==='F'?'Femme':'—','Sexe'],[prof.poids?prof.poids+' kg':'—','Poids']];
+      var cols=[[prof.nom||'-','Nom'],[age?age+' ans':'-','Age'],[prof.sexe==='H'?'Homme':prof.sexe==='F'?'Femme':'-','Sexe'],[prof.poids?prof.poids+' kg':'-','Poids']];
       var cw=CW/4;
       cols.forEach(function(c,i){
         doc.setFillColor(LGRAY[0],LGRAY[1],LGRAY[2]);
         doc.roundedRect(M+i*cw,y,cw-2,14,2,2,'F');
         doc.setTextColor(GRAY[0],GRAY[1],GRAY[2]);doc.setFontSize(7);doc.setFont('helvetica','normal');
-        doc.text(c[1],M+i*cw+3,y+5);
+        doc.text(s(c[1]),M+i*cw+3,y+5);
         doc.setTextColor(DARK[0],DARK[1],DARK[2]);doc.setFontSize(9);doc.setFont('helvetica','bold');
-        doc.text(c[0],M+i*cw+3,y+11);
+        doc.text(s(c[0]),M+i*cw+3,y+11);
       });
       y+=18;
       if(prof.traitement){
         doc.setFillColor(LGRAY[0],LGRAY[1],LGRAY[2]);
         doc.roundedRect(M,y,CW,10,2,2,'F');
         doc.setTextColor(GRAY[0],GRAY[1],GRAY[2]);doc.setFontSize(7);doc.setFont('helvetica','normal');
-        doc.text('Traitements en cours',M+3,y+4);
+        doc.text(s('Traitements en cours'),M+3,y+4);
         doc.setTextColor(DARK[0],DARK[1],DARK[2]);doc.setFontSize(8);doc.setFont('helvetica','normal');
-        doc.text(prof.traitement.substring(0,90),M+3,y+9);
+        doc.text(s(prof.traitement.substring(0),90),M+3,y+9);
         y+=14;
       }
 
@@ -2120,7 +2144,7 @@ function genRapportPDF(selectedPers, prof, pd){
       y+=2;
       doc.setTextColor(BLUE[0],BLUE[1],BLUE[2]);
       doc.setFontSize(11);doc.setFont('helvetica','bold');
-      doc.text('PERIODES ANALYSEES',M,y);y+=4;
+      doc.text(s('PERIODES ANALYSEES'),M,y);y+=4;
       doc.setLineWidth(0.5);doc.line(M,y,M+CW,y);y+=4;
       var pcw=CW/selectedPers.length;
       selectedPers.forEach(function(p,i){
@@ -2128,9 +2152,9 @@ function genRapportPDF(selectedPers, prof, pd){
         doc.setFillColor(LGRAY[0],LGRAY[1],LGRAY[2]);
         doc.roundedRect(M+i*pcw,y,pcw-2,12,2,2,'F');
         doc.setTextColor(BLUE[0],BLUE[1],BLUE[2]);doc.setFontSize(8);doc.setFont('helvetica','bold');
-        doc.text(p.nom.substring(0,24),M+i*pcw+3,y+5);
+        doc.text(s(p.nom.substring(0),24),M+i*pcw+3,y+5);
         doc.setTextColor(GRAY[0],GRAY[1],GRAY[2]);doc.setFontSize(7);doc.setFont('helvetica','normal');
-        doc.text(fmtD(p.debut)+' → '+fmtD(p.fin)+' · '+cnt+' séa.',M+i*pcw+3,y+10);
+        doc.text(s(fmtD(p.debut)+' - '+fmtD(p.fin)+' - '+cnt+' sea.'),M+i*pcw+3,y+10);
       });
       y+=16;
 
@@ -2163,18 +2187,18 @@ function genRapportPDF(selectedPers, prof, pd){
       y+=2;
       doc.setTextColor(BLUE[0],BLUE[1],BLUE[2]);
       doc.setFontSize(11);doc.setFont('helvetica','bold');
-      doc.text('RESUME STATISTIQUES',M,y);y+=4;
+      doc.text(s('RESUME STATISTIQUES'),M,y);y+=4;
       doc.setLineWidth(0.5);doc.line(M,y,M+CW,y);y+=4;
 
       // 3 métriques
       var mw=(CW-4)/3;
-      [[sysMoy||'—','Systolique moy.',RED_S,[250,236,231]],[diaMoy||'—','Diastolique moy.',BLUE_D,[230,241,251]],[hrMoy||'—','Pouls moyen',GREEN,[234,243,222]]].forEach(function(m,i){
+      [[sysMoy||'-','Systolique moy.',RED_S,[250,236,231]],[diaMoy||'-','Diastolique moy.',BLUE_D,[230,241,251]],[hrMoy||'-','Pouls moyen',GREEN,[234,243,222]]].forEach(function(m,i){
         doc.setFillColor(m[3][0],m[3][1],m[3][2]);
         doc.roundedRect(M+i*(mw+2),y,mw,18,2,2,'F');
         doc.setTextColor(m[2][0],m[2][1],m[2][2]);
-        doc.setFontSize(7);doc.setFont('helvetica','normal');doc.text(m[1],M+i*(mw+2)+3,y+5);
-        doc.setFontSize(16);doc.setFont('helvetica','bold');doc.text(String(m[0]),M+i*(mw+2)+3,y+14);
-        doc.setFontSize(7);doc.setFont('helvetica','normal');doc.text(i<2?'mmHg':'bpm',M+i*(mw+2)+3+doc.getTextWidth(String(m[0]))+2,y+14);
+        doc.setFontSize(7);doc.setFont('helvetica','normal');doc.text(s(m[1]),M+i*(mw+2)+3,y+5);
+        doc.setFontSize(16);doc.setFont('helvetica','bold');doc.text(s(String(m[0])),M+i*(mw+2)+3,y+14);
+        doc.setFontSize(7);doc.setFont('helvetica','normal');doc.text(s(i<2?'mmHg':'bpm'),M+i*(mw+2)+3+doc.getTextWidth(String(m[0]))+2,y+14);
       });
       y+=22;
 
@@ -2183,20 +2207,20 @@ function genRapportPDF(selectedPers, prof, pd){
       doc.roundedRect(M,y,CW,10,2,2,'F');
       doc.setTextColor(crC[0],crC[1],crC[2]);
       doc.setFontSize(9);doc.setFont('helvetica','bold');
-      doc.text('Bilan : '+cr[0].replace(/^\S+\s/,''),M+4,y+7);
+      doc.text(s('Bilan : '+cr[0].replace(/^\S+\s/),''),M+4,y+7);
       doc.setFont('helvetica','normal');doc.setFontSize(8);
-      doc.text(allSeances.length+' séances · '+tendance,M+CW-50,y+7);
+      doc.text(s(allSeances.length+' seances / '+tendance),M+CW-50,y+7);
       y+=14;
 
       // Stats secondaires
       var sw=CW/4-1;
-      [['Matin SYS/DIA',sysMat&&diaMat?sysMat+'/'+diaMat+' mmHg':'—'],['Soir SYS/DIA',sysSoi&&diaSoi?sysSoi+'/'+diaSoi+' mmHg':'—'],['Séances HTA',htaN+'/'+allSeances.length+' ('+htaPct+'%)'],['Tendance',tendance]].forEach(function(s,i){
+      [['Matin SYS/DIA',sysMat&&diaMat?sysMat+'/'+diaMat+' mmHg':'-'],['Soir SYS/DIA',sysSoi&&diaSoi?sysSoi+'/'+diaSoi+' mmHg':'-'],['Seances HTA',htaN+'/'+allSeances.length+' ('+htaPct+'%)'],['Tendance',tendance]].forEach(function(s,i){
         doc.setFillColor(LGRAY[0],LGRAY[1],LGRAY[2]);
         doc.roundedRect(M+i*(sw+1.3),y,sw,12,2,2,'F');
         doc.setTextColor(GRAY[0],GRAY[1],GRAY[2]);doc.setFontSize(6.5);doc.setFont('helvetica','normal');
-        doc.text(s[0],M+i*(sw+1.3)+2,y+4);
+        doc.text(s(s[0]),M+i*(sw+1.3)+2,y+4);
         doc.setTextColor(DARK[0],DARK[1],DARK[2]);doc.setFontSize(8);doc.setFont('helvetica','bold');
-        doc.text(s[1],M+i*(sw+1.3)+2,y+10);
+        doc.text(s(s[1]),M+i*(sw+1.3)+2,y+10);
       });
       y+=16;
 
@@ -2205,7 +2229,7 @@ function genRapportPDF(selectedPers, prof, pd){
         y+=2;
         doc.setTextColor(BLUE[0],BLUE[1],BLUE[2]);
         doc.setFontSize(11);doc.setFont('helvetica','bold');
-        doc.text('EVOLUTION TENSIONNELLE',M,y);y+=4;
+        doc.text(s('EVOLUTION TENSIONNELLE'),M,y);y+=4;
         doc.setLineWidth(0.5);doc.line(M,y,M+CW,y);y+=4;
 
         var GH=35; var GW=CW;
@@ -2245,9 +2269,9 @@ function genRapportPDF(selectedPers, prof, pd){
 
         // Légende
         doc.setFontSize(7);doc.setFont('helvetica','normal');
-        doc.setTextColor(RED_S[0],RED_S[1],RED_S[2]);doc.text('-- Systolique',M+4,y+GH-1);
-        doc.setTextColor(BLUE_D[0],BLUE_D[1],BLUE_D[2]);doc.text('-- Diastolique',M+38,y+GH-1);
-        doc.setTextColor(216,90,48);doc.text('-- Seuil 140',M+75,y+GH-1);
+        doc.setTextColor(RED_S[0],RED_S[1],RED_S[2]);doc.text(s('-- Systolique'),M+4,y+GH-1);
+        doc.setTextColor(BLUE_D[0],BLUE_D[1],BLUE_D[2]);doc.text(s('-- Diastolique'),M+38,y+GH-1);
+        doc.setTextColor(216,90,48);doc.text(s('-- Seuil 140'),M+75,y+GH-1);
 
         // Labels X (dates)
         doc.setTextColor(GRAY[0],GRAY[1],GRAY[2]);doc.setFontSize(5.5);
@@ -2255,7 +2279,7 @@ function genRapportPDF(selectedPers, prof, pd){
         allSeances.forEach(function(s,i){
           if(i%step===0||i===vals.length-1){
             var lbl=fmtDs(s.date)+(s.mom==='matin'?' M':' S');
-            doc.text(lbl,px(i)-4,y+GH+3);
+            doc.text(s(lbl),px(i)-4,y+GH+3);
           }
         });
         y+=GH+8;
@@ -2266,7 +2290,7 @@ function genRapportPDF(selectedPers, prof, pd){
       if(y>200){doc.addPage();y=M;}
       doc.setTextColor(BLUE[0],BLUE[1],BLUE[2]);
       doc.setFontSize(11);doc.setFont('helvetica','bold');
-      doc.text('DETAIL DES SEANCES',M,y);y+=4;
+      doc.text(s('DETAIL DES SEANCES'),M,y);y+=4;
       doc.setLineWidth(0.5);doc.line(M,y,M+CW,y);y+=3;
 
       // En-têtes tableau
@@ -2276,7 +2300,7 @@ function genRapportPDF(selectedPers, prof, pd){
       doc.rect(M,y,CW,6,'F');
       doc.setTextColor(255,255,255);doc.setFontSize(7);doc.setFont('helvetica','bold');
       var cx=M;
-      cols2.forEach(function(c,i){doc.text(c,cx+1,y+4.5);cx+=cws2[i];});
+      cols2.forEach(function(c,i){doc.text(s(c),cx+1,y+4.5);cx+=cws2[i];});
       y+=6;
 
       allSeances.forEach(function(s,idx){
@@ -2285,7 +2309,7 @@ function genRapportPDF(selectedPers, prof, pd){
           doc.setFillColor(BLUE[0],BLUE[1],BLUE[2]);
           doc.rect(M,y,CW,6,'F');
           doc.setTextColor(255,255,255);doc.setFontSize(7);doc.setFont('helvetica','bold');
-          cx=M;cols2.forEach(function(c,i){doc.text(c,cx+1,y+4.5);cx+=cws2[i];});
+          cx=M;cols2.forEach(function(c,i){doc.text(s(c),cx+1,y+4.5);cx+=cws2[i];});
           y+=6;
         }
         var cr2=cat(s.sys,s.dia);
@@ -2294,15 +2318,15 @@ function genRapportPDF(selectedPers, prof, pd){
         doc.setFillColor(bg[0],bg[1],bg[2]);
         doc.rect(M,y,CW,6,'F');
         doc.setTextColor(DARK[0],DARK[1],DARK[2]);doc.setFontSize(7);doc.setFont('helvetica','normal');
-        var cells=[fmtDs(s.date),s.mom==='matin'?'Matin':'Soir',s.sys+'/'+s.dia+' mmHg',(s.hr||'—')+' bpm','',s.wb!=null?WB_LABELS[s.wb]:'—',(s.comment||'').substring(0,28)];
+        var cells=[fmtDs(s.date),s.mom==='matin'?'Matin':'Soir',s.sys+'/'+s.dia+' mmHg',(s.hr||'-')+' bpm','',s.wb!=null?WB_LABELS[s.wb]:'-',(s.comment||'').substring(0,28)];
         cx=M;
         cells.forEach(function(c,i){
           if(i===4){
             doc.setTextColor(crC2[0],crC2[1],crC2[2]);doc.setFont('helvetica','bold');
-            doc.text(cr2[0].replace(/^\S+\s/,''),cx+1,y+4.5);
+            doc.text(s(cr2[0].replace(/^\S+\s/),''),cx+1,y+4.5);
             doc.setTextColor(DARK[0],DARK[1],DARK[2]);doc.setFont('helvetica','normal');
           } else {
-            doc.text(c,cx+1,y+4.5);
+            doc.text(s(c),cx+1,y+4.5);
           }
           cx+=cws2[i];
         });
@@ -2314,21 +2338,21 @@ function genRapportPDF(selectedPers, prof, pd){
       if(y>250){doc.addPage();y=M;}
       doc.setTextColor(BLUE[0],BLUE[1],BLUE[2]);
       doc.setFontSize(11);doc.setFont('helvetica','bold');
-      doc.text('NORMES DE REFERENCE ESH/ESC',M,y);y+=4;
+      doc.text(s('NORMES DE REFERENCE ESH/ESC'),M,y);y+=4;
       doc.setLineWidth(0.5);doc.line(M,y,M+CW,y);y+=3;
-      var normes=[['Optimal','< 120','< 80','Optimal','ok'],['Normal','120–129','80–84','Normal','ok'],['Normal élevé','130–139','85–89','Normal eleve','warn'],['HTA grade 1','140–159','90–99','HTA grade 1','warn'],['HTA grade 2+','≥ 160','≥ 100','HTA grade 2+','danger']];
+      var normes=[['Optimal','< 120','< 80','Optimal','ok'],['Normal','120-129','80-84','Normal','ok'],['Normal eleve','130-139','85-89','Normal eleve','warn'],['HTA grade 1','140-159','90-99','HTA grade 1','warn'],['HTA grade 2+','>= 160','>= 100','HTA grade 2+','danger']];
       var ncw=[40,35,35,CW-40-35-35];
       doc.setFillColor(BLUE[0],BLUE[1],BLUE[2]);doc.rect(M,y,CW,6,'F');
       doc.setTextColor(255,255,255);doc.setFontSize(7);doc.setFont('helvetica','bold');
-      ['Catégorie','Systolique','Diastolique','Statut'].forEach(function(h,i){var x=M;for(var j=0;j<i;j++)x+=ncw[j];doc.text(h,x+2,y+4.5);});y+=6;
+      ['Categorie','Systolique','Diastolique','Statut'].forEach(function(h,i){var x=M;for(var j=0;j<i;j++)x+=ncw[j];doc.text(s(h),x+2,y+4.5);});y+=6;
       normes.forEach(function(n,idx){
         var bg=idx%2===0?[255,255,255]:LGRAY;
         doc.setFillColor(bg[0],bg[1],bg[2]);doc.rect(M,y,CW,5.5,'F');
         var nc=n[4]==='ok'?[39,80,10]:n[4]==='warn'?[99,56,6]:[121,31,19];
         doc.setTextColor(DARK[0],DARK[1],DARK[2]);doc.setFont('helvetica','normal');doc.setFontSize(7);
-        [n[0],n[1],n[2]].forEach(function(v,i){var x=M;for(var j=0;j<i;j++)x+=ncw[j];doc.text(v,x+2,y+4);});
+        [n[0],n[1],n[2]].forEach(function(v,i){var x=M;for(var j=0;j<i;j++)x+=ncw[j];doc.text(s(v),x+2,y+4);});
         doc.setTextColor(nc[0],nc[1],nc[2]);doc.setFont('helvetica','bold');
-        var x=M+ncw[0]+ncw[1]+ncw[2];doc.text(n[3],x+2,y+4);
+        var x=M+ncw[0]+ncw[1]+ncw[2];doc.text(s(n[3]),x+2,y+4);
         y+=5.5;
       });
 
@@ -2338,8 +2362,8 @@ function genRapportPDF(selectedPers, prof, pd){
         doc.setPage(i);
         doc.setFontSize(7);doc.setFont('helvetica','normal');
         doc.setTextColor(180,180,180);
-        doc.text('Rapport généré le '+today+' — Application Suivi tensionnel — ericbouquin41-design.github.io/tension/',M,295);
-        doc.text('Page '+i+'/'+pageCount,W-M-10,295);
+        doc.text(s('Rapport genere le '+today+' - Application Suivi tensionnel - ericbouquin41-design.github.io/tension/'),M,295);
+        doc.text(s('Page '+i+'/'+pageCount),W-M-10,295);
         doc.setDrawColor(200,200,200);doc.setLineWidth(0.3);doc.line(M,290,W-M,290);
       }
 
@@ -2347,7 +2371,7 @@ function genRapportPDF(selectedPers, prof, pd){
       toast('PDF telecharge !','success');
     } catch(e){
       console.error(e);
-      toast('Erreur generation PDF','error');
+      toast('Erreur PDF','error');
     }
   },100);
 }
