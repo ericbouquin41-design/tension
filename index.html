@@ -531,10 +531,9 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
       <p style="font-size:13px;color:#555;margin-bottom:1rem;">Sélectionnez les périodes à inclure dans le rapport, puis choisissez le format.</p>
       <div id="rapport-per-list" style="margin-bottom:1rem;"></div>
       <div style="display:flex;flex-direction:column;gap:.75rem;">
-        <button class="btn btn-primary" style="margin-top:0;background:#0C447C;" onclick="genRapport('html')">🌐 Ouvrir le rapport (HTML)</button>
-        <button class="btn btn-primary" style="margin-top:0;background:#1D9E75;" onclick="genRapport('pdf')">🖨️ Imprimer / Enregistrer en PDF</button>
+        <button class="btn btn-primary" style="margin-top:0;background:#0C447C;" onclick="genRapport('html')">🌐 Ouvrir le rapport HTML</button>
       </div>
-      <div class="info-box" style="margin-top:.75rem;"><span>💡</span><span>Le rapport s'ouvre et l'impression se lance automatiquement. Dans la boîte d'impression, choisissez <strong>Enregistrer en PDF</strong> comme destination. Sur iPhone : <strong>Partager → Imprimer → Appui long → Enregistrer en PDF</strong>.</span></div>
+      <div class="info-box" style="margin-top:.75rem;"><span>💡</span><span>Le rapport s'ouvre dans un nouvel onglet. Pour l'enregistrer en PDF : <strong>Fichier → Imprimer → Enregistrer en PDF</strong>. Sur iPhone : <strong>Partager → Imprimer → Appui long → Enregistrer en PDF</strong>.</span></div>
     </div>
   </div>
 
@@ -2035,17 +2034,6 @@ function genRapport(format){
     +'new Chart(document.getElementById("c3"),{type:"bar",data:{labels:labels,datasets:[{label:"Bien-être",data:wbData,backgroundColor:wbData.map(function(v){return v==null?"transparent":v>=3?"#EAF3DE":v>=2?"#FAEEDA":"#FCEBEB";}),borderRadius:4}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:axOpts,y:{min:0,max:4,ticks:{callback:function(v){return ["😰","😟","😐","🙂","😁"][v]||"";},font:{size:14}},grid:{color:"rgba(128,128,128,0.1)"}}}}});'
     +'<\/script>'
     +'</body></html>';
-
-  if(format==='pdf'){
-    // Ouvrir le rapport et déclencher l'impression automatiquement
-    // Le navigateur propose "Enregistrer en PDF" dans la boîte d'impression
-    var htmlPdf=html.replace('<body>','<body onload="setTimeout(function(){window.print();},800);">');
-    var blobPdf=new Blob([htmlPdf],{type:'text/html;charset=utf-8'});
-    var urlPdf=URL.createObjectURL(blobPdf);
-    window.open(urlPdf,'_blank');
-    toast('🖨️ Choisissez "Enregistrer en PDF" dans la boîte d\'impression','ok');
-    return;
-  }
 
   var blob=new Blob([html],{type:'text/html;charset=utf-8'});
   var url=URL.createObjectURL(blob);
