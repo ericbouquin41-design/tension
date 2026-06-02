@@ -532,9 +532,9 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
       <div id="rapport-per-list" style="margin-bottom:1rem;"></div>
       <div style="display:flex;flex-direction:column;gap:.75rem;">
         <button class="btn btn-primary" style="margin-top:0;background:#0C447C;" onclick="genRapport('html')">🌐 Ouvrir le rapport (HTML)</button>
-        <button class="btn btn-primary" style="margin-top:0;background:#1D9E75;" onclick="genRapport('pdf')">📄 Télécharger directement en PDF</button>
+        <button class="btn btn-primary" style="margin-top:0;background:#1D9E75;" onclick="genRapport('pdf')">🖨️ Imprimer / Enregistrer en PDF</button>
       </div>
-      <div class="info-box" style="margin-top:.75rem;"><span>ℹ️</span><span>Le PDF est généré directement sur votre appareil. Patientez quelques secondes après le clic.</span></div>
+      <div class="info-box" style="margin-top:.75rem;"><span>💡</span><span>Le rapport s'ouvre et l'impression se lance automatiquement. Dans la boîte d'impression, choisissez <strong>Enregistrer en PDF</strong> comme destination. Sur iPhone : <strong>Partager → Imprimer → Appui long → Enregistrer en PDF</strong>.</span></div>
     </div>
   </div>
 
@@ -734,7 +734,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 </div><!-- fin app -->
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 <script>
 // ═══════════════════════════════════════════════════════════
 // DONNÉES & ÉTAT
@@ -2038,38 +2037,13 @@ function genRapport(format){
     +'</body></html>';
 
   if(format==='pdf'){
-    toast('⏳ Génération du PDF…','ok');
-    // Créer un conteneur hors-écran avec le rapport HTML
-    var container=document.createElement('div');
-    container.style.cssText='position:fixed;top:-99999px;left:-99999px;width:794px;background:#fff;';
-    // Injecter le HTML du rapport (sans les balises html/body)
-    var bodyStart=html.indexOf('<body>')+6;
-    var bodyEnd=html.indexOf('</body>');
-    var bodyContent=html.slice(bodyStart,bodyEnd);
-    // Retirer le bouton impression et les scripts
-    bodyContent=bodyContent.replace(/<button class="print-btn[^>]*>.*?<\/button>/,'');
-    bodyContent=bodyContent.replace(/<script[\s\S]*?<\/script>/g,'');
-    container.innerHTML=bodyContent;
-    document.body.appendChild(container);
-
-    // Attendre que le DOM soit prêt puis générer le PDF
-    setTimeout(function(){
-      var prof2=db.profiles.find(function(x){return x.id===CUR_PROF;})||{nom:'Patient'};
-      var filename='rapport_'+prof2.nom.replace(/[^a-zA-Z0-9]/g,'_')+'_'+new Date().toISOString().slice(0,10)+'.pdf';
-      html2pdf().set({
-        margin:[10,10,10,10],
-        filename:filename,
-        image:{type:'jpeg',quality:0.95},
-        html2canvas:{scale:1.5,useCORS:true,logging:false},
-        jsPDF:{unit:'mm',format:'a4',orientation:'portrait'}
-      }).from(container).save().then(function(){
-        document.body.removeChild(container);
-        toast('✅ PDF téléchargé !','success');
-      }).catch(function(e){
-        document.body.removeChild(container);
-        toast('❌ Erreur : '+e.message,'error');
-      });
-    },300);
+    // Ouvrir le rapport et déclencher l'impression automatiquement
+    // Le navigateur propose "Enregistrer en PDF" dans la boîte d'impression
+    var htmlPdf=html.replace('<body>','<body onload="setTimeout(function(){window.print();},800);">');
+    var blobPdf=new Blob([htmlPdf],{type:'text/html;charset=utf-8'});
+    var urlPdf=URL.createObjectURL(blobPdf);
+    window.open(urlPdf,'_blank');
+    toast('🖨️ Choisissez "Enregistrer en PDF" dans la boîte d\'impression','ok');
     return;
   }
 
