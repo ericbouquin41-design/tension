@@ -1122,7 +1122,8 @@ function startTimer(sid,step){
       if(col){col.classList.remove('locked');col.classList.add('unlocked');}
       bip();
       // Recalculer l'état du bouton après déverrouillage
-      onMesureInput(sid);
+      checkBtnState(sid);
+      startBtnChecker(sid);
     }
   },500);
 }
@@ -1134,16 +1135,46 @@ function valInput(id){
   return (!isNaN(v)&&v>0)?v:null;
 }
 
+// Intervalle de vérification du bouton (fiabilité iOS)
+var btnCheckers={};
+
+function startBtnChecker(sid){
+  if(btnCheckers[sid])return;
+  btnCheckers[sid]=setInterval(function(){checkBtnState(sid);},400);
+}
+
+function stopBtnChecker(sid){
+  if(btnCheckers[sid]){clearInterval(btnCheckers[sid]);delete btnCheckers[sid];}
+}
+
+function checkBtnState(sid){
+  var s1=valInput('s1s-'+sid), d1=valInput('s1d-'+sid);
+  var s2=valInput('s2s-'+sid), d2=valInput('s2d-'+sid);
+  var s3=valInput('s3s-'+sid), d3=valInput('s3d-'+sid);
+  var btn=document.getElementById('bsave-'+sid);
+  if(!btn)return stopBtnChecker(sid);
+  var ok=!!(s1&&d1&&s2&&d2&&s3&&d3);
+  if(ok){
+    btn.removeAttribute('disabled');
+    btn.style.opacity='1';
+    btn.style.cursor='pointer';
+  } else {
+    btn.setAttribute('disabled','disabled');
+    btn.style.opacity='0.4';
+    btn.style.cursor='not-allowed';
+  }
+}
+
 function onMesureInput(sid){
   unlockAudio();
   var s1=valInput('s1s-'+sid), d1=valInput('s1d-'+sid);
   var s2=valInput('s2s-'+sid), d2=valInput('s2d-'+sid);
   var s3=valInput('s3s-'+sid), d3=valInput('s3d-'+sid);
 
-  if(s1&&d1&&!timers[sid+'_2'])startTimer(sid,2);
-  if(s2&&d2&&!timers[sid+'_3'])startTimer(sid,3);
+  if(s1&&d1&&!timers[sid+'_2']){startTimer(sid,2);startBtnChecker(sid);}
+  if(s2&&d2&&!timers[sid+'_3']){startTimer(sid,3);startBtnChecker(sid);}
 
-  // Calcul moyenne
+  // Calcul moyenne (M2+M3 prioritaires)
   var used=[];
   if(s2&&d2)used.push({sys:s2,dia:d2});
   if(s3&&d3)used.push({sys:s3,dia:d3});
@@ -1163,9 +1194,10 @@ function onMesureInput(sid){
     prev.classList.remove('visible');
   }
 
-  // Activer bouton save : les 3 SYS et DIA doivent être valides (> 0)
-  var btn=document.getElementById('bsave-'+sid);
-  if(btn) btn.disabled=!(s1&&d1&&s2&&d2&&s3&&d3);
+  // Activer/désactiver le bouton
+  checkBtnState(sid);
+  // Démarrer le checker périodique pour fiabilité iOS
+  startBtnChecker(sid);
 }
 
 var WB_EMOJIS=['😁','🙂','😐','😟','😰'];
@@ -1196,6 +1228,7 @@ function saveSeance(sid){
   if(!s1||!d1||!s2||!d2||!s3||!d3){toast('⚠️ Les 3 mesures SYS et DIA sont requises','error');return;}
 
   [2,3].forEach(function(n){var k=sid+'_'+n;if(timers[k]){clearInterval(timers[k].iv);delete timers[k];}});
+  stopBtnChecker(sid);
 
   var wb=getSelectedWB(sid);
   var comment=document.getElementById('sc-'+sid)?document.getElementById('sc-'+sid).value.trim():'';
