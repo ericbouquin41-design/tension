@@ -528,7 +528,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
   <div id="t-rapport" class="section">
     <div class="card">
       <div class="card-hd"><span class="card-hd-icon">📄</span><span class="card-hd-title">Générer un rapport patient</span></div>
-      <p style="font-size:13px;color:#555;margin-bottom:1rem;">Sélectionnez les périodes à inclure dans le rapport, puis choisissez le format.</p>
+      <p style="font-size:13px;color:#555;margin-bottom:1rem;">Sélectionnez la période à inclure dans le rapport, puis ouvrez-le.</p>
       <div id="rapport-per-list" style="margin-bottom:1rem;"></div>
       <div style="display:flex;flex-direction:column;gap:.75rem;">
         <button class="btn btn-primary" style="margin-top:0;background:#0C447C;" onclick="genRapport('html')">🌐 Ouvrir le rapport HTML</button>
@@ -1803,25 +1803,39 @@ function renderRapportPerList(){
     w.innerHTML='<div class="empty-state" style="padding:1rem;"><span class="empty-icon">📭</span><p>Aucune période disponible.</p></div>';return;
   }
   var h='<div style="display:flex;flex-direction:column;gap:8px;">';
-  pd.periodes.forEach(function(p){
+  pd.periodes.forEach(function(p,idx){
     var cnt=(pd.seances||[]).filter(function(s){return s.perId===p.id;}).length;
-    h+='<div style="display:flex;align-items:center;gap:10px;padding:8px 12px;border:1px solid #e2e8f0;border-radius:8px;background:#fff;">'
-      +'<input type="checkbox" id="rp-'+p.id+'" checked style="width:16px;height:16px;cursor:pointer;">'
-      +'<label for="rp-'+p.id+'" style="flex:1;font-size:13px;font-weight:500;cursor:pointer;">'+p.nom+'</label>'
-      +'<span style="font-size:11px;color:#888;">'+fmtDs(p.debut)+' → '+fmtDs(p.fin)+' · '+cnt+' séance'+(cnt!==1?'s':'')+'</span>'
-      +'</div>';
+    var checked=idx===0?'checked':'';
+    h+='<label style="display:flex;align-items:center;gap:10px;padding:10px 14px;border:2px solid '+(checked?'#0C447C':'#e2e8f0')+';border-radius:10px;background:'+(checked?'#E6F1FB':'#fff')+';cursor:pointer;-webkit-tap-highlight-color:transparent;" onclick="selectRapportPer(this)">'
+      +'<input type="radio" name="rp-periode" id="rp-'+p.id+'" value="'+p.id+'" '+checked+' style="width:16px;height:16px;accent-color:#0C447C;cursor:pointer;">'
+      +'<div style="flex:1;">'
+      +'<div style="font-size:13px;font-weight:600;color:#1a1a2e;">'+p.nom+'</div>'
+      +'<div style="font-size:11px;color:#888;">'+fmtD(p.debut)+' → '+fmtD(p.fin)+'</div>'
+      +'</div>'
+      +'<span style="font-size:11px;color:#888;white-space:nowrap;">'+cnt+' séance'+(cnt!==1?'s':'')+'</span>'
+      +'</label>';
   });
   w.innerHTML=h+'</div>';
+}
+
+function selectRapportPer(label){
+  // Mettre à jour le style de toutes les cartes
+  document.querySelectorAll('#rapport-per-list label').forEach(function(l){
+    var isSelected=l===label||l.contains(label);
+    l.style.borderColor=isSelected?'#0C447C':'#e2e8f0';
+    l.style.background=isSelected?'#E6F1FB':'#fff';
+  });
 }
 
 function genRapport(format){
   var pd=getPD();
   var prof=db.profiles.find(function(x){return x.id===CUR_PROF;})||{nom:'Patient'};
-  var selectedPers=pd.periodes.filter(function(p){
-    var cb=document.getElementById('rp-'+p.id);
-    return cb&&cb.checked;
-  });
-  if(!selectedPers.length){toast('⚠️ Sélectionnez au moins une période','error');return;}
+
+  // Lire la période sélectionnée (radio)
+  var radioSel=document.querySelector('input[name="rp-periode"]:checked');
+  if(!radioSel){toast('⚠️ Sélectionnez une période','error');return;}
+  var selectedPers=pd.periodes.filter(function(p){return p.id===radioSel.value;});
+  if(!selectedPers.length){toast('⚠️ Période introuvable','error');return;}
 
   var age=getAge(prof.annee);
   var today=new Date().toLocaleDateString('fr-FR',{day:'2-digit',month:'long',year:'numeric'});
