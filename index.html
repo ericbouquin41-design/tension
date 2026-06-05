@@ -555,7 +555,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 
   <!-- MANUEL -->
   <div id="t-man" class="section">
-    <div class="manual-hero"><div class="manual-hero-icon">📖</div><div><h2>Manuel utilisateur<span class="vbadge">v3</span></h2><p>Guide complet de l'application Suivi tensionnel</p></div></div>
+    <div class="manual-hero"><div class="manual-hero-icon">📖</div><div><h2>Manuel utilisateur<span class="vbadge">v4</span></h2><p>Guide complet de l'application Suivi tensionnel</p></div></div>
     <div class="manual-toc">
       <button class="toc-btn active" onclick="showMan('demarrage')"><span class="toc-icon">🚀</span><div><div class="toc-label">Démarrage</div><div class="toc-desc">Premiers pas</div></div></button>
       <button class="toc-btn" onclick="showMan('profils')"><span class="toc-icon">👥</span><div><div class="toc-label">Profils</div><div class="toc-desc">Créer et modifier</div></div></button>
@@ -565,6 +565,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
       <button class="toc-btn" onclick="showMan('resultats')"><span class="toc-icon">📊</span><div><div class="toc-label">Résultats</div><div class="toc-desc">Historique et graphiques</div></div></button>
       <button class="toc-btn" onclick="showMan('rapport')"><span class="toc-icon">📄</span><div><div class="toc-label">Rapport médecin</div><div class="toc-desc">Générer un PDF</div></div></button>
       <button class="toc-btn" onclick="showMan('donnees')"><span class="toc-icon">💾</span><div><div class="toc-label">Données</div><div class="toc-desc">Export, import, réglages</div></div></button>
+      <button class="toc-btn" onclick="showMan('pwa')"><span class="toc-icon">📲</span><div><div class="toc-label">Installation</div><div class="toc-desc">App sur l'écran d'accueil</div></div></button>
       <button class="toc-btn" onclick="showMan('agenda')"><span class="toc-icon">📆</span><div><div class="toc-label">Agenda</div><div class="toc-desc">Rappels calendrier</div></div></button>
       <button class="toc-btn" onclick="showMan('normes')"><span class="toc-icon">❤️</span><div><div class="toc-label">Normes</div><div class="toc-desc">Référence médicale</div></div></button>
       <button class="toc-btn" onclick="showMan('faq')"><span class="toc-icon">💬</span><div><div class="toc-label">FAQ</div><div class="toc-desc">Questions fréquentes</div></div></button>
@@ -574,14 +575,14 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
     <div id="man-demarrage" class="msec active">
       <div class="man-card"><div class="man-card-title">🚀 Premiers pas</div>
         <div class="step-list">
-          <div class="step"><div class="step-num">1</div><div class="step-body"><div class="step-title">Créer votre profil</div><div class="step-desc">Entrez votre prénom, année de naissance, sexe, poids, médecin traitant et traitements en cours, puis cliquez ➕ Créer le profil.</div></div></div>
-          <div class="step"><div class="step-num">2</div><div class="step-body"><div class="step-title">Sélectionner votre profil</div><div class="step-desc">Cliquez sur votre carte pour entrer dans votre espace personnel. Toutes vos données sont isolées des autres profils.</div></div></div>
+          <div class="step"><div class="step-num">1</div><div class="step-body"><div class="step-title">Installer l'app sur votre téléphone</div><div class="step-desc"><strong>iPhone</strong> : ouvrez Safari → Partager → "Sur l'écran d'accueil". <strong>Android</strong> : Chrome affiche une bannière "Installer l'app". <strong>Windows</strong> : cliquez l'icône ➕ dans Chrome/Edge.</div></div></div>
+          <div class="step"><div class="step-num">2</div><div class="step-body"><div class="step-title">Créer votre profil</div><div class="step-desc">Entrez votre prénom, année de naissance, sexe, poids, médecin traitant et traitements en cours, puis cliquez ➕ Créer le profil.</div></div></div>
           <div class="step"><div class="step-num">3</div><div class="step-body"><div class="step-title">Créer une période de 3 jours</div><div class="step-desc">Dans l'onglet 📅 Périodes, donnez un nom et choisissez une date de début — la fin est calculée automatiquement à J+2.</div></div></div>
-          <div class="step"><div class="step-num">4</div><div class="step-body"><div class="step-title">Saisir vos mesures</div><div class="step-desc">Cliquez sur une période pour l'ouvrir. Le formulaire apparaît directement en bas : 3 mesures espacées par un minuteur.</div></div></div>
-          <div class="step"><div class="step-num">5</div><div class="step-body"><div class="step-title">Renseigner le bien-être et un commentaire</div><div class="step-desc">Après les 3 mesures, indiquez votre ressenti 😁🙂😐😟😰 et un commentaire libre (optionnel).</div></div></div>
-          <div class="step"><div class="step-num">6</div><div class="step-body"><div class="step-title">Générer un rapport pour votre médecin</div><div class="step-desc">Dans l'onglet 📄 Rapport, sélectionnez les périodes souhaitées et téléchargez le rapport en HTML ou PDF.</div></div></div>
+          <div class="step"><div class="step-num">4</div><div class="step-body"><div class="step-title">Saisir vos mesures</div><div class="step-desc">Tapez sur une case de la grille (bleue = aujourd'hui, orange = en retard) pour ouvrir le formulaire : 3 mesures espacées par le minuteur.</div></div></div>
+          <div class="step"><div class="step-num">5</div><div class="step-body"><div class="step-title">Renseigner le bien-être et un commentaire</div><div class="step-desc">Indiquez votre ressenti 😁🙂😐😟😰 et un commentaire libre optionnel (stress, mauvaise nuit, médicament…).</div></div></div>
+          <div class="step"><div class="step-num">6</div><div class="step-body"><div class="step-title">Générer un rapport pour votre médecin</div><div class="step-desc">Dans l'onglet 📄 Rapport, sélectionnez une période et ouvrez le rapport HTML — imprimable en PDF depuis le navigateur.</div></div></div>
         </div>
-        <div class="tip-box"><span>💡</span><span>Application 100% hors-ligne. Données sauvegardées automatiquement dans le navigateur.</span></div>
+        <div class="tip-box"><span>💡</span><span>Application 100% hors-ligne. Données sauvegardées automatiquement dans le navigateur. Fonctionne même sans connexion internet une fois installée.</span></div>
       </div>
     </div>
 
@@ -714,7 +715,20 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
     </div>
 
     <!-- NORMES -->
-    <div id="man-normes" class="msec">
+    <div id="man-pwa" class="msec">
+      <div class="man-card"><div class="man-card-title">📲 Installer l'application (PWA)</div>
+        <p style="font-size:13px;color:#555;margin-bottom:.75rem;">L'application peut s'installer sur votre écran d'accueil comme une vraie application native — sans passer par l'App Store. Elle fonctionne ensuite hors-ligne.</p>
+        <div class="step-list">
+          <div class="step"><div class="step-num" style="background:#1a1a2e;">🍎</div><div class="step-body"><div class="step-title">iPhone / iPad (iOS)</div><div class="step-desc">1. Ouvrez <strong>Safari</strong> (obligatoire, pas Chrome)<br>2. Allez sur <strong>ericbouquin41-design.github.io/tension/</strong><br>3. Appuyez sur le bouton <strong>Partager</strong> (carré avec flèche ↑)<br>4. Choisissez <strong>"Sur l'écran d'accueil"</strong><br>5. L'icône 🩺 apparaît sur votre écran d'accueil !</div></div></div>
+          <div class="step"><div class="step-num" style="background:#1D9E75;">🤖</div><div class="step-body"><div class="step-title">Android (Chrome)</div><div class="step-desc">1. Ouvrez <strong>Chrome</strong><br>2. Allez sur l'application<br>3. Une bannière <strong>"Installer Suivi Tensionnel"</strong> apparaît en bas<br>4. Tapez <strong>Installer</strong> — ou via Menu ⋮ → "Ajouter à l'écran d'accueil"</div></div></div>
+          <div class="step"><div class="step-num" style="background:#0078D4;">💻</div><div class="step-body"><div class="step-title">Windows (Chrome ou Edge)</div><div class="step-desc">1. Ouvrez <strong>Chrome</strong> ou <strong>Edge</strong><br>2. Allez sur l'application<br>3. Cliquez l'icône <strong>➕</strong> dans la barre d'adresse<br>4. Cliquez <strong>"Installer"</strong> — l'app apparaît dans le menu Démarrer</div></div></div>
+        </div>
+        <div class="info-box"><span>✅</span><span>Une fois installée, l'app s'ouvre en <strong>plein écran</strong> sans barre d'adresse, se charge <strong>instantanément</strong> et fonctionne <strong>sans connexion internet</strong>.</span></div>
+        <div class="tip-box"><span>💡</span><span>L'installation est totalement gratuite et n'utilise presque pas d'espace sur votre téléphone.</span></div>
+      </div>
+    </div>
+
+        <div id="man-normes" class="msec">
       <div class="man-card"><div class="man-card-title">❤️ Normes tensionnelles ESH/ESC</div>
         <p style="font-size:13px;color:#555;margin-bottom:.75rem;">Normes de la Société Européenne d'Hypertension, applicables aux mesures à domicile.</p>
         <table class="norme-table"><thead><tr><th>Catégorie</th><th>Systolique</th><th>Diastolique</th><th>Statut</th></tr></thead><tbody>
@@ -732,7 +746,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
     <!-- FAQ -->
     <div id="man-faq" class="msec">
       <div class="man-card"><div class="man-card-title">💬 Questions fréquentes</div>
-        <div class="faq-item"><div class="faq-q">❓ Mes données sont-elles sécurisées ?</div><div class="faq-a">Toutes les données restent sur votre appareil (localStorage). Elles ne sont jamais envoyées sur internet.</div></div>
+        <div class="faq-item"><div class="faq-q">❓ L'app fonctionne-t-elle sans internet ?</div><div class="faq-a">Oui, une fois installée comme PWA, elle fonctionne entièrement hors-ligne. Les données sont stockées sur votre appareil et ne nécessitent aucune connexion.</div></div><div class="faq-item"><div class="faq-q">❓ Mes données sont-elles sécurisées ?</div><div class="faq-a">Toutes les données restent sur votre appareil (localStorage). Elles ne sont jamais envoyées sur internet.</div></div>
         <div class="faq-item"><div class="faq-q">❓ Que faire si le cache du navigateur est vidé ?</div><div class="faq-a">Les données peuvent être perdues. Exportez régulièrement via ⚙️ Données pour garder une sauvegarde.</div></div>
         <div class="faq-item"><div class="faq-q">❓ Le son ne fonctionne pas sur iPhone ?</div><div class="faq-a">Sur iOS Safari, le son doit être activé par une interaction manuelle. Avant votre séance, appuyez sur 🔔 Test son dans le formulaire. Cela déverrouille l'audio pour toute la session.</div></div>
         <div class="faq-item"><div class="faq-q">❓ Comment changer la durée du minuteur ?</div><div class="faq-a">Dans l'onglet ⚙️ Données, la carte "Paramètres du minuteur" propose 1 min, 1 min 30 s, 2 min, 3 min ou 5 min. Choisissez selon la recommandation de votre médecin. Rappel : le minuteur démarre quand les 3 champs (SYS, DIA et bpm) d'une mesure sont remplis.</div></div>
@@ -740,7 +754,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
         <div class="faq-item"><div class="faq-q">❓ À quoi sert le champ bien-être ?</div><div class="faq-a">Il permet de contextualiser les mesures tensionnelles. Une tension élevée lors d'une séance notée 😰 "très stressé" sera interprétée différemment par le médecin qu'une tension élevée lors d'une séance notée 😁 "très bien".</div></div>
         <div class="faq-item"><div class="faq-q">❓ Comment générer un rapport PDF ?</div><div class="faq-a">Dans l'onglet 📄 Rapport, sélectionnez les périodes souhaitées, puis cliquez 🌐 Ouvrir HTML. Dans la page qui s'ouvre, cliquez le bouton 🖨️ Imprimer/PDF et choisissez "Enregistrer en PDF" comme destination d'impression.</div></div>
         <div class="faq-item"><div class="faq-q">❓ Puis-je modifier une séance déjà enregistrée ?</div><div class="faq-a">Oui. Dans la grille de la période, tapez sur une case verte ✅ pour ouvrir le formulaire de modification pré-rempli avec toutes les valeurs existantes (mesures, bien-être, commentaire). Modifiez et enregistrez.</div></div><div class="faq-item"><div class="faq-q">❓ Comment transférer les données vers un autre appareil ?</div><div class="faq-a">Exportez depuis ⚙️ Données (fichier JSON), puis importez ce fichier sur l'autre appareil en mode 🔀 Fusionner pour ne pas écraser les données existantes.</div></div>
-        <div class="faq-item"><div class="faq-q">❓ Puis-je installer l'app sur mon téléphone ?</div><div class="faq-a">Oui. Dans Safari, ouvrez le fichier HTML, appuyez sur Partager → "Sur l'écran d'accueil". L'app s'installe comme une application native.</div></div>
+        <div class="faq-item"><div class="faq-q">❓ Puis-je installer l'app sur mon téléphone ?</div><div class="faq-a">Oui ! L'app est une PWA (Progressive Web App). Sur iPhone : Safari → Partager → "Sur l'écran d'accueil". Sur Android : Chrome affiche une bannière d'installation automatique. Sur Windows : cliquez l'icône ➕ dans Chrome ou Edge. Voir la section 📲 Installation dans ce manuel.</div></div>
       </div>
     </div>
   </div>
