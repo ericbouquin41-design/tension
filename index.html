@@ -108,6 +108,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .per-actions-row .btn-agenda{flex:1;}
 .btn-del-per{background:none;border:1px solid #f0d0d0;color:#A32D2D;font-size:12px;font-weight:600;padding:6px 14px;border-radius:8px;cursor:pointer;-webkit-tap-highlight-color:transparent;white-space:nowrap;}
 .btn-del-per:active{background:#FCEBEB;}
+.btn-rename-per{background:none;border:1px solid #b5d4f4;color:#185FA5;font-size:12px;font-weight:600;padding:6px 14px;border-radius:8px;cursor:pointer;-webkit-tap-highlight-color:transparent;white-space:nowrap;}
+.btn-rename-per:active{background:#E6F1FB;}
 .per-dot{width:9px;height:9px;border-radius:50%;background:#ccc;flex-shrink:0;pointer-events:none;}
 .per-card.open .per-dot{background:#0C447C;}
 .per-card.cur .per-dot{background:#1D9E75;}
@@ -333,6 +335,23 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
     <div class="modal-btns">
       <button class="modal-btn-cancel" onclick="closeAgenda()">Annuler</button>
       <button class="modal-btn-ok" onclick="genICS()">⬇️ Télécharger .ics</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL RENOMMER PÉRIODE -->
+<div class="modal-overlay hidden" id="modal-rename-per" onclick="if(event.target===this)closeRenamePer()">
+  <div class="modal-box">
+    <div class="modal-title">✏️ Renommer la période</div>
+    <div class="modal-sub">Modifiez le nom ci-dessous.</div>
+    <input type="hidden" id="rename-per-id">
+    <div class="field-sm" style="margin-bottom:1rem;">
+      <label>🏷️ Nom de la période</label>
+      <input type="text" id="rename-per-nom" placeholder="ex : Avant traitement, Contrôle mensuel…" maxlength="60">
+    </div>
+    <div class="modal-btns">
+      <button class="modal-btn-cancel" onclick="closeRenamePer()">Annuler</button>
+      <button class="modal-btn-ok" onclick="saveRenamePer()">💾 Enregistrer</button>
     </div>
   </div>
 </div>
@@ -1017,6 +1036,35 @@ function togglePer(id){
   renderPerList();
 }
 
+function openRenamePer(id){
+  var pd=getPD();
+  var p=pd.periodes.find(function(x){return x.id===id;});
+  if(!p)return;
+  document.getElementById('rename-per-id').value=id;
+  document.getElementById('rename-per-nom').value=p.nom;
+  document.getElementById('modal-rename-per').classList.remove('hidden');
+  // Focus sur le champ texte
+  setTimeout(function(){document.getElementById('rename-per-nom').focus();},100);
+}
+
+function closeRenamePer(){
+  document.getElementById('modal-rename-per').classList.add('hidden');
+}
+
+function saveRenamePer(){
+  var id=document.getElementById('rename-per-id').value;
+  var nom=document.getElementById('rename-per-nom').value.trim();
+  if(!nom){toast('⚠️ Le nom ne peut pas être vide','error');return;}
+  var pd=getPD();
+  var p=pd.periodes.find(function(x){return x.id===id;});
+  if(!p)return;
+  p.nom=nom;
+  save();
+  closeRenamePer();
+  toast('✅ Période renommée !','success');
+  renderPerList();
+}
+
 function delPer(id){
   if(!confirm('Supprimer cette période et ses séances ?'))return;
   var pd=getPD();
@@ -1056,6 +1104,7 @@ function renderPerList(){
       +'</button>'
       +'</div>'
       +'<div class="per-actions-row">'
+      +'<button class="btn-rename-per" onclick="openRenamePer(\''+p.id+'\')">✏️ Renommer</button>'
       +'<button class="btn-agenda" onclick="openAgenda(\''+p.id+'\')">📆 Agenda</button>'
       +'<button class="btn-del-per" onclick="delPer(\''+p.id+'\')">🗑️ Supprimer</button>'
       +'</div>';
